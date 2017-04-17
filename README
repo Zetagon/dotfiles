@@ -1,0 +1,9 @@
+Run these commands on a new machine:
+
+ln -s aspell.sv.pws dotfiles/.aspell.sv.pws
+ln -s tmux.conf dotfiles/.tmux.conf
+ln -s vim dotfiles/.vim
+ln -s xsession dotfiles/.xsession
+ln -s zshrc dotfiles/.zshrc 
+
+
