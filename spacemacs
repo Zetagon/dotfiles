@@ -347,6 +347,7 @@ SCHEDULED: %t")))
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
   (setq indent-line-function 'insert-tab)
+  (setq bookmark-default-file "~/Dropbox/emacsbookmarks")
 
   "Remap j and k to function with softwraps"
   (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
