@@ -360,7 +360,8 @@ SCHEDULED: %t")))
   (add-hook 'text-mode-hook 'auto-fill-mode)
   (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-spelling-checking-off)))
   (add-hook 'latex-mode 'outline-minor-mode)
-  (linum-relative-global-mode t)
+  (add-hook 'text-mode-hook (lambda() linum-relative-global-mode t))
+  (add-hook 'prog-mode-hook (lambda() linum-relative-global-mode t))
   )
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
