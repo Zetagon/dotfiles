@@ -33,6 +33,7 @@ values."
    '(
      themes-megapack
      spotify
+     ranger
      python
      javascript
      typescript
@@ -357,6 +358,8 @@ SCHEDULED: %t")))
   (define-key evil-normal-state-map (kbd ",;r") 'jump-to-register)
   (set-register ?I '(file . "~/Dropbox/org/skola.org" ))
   (add-hook 'text-mode-hook 'auto-fill-mode)
+  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-spelling-checking-off)))
+  (add-hook 'latex-mode 'outline-minor-mode)
   (linum-relative-global-mode t)
   )
 ;; Do not write anything past this comment. This is where Emacs will
