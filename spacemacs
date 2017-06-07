@@ -1,6 +1,6 @@
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
-;; It must be stored in your home directory.
+;; It must be stored in your home directory .
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
@@ -41,6 +41,7 @@ values."
      latex
      auto-completion
      xkcd
+     MyLayer
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -130,7 +131,8 @@ values."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
    dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+                                (projects . 7)
+                                (bookmarks . 3))
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -139,7 +141,7 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(zenburn
-                         ample-light)
+                         monokai)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -310,7 +312,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
   (setq-default dotspacemacs-line-numbers 'relative)
-  (setq-default shell-default-shell 'eshell)
 )
 
 (defun dotspacemacs/user-config ()
@@ -337,7 +338,7 @@ you should place your code here."
 
   "Org todo keywords"
   (setq org-todo-keywords
-        '((sequence "Examination" "Läxa" "TODO" "IN PROGRESS"  "|" "DONE" "CANCELLED")))
+        '((sequence "TODO" "Examination" "Läxa" "IN PROGRESS"  "|" "DONE" "CANCELLED")))
 
   (setq org-capture-templates
         '(("l" "Ny läxa" entry
@@ -361,9 +362,17 @@ SCHEDULED: %t")))
   (set-register ?I '(file . "~/Dropbox/org/skola.org" ))
   (add-hook 'text-mode-hook 'auto-fill-mode)
   (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-spelling-checking-off)))
-  (add-hook 'latex-mode 'outline-minor-mode)
+  (add-hook 'tex-mode-hook 'outline-minor-mode)
   (add-hook 'text-mode-hook (lambda() linum-relative-global-mode t))
   (add-hook 'prog-mode-hook (lambda() linum-relative-global-mode t))
+
+
+  (setq bibtex-dialect 'biblatex)
+  (setq shell-default-shell 'eshell)
+  ;(use-package chronos :ensure t)
+  ;(setq chronos-expiry-functions '(chronos-desktop-notifications-notify
+                                   ;chronos-buffer-notify))
+  ;(add-hook 'chronos-mode-hook (lambda() (evil-emacs-state) ))
   )
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.

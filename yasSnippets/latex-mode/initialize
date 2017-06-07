@@ -1,0 +1,21 @@
+# key: init
+# name: initialize
+# --
+\documentclass[a4paper, twocolumn]{article}
+\RequirePackage[l2tabu, orthodox]{nag}% Complain about old and bad habits
+\usepackage[utf8]{inputenc}
+\usepackage[swedish]{babel}
+\usepackage{microtype}
+\usepackage{todonotes}
+
+\usepackage[backend=biber, style=ieee]{biblatex}
+\addbibresource{bib.bib} % <----- Rename bibtex file!
+
+\author{Leo Okawa Ericson}
+\title{$1}
+$2
+\begin{document}
+\maketitle{}
+
+\printbibliography
+\end{document}
