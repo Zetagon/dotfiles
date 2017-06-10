@@ -369,6 +369,7 @@ SCHEDULED: %t")))
 
   (setq bibtex-dialect 'biblatex)
   (setq shell-default-shell 'eshell)
+  (setq evil-move-cursor-back t)
   ;(use-package chronos :ensure t)
   ;(setq chronos-expiry-functions '(chronos-desktop-notifications-notify
                                    ;chronos-buffer-notify))
