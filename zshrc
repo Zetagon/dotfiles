@@ -90,7 +90,12 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 setopt autocd
-#bindkey -v
+#Vim mode
+bindkey -v
+export KEYTIMEOUT=10
+bindkey jk vi-cmd-mode
+bindkey '^w' backward-kill-word
+
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/leo/.zshrc'
@@ -111,6 +116,7 @@ alias ...='ls ../..'
 alias svim='sudo vim'
 alias apt-get="sudo apt-get"
 alias irl='systemctl suspend'
+eval $(thefuck --alias fuck)
 
 # do not delete / or prompt if deleting more than 3 files at a time #
 alias rm='rm -I --preserve-root'
