@@ -338,7 +338,7 @@ you should place your code here."
 
   "Org todo keywords"
   (setq org-todo-keywords
-        '((sequence "TODO" "Examination" "Läxa" "IN PROGRESS"  "|" "DONE" "CANCELLED")))
+        '((sequence "TODO" "IN PROGRESS"  "|" "DONE" "CANCELLED")))
 
   (setq org-capture-templates
         '(("l" "Ny läxa" entry
@@ -370,6 +370,7 @@ SCHEDULED: %t")))
   (setq bibtex-dialect 'biblatex)
   (setq shell-default-shell 'eshell)
   (setq evil-move-cursor-back t)
+  (fci-mode)
   ;(use-package chronos :ensure t)
   ;(setq chronos-expiry-functions '(chronos-desktop-notifications-notify
                                    ;chronos-buffer-notify))
