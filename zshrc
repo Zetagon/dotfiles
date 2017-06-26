@@ -116,6 +116,7 @@ alias ...='ls ../..'
 alias svim='sudo vim'
 alias apt-get="sudo apt-get"
 alias irl='systemctl suspend'
+alias flashinstall='sudo apt-get install flashplugin-installer' 
 eval $(thefuck --alias fuck)
 
 # do not delete / or prompt if deleting more than 3 files at a time #
