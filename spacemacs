@@ -367,7 +367,40 @@ SCHEDULED: %t")))
   (add-hook 'text-mode-hook (lambda() linum-relative-global-mode t))
   (add-hook 'prog-mode-hook (lambda() linum-relative-global-mode t))
 
+  ; Mu4e
+  (setq-default dotspacemacs-configuration-layers
+                  '((mu4e :variables
+                          mu4e-installation-path "/usr/share/emacs/site-lisp")))
 
+  (setq mu4e-maildir "~/.mail"
+          mu4e-trash-folder "/Trash"
+          mu4e-refile-folder "/Archive"
+          mu4e-get-mail-command "offlineimap"
+          mu4e-update-interval nil
+          mu4e-compose-signature-auto-include nil
+          mu4e-view-show-images t
+          mu4e-view-show-addresses t)
+
+    ;;; Mail directory shortcuts
+    (setq mu4e-maildir-shortcuts
+        '( ("/INBOX"               . ?i)
+           ("/[Gmail].Sent Mail"   . ?s)
+           ("/[Gmail].Trash"       . ?t)
+           ("/[Gmail].All Mail"    . ?a)))
+
+    ;;; Bookmarks
+    (setq mu4e-bookmarks
+          `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+            ("date:today..now" "Today's messages" ?t)
+            ("date:7d..now" "Last 7 days" ?w)
+            ("mime:image/*" "Messages with images" ?p)
+            (,(mapconcat 'identity
+                         (mapcar
+                          (lambda (maildir)
+                            (concat "maildir:" (car maildir)))
+                          mu4e-maildir-shortcuts) " OR ")
+             "All inboxes" ?i)))
+  ; end mu4e
   (setq bibtex-dialect 'biblatex)
   (setq shell-default-shell 'eshell)
   (setq evil-move-cursor-back t)
