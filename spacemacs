@@ -42,6 +42,7 @@ values."
      auto-completion
      xkcd
      MyLayer
+     pdf-reference
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
