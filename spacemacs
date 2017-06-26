@@ -309,9 +309,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   "Add functionality to org
    so that :ignore: tag can be used on org-headlines. Those headlines will not be exported
    but their subtrees will"
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
-  (setq-default dotspacemacs-line-numbers 'relative)
+  ; (require 'ox-extra)
+  ; (ox-extras-activate '(ignore-headlines))
+  ; (setq-default dotspacemacs-line-numbers 'relative)
 )
 
 (defun dotspacemacs/user-config ()
