@@ -206,6 +206,7 @@ exec_always setxkbmap -layout us,se -option grp:shifts_toggle
 
 exec slack
 exec firefox
+exec emacs --daemon
 exec_always feh --bg-scale ~/Pictures/mandelbrot.jpg
 exec_always ~/startup.sh
 
