@@ -34,6 +34,7 @@
            org
            yaml
            themes-megapack
+           search-engine
            spotify
            ranger
            python
@@ -45,7 +46,7 @@
            xkcd
            c-c++
            MyLayer
-           ;;mu4e
+           mu4e
             react
            ;; ----------------------------------------------------------------
            ;; Example of useful layers you may want to use right away.
@@ -146,8 +147,8 @@
          ;; List of themes, the first of the list is loaded when spacemacs starts.
          ;; Press <SPC> T n to cycle to the next theme in the list (works great
          ;; with 2 themes variants, one dark and one light)
-         dotspacemacs-themes '(zenburn
-                               monokai)
+         dotspacemacs-themes '(monokai
+                               zenburn)
          ;; If non nil the cursor color matches the state color in GUI Emacs.
          dotspacemacs-colorize-cursor-according-to-state t
          ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -400,10 +401,7 @@
         (add-hook 'prog-mode-hook 'linum-relative-global-mode)
         (add-hook 'web-mode-hook 'electric-pair-mode)
 
-        Mu4e
-        (setq-default dotspacemacs-configuration-layers
-                        '((mu4e :variables
-                                mu4e-installation-path "/usr/share/emacs/site-lisp")))
+        ;;Mu4e
 
         (setq mu4e-maildir "~/.mail"
                 mu4e-trash-folder "/Trash"
@@ -433,7 +431,7 @@
                                   (concat "maildir:" (car maildir)))
                                 mu4e-maildir-shortcuts) " OR ")
                    "All inboxes" ?i)))
-        end mu4e
+        ;;end mu4e
         ; Org Capture
          (setq org-capture-templates
             '(("t" "TODO" entry (file+headline "~/org/todo.org" "Tasks")
@@ -478,6 +476,13 @@
       (spacemacs/set-leader-keys "os" 'node-restart-server)
       (spacemacs/set-leader-keys "or" 'node-reload-server-and-browser)
       (spacemacs/set-leader-keys "ot" 'node-run-tests)
+      (push '(javascript-docs
+              :name "Javascript")
+            search-engine-alist)
+      (defengine javascript-docs
+        "http://devdocs.io/#q=javascript %s"
+        :docstring "Search devdocs with javascript tag")
+
 
       )
 (defun dotspacemacs/emacs-custom-settings ()
