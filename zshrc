@@ -66,7 +66,7 @@ source $ZSH/oh-my-zsh.sh
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='emacsclient'
 # fi
 
 # Compilation flags
@@ -104,9 +104,18 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-export VISUAL=vim
-export EDITOR="$VISUAL"
-alias ec='emacsclient -n'
+function potentialGlossary {
+  emacsclient -c -n '~/Documents/potential-glossary/app.js'
+  tmuxp load potential-glossary
+}
+
+source ~/.bin/tmuxinator.zsh 
+export VISUAL=emacsclient 
+export EDITOR="$VISUAL -n"
+export DISABLE_AUTO_TITLE=true
+alias en='emacsclient -n'
+alias ec='emacsclient -c -n'
+alias et='emacsclient -t'
 alias erik='sshfs leo@perpetuality.hexeye.se:/ /home/leo/Hexeye-Server'
 alias erikssh='ssh leo@perpetuality.hexeye.se'
 alias ls='ls -l --color=auto'
@@ -118,6 +127,7 @@ alias apt-get="sudo apt-get"
 alias irl='systemctl suspend'
 alias flashinstall='sudo apt-get install flashplugin-installer' 
 eval $(thefuck --alias fuck)
+alias pg=potentialGlossary
 
 # do not delete / or prompt if deleting more than 3 files at a time #
 alias rm='rm -I --preserve-root'
