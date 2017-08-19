@@ -32,6 +32,7 @@
          dotspacemacs-configuration-layers
          '( 
            org
+           rust
            yaml
            themes-megapack
            search-engine
@@ -137,8 +138,6 @@
          ;; List sizes may be nil, in which case
          ;; `spacemacs-buffer-startup-lists-length' takes effect.
          dotspacemacs-startup-lists '((agenda . 10)
-                                      (recents . 5)
-                                      (projects . 7)
                                       (bookmarks . 3))
          ;; True if the home buffer should respond to resize events.
          dotspacemacs-startup-buffer-responsive t
@@ -337,9 +336,34 @@
          web-mode-css-indent-offset 2
          web-mode-code-indent-offset 2
          web-mode-attr-indent-offset 2)
-        ;; (add-hook 'js2-mode-hook  (function (lambda()
-        ;;                                      (setq evil-shift-width 2)
-        ;;                                      )))
+        (add-hook 'js2-mode-hook  (function (lambda()
+                                             (setq evil-shift-width 2)
+                                             )))
+    (defun hide-org-radio-targets ()
+      (defcustom org-hidden-links-additional-re "\\(<<<\\)[[:print:]]+\\(>>>\\)"
+        "Regular expression that matches strings where the invisible-property of the sub-matches 1 and 2 is set to org-link."
+        :type '(choice (const :tag "Off" nil) regexp)
+        :group 'org-link)
+      (make-variable-buffer-local 'org-hidden-links-additional-re)
+
+      (defun org-activate-hidden-links-additional (limit)
+        "Put invisible-property org-link on strings matching `org-hide-links-additional-re'."
+        (if org-hidden-links-additional-re
+            (re-search-forward org-hidden-links-additional-re limit t)
+          (goto-char limit)
+          nil))
+
+      (defun org-hidden-links-hook-function ()
+        "Add rule for `org-activate-hidden-links-additional' to `org-font-lock-extra-keywords'.
+      You can include this function in `org-font-lock-set-keywords-hook'."
+        (add-to-list 'org-font-lock-extra-keywords
+                                    '(org-activate-hidden-links-additional
+                                      (1 '(face org-target invisible org-link))
+                      (2 '(face org-target invisible org-link)))))
+
+      (add-hook 'org-font-lock-set-keywords-hook #'org-hidden-links-hook-function))
+
+      (hide-org-radio-targets)
       )
 
       (defun dotspacemacs/user-config ()
@@ -365,7 +389,7 @@
         (setq org-agenda-files '( "~/org/skola.org" "~/org/todo.org" "~/org/ifft_capture.org" ))
         (setq org-refile-targets (quote (("~/org/skola.org" :maxlevel . 1)
                                          ("~/org/todo.org" :level . 1)
-                                         ("~/org/someday.org" :level . 2))))
+                                         ("~/org/someday.org" :maxlevel . 1))))
 
         "Org todo keywords"
         (setq org-todo-keywords
@@ -379,11 +403,17 @@
               ("t" "TODO" entry (file+headline "~/org/todo.org" "Tasks")
                "* TODO %?
    Added: %T "
-               )))
+               )
+              ("r" "To Read" entry (file+headline "~/org/someday.org" "To Read")
+                             "* %?
+                 added: %t
+                 "
+                           )
+    ))
 
         (setq bookmark-default-file "~/Dropbox/emacsbookmarks")
-        (add-to-list 'projectile-globally-ignored-directories "node_modules")
-            (add-to-list 'projectile-globally-ignored-directories "data")
+        ;; (add-to-list 'projectile-globally-ignored-directories "node_modules")
+            ;; (add-to-list 'projectile-globally-ignored-directories "data")
 
         "Remap j and k to function with softwraps"
         (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -432,13 +462,7 @@
                                 mu4e-maildir-shortcuts) " OR ")
                    "All inboxes" ?i)))
         ;;end mu4e
-        ; Org Capture
-         (setq org-capture-templates
-            '(("t" "TODO" entry (file+headline "~/org/todo.org" "Tasks")
-                "* TODO %?
-   Added: %T "
-            )))
-      ; end Org Capture
+          ; end Org Capture
       (setq bibtex-dialect 'biblatex)
       (setq shell-default-shell 'ansi-term)
       (setq evil-move-cursor-back t)
@@ -450,22 +474,23 @@
       (defun node-run-tests()
             "Run test"
             (interactive)
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potentialGlossary:tests" "npm test\n"))
+            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:tests" "npm test\n"))
 
       (defun reload-browser ()
             "Reload the browser by using xdotool
             Do this by sending M-3 , sleep 0.5 seconds and then send <F5>"
             (interactive)
-            (call-process "xdotool" nil nil nil "key" "ALT+3")
+            ;; (call-process "xdotool" nil nil nil "key" "Super_L+3")
+            (call-process "awesome-client" nil nil nil "require('awful').screen.focused().tags[3]:view_only()")
             (call-process "sleep" nil nil nil "0.7")
             (call-process "xdotool" nil nil nil "key" "F5"))
 
       (defun node-restart-server()
             "Restart server that is running inside tmux"
             (interactive)
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potentialGlossary:server" "C-c")
+            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" "C-c")
             (call-process "sleep" nil nil nil "0.1")
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potentialGlossary:server" " node app.js" "enter"))
+            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" " node app.js" "enter"))
 
       (defun node-reload-server-and-browser ()
             (interactive)
@@ -483,8 +508,11 @@
         "http://devdocs.io/#q=javascript %s"
         :docstring "Search devdocs with javascript tag")
 
-
-      )
+      ;; (zoom-frm-out)
+      ;; (zoom-frm-out)
+      ;; (zoom-frm-out)
+(require 'org-brain)
+)
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -504,8 +532,9 @@ This function is called at the very end of Spacemacs initialization."
  '(org-tags-column -90)
  '(package-selected-packages
    (quote
-    (org-ref pdf-tools key-chord ivy tablist interleave helm-bibtex biblio parsebib biblio-core chronos org-mime zonokai-theme zen-and-art-theme yaml-mode xterm-color xkcd winum underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme slime-company slime shell-pop seti-theme reverse-theme ranger railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme spinner orgit organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme multi-term mu4e-maildirs-extension mu4e-alert ht monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme skewer-mode simple-httpd light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme parent-mode heroku-theme hemisu-theme helm-spotify multi helm-company helm-c-yasnippet hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme fuzzy flycheck-pos-tip pos-tip epl flx flatui-theme flatland-theme firebelly-theme farmhouse-theme iedit evil-commentary espresso-theme eshell-z eshell-prompt-extras esh-help dracula-theme django-theme disaster darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company common-lisp-snippets color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmake-mode clues-theme clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-map badwolf-theme auto-yasnippet auctex apropospriate-theme anti-zenburn-theme pythonic s ample-zen-theme ample-theme alect-themes afternoon-theme ac-ispell auto-complete popup which-key web-mode use-package toc-org tide typescript-mode flycheck restart-emacs pug-mode persp-mode org-plus-contrib org-download neotree move-text mmm-mode markdown-toc markdown-mode live-py-mode link-hint json-mode js2-refactor yasnippet info+ indent-guide hungry-delete highlight-indentation hide-comnt help-fns+ helm-projectile helm-make helm-gitignore helm-flx helm-ag git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-surround evil-nerd-commenter evil-mc evil-ediff evil-anzu dumb-jump diminish coffee-mode auto-compile packed anaconda-mode aggressive-indent ace-window ace-link avy smartparens highlight evil flyspell-correct helm helm-core magit magit-popup git-commit with-editor async projectile hydra f haml-mode js2-mode alert log4e request dash spacemacs-theme yapfify ws-butler window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree tagedit spaceline smeargle slim-mode slack scss-mode sass-mode rainbow-delimiters quelpa pyvenv pytest pyenv-mode py-isort popwin pkg-info pip-requirements pcre2el paradox org-projectile org-present org-pomodoro org-bullets open-junk-file multiple-cursors magit-gitflow macrostep lorem-ipsum livid-mode linum-relative less-css-mode json-snatcher json-reformat js-doc ido-vertical-mode hy-mode htmlize hl-todo highlight-parentheses highlight-numbers helm-themes helm-swoop helm-pydoc helm-mode-manager helm-descbinds helm-css-scss goto-chg google-translate golden-ratio gnuplot gntp gitignore-mode gitconfig-mode gitattributes-mode git-messenger gh-md flyspell-correct-helm flx-ido fill-column-indicator fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args eval-sexp-fu emmet-mode elisp-slime-nav define-word cython-mode column-enforce-mode clean-aindent-mode bind-key auto-highlight-symbol auto-dictionary auctex-latexmk anzu adaptive-wrap ace-jump-helm-line)))
+    (scad-preview scad-mode org-mime zonokai-theme zen-and-art-theme yaml-mode xterm-color xkcd winum underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme slime-company slime shell-pop seti-theme reverse-theme ranger railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme spinner orgit organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme multi-term mu4e-maildirs-extension mu4e-alert ht monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme skewer-mode simple-httpd light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme parent-mode heroku-theme hemisu-theme helm-spotify multi helm-company helm-c-yasnippet hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme fuzzy flycheck-pos-tip pos-tip epl flx flatui-theme flatland-theme firebelly-theme farmhouse-theme iedit evil-commentary espresso-theme eshell-z eshell-prompt-extras esh-help dracula-theme django-theme disaster darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company common-lisp-snippets color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmake-mode clues-theme clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-map badwolf-theme auto-yasnippet auctex apropospriate-theme anti-zenburn-theme pythonic s ample-zen-theme ample-theme alect-themes afternoon-theme ac-ispell auto-complete popup which-key web-mode use-package toc-org tide typescript-mode flycheck restart-emacs pug-mode persp-mode org-plus-contrib org-download neotree move-text mmm-mode markdown-toc markdown-mode live-py-mode link-hint json-mode js2-refactor yasnippet info+ indent-guide hungry-delete highlight-indentation hide-comnt help-fns+ helm-projectile helm-make helm-gitignore helm-flx helm-ag git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-surround evil-nerd-commenter evil-mc evil-ediff evil-anzu dumb-jump diminish coffee-mode auto-compile packed anaconda-mode aggressive-indent ace-window ace-link avy smartparens highlight evil flyspell-correct helm helm-core magit magit-popup git-commit with-editor async projectile hydra f haml-mode js2-mode alert log4e request dash spacemacs-theme yapfify ws-butler window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree tagedit spaceline smeargle slim-mode slack scss-mode sass-mode rainbow-delimiters quelpa pyvenv pytest pyenv-mode py-isort popwin pkg-info pip-requirements pcre2el paradox org-projectile org-present org-pomodoro org-bullets open-junk-file multiple-cursors magit-gitflow macrostep lorem-ipsum livid-mode linum-relative less-css-mode json-snatcher json-reformat js-doc ido-vertical-mode hy-mode htmlize hl-todo highlight-parentheses highlight-numbers helm-themes helm-swoop helm-pydoc helm-mode-manager helm-descbinds helm-css-scss goto-chg google-translate golden-ratio gnuplot gntp gitignore-mode gitconfig-mode gitattributes-mode git-messenger gh-md flyspell-correct-helm flx-ido fill-column-indicator fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args eval-sexp-fu emmet-mode elisp-slime-nav define-word cython-mode column-enforce-mode clean-aindent-mode bind-key auto-highlight-symbol auto-dictionary auctex-latexmk anzu adaptive-wrap ace-jump-helm-line)))
  '(paradox-github-token t)
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(quote
    (org-file-apps
     (quote
