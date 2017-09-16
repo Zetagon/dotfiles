@@ -5,14 +5,15 @@
 
 xrdb -merge .Xresources
 setxkbmap -option "caps:ctrl_modifier"
-setxkbmap -layout us,se -option grp:shifts_toggle 
+#setxkbmap -layout us,se -option grp:shifts_toggle 
+setxkbmap -layout se,dvorak -option grp:shifts_toggle -option lv3:ralt_switch
 
 emacs --daemon
 firefox &
 slack &
 spotify &
 dropbox start
-guake 
+guake  &
 
     # Log stderror to a file 
 exec awesome 

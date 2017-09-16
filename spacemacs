@@ -310,7 +310,7 @@
      This function is mostly useful for variables that need to be set
     before packages are loaded. If you are unsure, you should try in setting them in
     `dotspacemacs/user-config' first."
-        (setq-default evil-escape-key-sequence "jk")
+        (setq-default evil-escape-key-sequence "ht")
 
         "Add functionality to org
        so that :ignore: tag can be used on org-headlines. Those headlines will not be exported
