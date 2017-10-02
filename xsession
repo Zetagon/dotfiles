@@ -6,7 +6,9 @@
 xrdb -merge .Xresources
 setxkbmap -option "caps:ctrl_modifier"
 #setxkbmap -layout us,se -option grp:shifts_toggle 
-setxkbmap -layout dvorak,se -option grp:shifts_toggle -option lv3:ralt_switch
+#setxkbmap -layout dvorak,se -option grp:shifts_toggle -option lv3:ralt_switch
+setxkbmap -layout se,dvorak -variant dvorak, -option grp:shifts_toggle -option lv3:ralt_switch
+
 
 emacs --daemon
 firefox &
