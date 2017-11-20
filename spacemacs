@@ -30,7 +30,10 @@
          dotspacemacs-configuration-layer-path '()
          ;; List of configuration layers to load.
          dotspacemacs-configuration-layers
-         '( 
+         '(clojure
+           haskell
+           lua
+           lispy
            org
            rust
            yaml
@@ -74,11 +77,11 @@
          ;; wrapped in a layer. If you need some configuration for these
          ;; packages, then consider creating a layer. You can also put the
          ;; configuration in `dotspacemacs/user-config'.
-         dotspacemacs-additional-packages '()
+         dotspacemacs-additional-packages '(scad-preview)
          ;; A list of packages that cannot be updated.
          dotspacemacs-frozen-packages '()
          ;; A list of packages that will not be installed and loaded.
-         dotspacemacs-excluded-packages '()
+         dotspacemacs-excluded-packages '(auto-complete)
          ;; Defines the behaviour of Spacemacs when installing packages.
          ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
          ;; `used-only' installs only explicitly used packages and uninstall any
@@ -153,7 +156,7 @@
          ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
          ;; quickly tweak the mode-line size to make separators look not too crappy.
          dotspacemacs-default-font '("Source Code Pro"
-                                     :size 13
+                                     :size 11
                                      :weight normal
                                      :width normal
                                      :powerline-scale 1.1)
@@ -315,12 +318,9 @@
         "Add functionality to org
        so that :ignore: tag can be used on org-headlines. Those headlines will not be exported
        but their subtrees will"
-        ; (require 'ox-extra)
-        ; (ox-extras-activate '(ignore-headlines))
-        ; (setq-default dotspacemacs-line-numbers 'relative)
-        (setq
-         auto-completion-return-key-behavior nil
-         auto-completion-tab-key-behavior 'complete)
+        (require 'ox-extra)
+        (ox-extras-activate '(ignore-headlines))
+        (setq-default dotspacemacs-line-numbers 'relative)
 
         "Set indentation to 4 spaces"
         (setq-default indent-tabs-mode nil)
@@ -364,6 +364,11 @@
       (add-hook 'org-font-lock-set-keywords-hook #'org-hidden-links-hook-function))
 
       (hide-org-radio-targets)
+          (setq
+           auto-completion-return-key-behavior nil
+           auto-completion-tab-key-behavior 'complete)
+
+    (setq cider-cljs-lein-repl  "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
       )
 
       (defun dotspacemacs/user-config ()
@@ -374,19 +379,19 @@
     explicitly specified that a variable should be set before a package is loaded
     you should place your code here."
 
-          ;copied from the internet
-          (defun increment-number-at-point ()
-                (interactive)
-                (skip-chars-backward "0-9")
-                (or (looking-at "[0-9]+")
-                    (error "No number at point"))
-                (replace-match (number-to-string (1+ (string-to-number (match-string 0)))))) (require 'org)
+                                        ;copied from the internet
+        (defun increment-number-at-point ()
+          (interactive)
+          (skip-chars-backward "0-9")
+          (or (looking-at "[0-9]+")
+              (error "No number at point"))
+          (replace-match (number-to-string (1+ (string-to-number (match-string 0)))))) (require 'org)
         (global-set-key (kbd "C-c +") 'increment-number-at-point)
 
         (define-key global-map "\C-cl" 'org-store-link)
         (define-key global-map "\C-ca" 'org-agenda)
         (setq org-log-done t)
-        (setq org-agenda-files '( "~/org/skola.org" "~/org/todo.org" "~/org/ifft_capture.org" ))
+        (setq org-agenda-files '( "~/Dropbox/org/skola.org" "~/Dropbox/org/todo.org" "~/Dropbox/org/ifft_capture.org" "~/Dropbox/org/begrepp.org"))
         (setq org-refile-targets (quote (("~/org/skola.org" :maxlevel . 1)
                                          ("~/org/todo.org" :level . 1)
                                          ("~/org/someday.org" :maxlevel . 1))))
@@ -400,25 +405,25 @@
                  (file "skola.org")
                  "* Läxa %?
     SCHEDULED: %t")
-              ("t" "TODO" entry (file+headline "~/org/todo.org" "Tasks")
-               "* TODO %?
+                ("t" "TODO" entry (file+headline "~/org/todo.org" "Tasks")
+                 "* TODO %?
    Added: %T "
-               )
-              ("r" "To Read" entry (file+headline "~/org/someday.org" "To Read")
-                             "* %?
+                 )
+                ("r" "To Read" entry (file+headline "~/org/someday.org" "To Read")
+                 "* %?
                  added: %t
                  "
-                           )
-              ("b" "Nytt begrepp" entry
+                 )
+                ("b" "Nytt begrepp" entry
                  (file "begrepp.org")
                  "* begrepp 
 %?
 ** Answer")
-    ))
+                ))
 
         (setq bookmark-default-file "~/Dropbox/emacsbookmarks")
-        ;; (add-to-list 'projectile-globally-ignored-directories "node_modules")
-            ;; (add-to-list 'projectile-globally-ignored-directories "data")
+          ;; (add-to-list 'projectile-globally-ignored-directories "node_modules")
+              ;; (add-to-list 'projectile-globally-ignored-directories "data")
 
         "Remap j and k to function with softwraps"
         (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -436,89 +441,88 @@
         (add-hook 'prog-mode-hook 'linum-relative-global-mode)
         (add-hook 'web-mode-hook 'electric-pair-mode)
 
-        ;;Mu4e
+        
+          ;;Mu4e
 
         (setq mu4e-maildir "~/.mail"
-                mu4e-trash-folder "/Trash"
-                mu4e-refile-folder "/Archive"
-                mu4e-get-mail-command "offlineimap"
-                mu4e-update-interval nil
-                mu4e-compose-signature-auto-include nil
-                mu4e-view-show-images t
-                mu4e-view-show-addresses t)
+              mu4e-trash-folder "/Trash"
+              mu4e-refile-folder "/Archive"
+              mu4e-get-mail-command "offlineimap"
+              mu4e-update-interval nil
+              mu4e-compose-signature-auto-include nil
+              mu4e-view-show-images t
+              mu4e-view-show-addresses t)
 
-          ;;; Mail directory shortcuts
-          (setq mu4e-maildir-shortcuts
+;;; Mail directory shortcuts
+        (setq mu4e-maildir-shortcuts
               '( ("/INBOX"               . ?i)
                  ("/[Gmail].Sent Mail"   . ?s)
                  ("/[Gmail].Trash"       . ?t)
                  ("/[Gmail].All Mail"    . ?a)))
 
-          ;;; Bookmarks
-          (setq mu4e-bookmarks
-                `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
-                  ("date:today..now" "Today's messages" ?t)
-                  ("date:7d..now" "Last 7 days" ?w)
-                  ("mime:image/*" "Messages with images" ?p)
-                  (,(mapconcat 'identity
-                               (mapcar
-                                (lambda (maildir)
-                                  (concat "maildir:" (car maildir)))
-                                mu4e-maildir-shortcuts) " OR ")
-                   "All inboxes" ?i)))
-        ;;end mu4e
-          ; end Org Capture
-      (setq bibtex-dialect 'biblatex)
-      (setq shell-default-shell 'ansi-term)
-      (setq evil-move-cursor-back t)
-      (projectile-register-project-type 'npm '("package.json")
-                                        :compile "npm build"
-                                        :test "npm test"
-                                        :run "npm start"
-                                        :test-suffix ".test")
-      (defun node-run-tests()
-            "Run test"
-            (interactive)
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:tests" "npm test\n"))
+;;; Bookmarks
+        (setq mu4e-bookmarks
+              `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+                ("date:today..now" "Today's messages" ?t)
+                ("date:7d..now" "Last 7 days" ?w)
+                ("mime:image/*" "Messages with images" ?p)
+                (,(mapconcat 'identity
+                             (mapcar
+                              (lambda (maildir)
+                                (concat "maildir:" (car maildir)))
+                              mu4e-maildir-shortcuts) " OR ")
+                 "All inboxes" ?i)))
+          ;;end mu4e
+                                        ; end Org Capture
+        (setq bibtex-dialect 'biblatex)
+        (setq shell-default-shell 'ansi-term)
+        (setq evil-move-cursor-back t)
+        ;; (projectile-register-project-type 'npm '("package.json")
+        ;;                                   :compile "npm build"
+        ;;                                   :test "npm test"
+        ;;                                   :run "npm start"
+        ;;                                   :test-suffix ".test")
+        (defun node-run-tests()
+          "Run test"
+          (interactive)
+          (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:tests" "npm test\n"))
 
-      (defun reload-browser ()
-            "Reload the browser by using xdotool
+        (defun reload-browser ()
+          "Reload the browser by using xdotool
             Do this by sending M-3 , sleep 0.5 seconds and then send <F5>"
-            (interactive)
-            ;; (call-process "xdotool" nil nil nil "key" "Super_L+3")
-            (call-process "awesome-client" nil nil nil "require('awful').screen.focused().tags[3]:view_only()")
-            (call-process "sleep" nil nil nil "0.7")
-            (call-process "xdotool" nil nil nil "key" "F5"))
+          (interactive)
+              ;; (call-process "xdotool" nil nil nil "key" "Super_L+3")
+          (call-process "awesome-client" nil nil nil "require('awful').screen.focused().tags[3]:view_only()")
+          (call-process "sleep" nil nil nil "0.7")
+          (call-process "xdotool" nil nil nil "key" "F5"))
 
-      (defun node-restart-server()
-            "Restart server that is running inside tmux"
-            (interactive)
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" "C-c")
-            (call-process "sleep" nil nil nil "0.1")
-            (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" " node app.js" "enter"))
+        (defun node-restart-server()
+          "Restart server that is running inside tmux"
+          (interactive)
+          (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" "C-c")
+          (call-process "sleep" nil nil nil "0.1")
+          (call-process "tmux" nil nil nil "send-keys" "-t" "potential-glossary:server" " node app.js" "enter"))
 
-      (defun node-reload-server-and-browser ()
-            (interactive)
-            (node-restart-server)
-            (reload-browser))
+        (defun node-reload-server-and-browser ()
+          (interactive)
+          (node-restart-server)
+          (reload-browser))
 
-      (spacemacs/set-leader-keys "ob" 'reload-browser)
-      (spacemacs/set-leader-keys "os" 'node-restart-server)
-      (spacemacs/set-leader-keys "or" 'node-reload-server-and-browser)
-      (spacemacs/set-leader-keys "ot" 'node-run-tests)
-      (push '(javascript-docs
-              :name "Javascript")
-            search-engine-alist)
-      (defengine javascript-docs
-        "http://devdocs.io/#q=javascript %s"
-        :docstring "Search devdocs with javascript tag")
+        (spacemacs/set-leader-keys "ob" 'reload-browser)
+        (spacemacs/set-leader-keys "os" 'node-restart-server)
+        (spacemacs/set-leader-keys "or" 'node-reload-server-and-browser)
+        (spacemacs/set-leader-keys "ot" 'node-run-tests)
+        (push '(javascript-docs
+                :name "Javascript")
+              search-engine-alist)
+        (defengine javascript-docs
+          "http://devdocs.io/#q=javascript %s"
+          :docstring "Search devdocs with javascript tag")
 
-      ;; (zoom-frm-out)
-      ;; (zoom-frm-out)
-      ;; (zoom-frm-out)
-(require 'org-brain)
-(require 'org-drill)
-)
+        (global-company-mode)
+      
+        (require 'org-brain)
+        (require 'org-drill)) 
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -538,12 +542,14 @@ This function is called at the very end of Spacemacs initialization."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(org-agenda-files (quote ("~/org/skola.org" "~/org/todo.org")))
  '(org-babel-load-languages (quote ((awk . t) (C . t))))
+ '(org-drill-learn-fraction 0.45)
  '(org-drill-scope (quote tree))
  '(org-highlight-latex-and-related (quote (latex script entities)))
+ '(org-latex-caption-above nil)
  '(org-tags-column -90)
  '(package-selected-packages
    (quote
-    (org-mime zonokai-theme zen-and-art-theme yaml-mode xterm-color xkcd winum underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme slime-company slime shell-pop seti-theme reverse-theme ranger railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme spinner orgit organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme multi-term mu4e-maildirs-extension mu4e-alert ht monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme skewer-mode simple-httpd light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme parent-mode heroku-theme hemisu-theme helm-spotify multi helm-company helm-c-yasnippet hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme fuzzy flycheck-pos-tip pos-tip epl flx flatui-theme flatland-theme firebelly-theme farmhouse-theme iedit evil-commentary espresso-theme eshell-z eshell-prompt-extras esh-help dracula-theme django-theme disaster darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company common-lisp-snippets color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmake-mode clues-theme clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-map badwolf-theme auto-yasnippet auctex apropospriate-theme anti-zenburn-theme pythonic s ample-zen-theme ample-theme alect-themes afternoon-theme ac-ispell auto-complete popup which-key web-mode use-package toc-org tide typescript-mode flycheck restart-emacs pug-mode persp-mode org-plus-contrib org-download neotree move-text mmm-mode markdown-toc markdown-mode live-py-mode link-hint json-mode js2-refactor yasnippet info+ indent-guide hungry-delete highlight-indentation hide-comnt help-fns+ helm-projectile helm-make helm-gitignore helm-flx helm-ag git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-surround evil-nerd-commenter evil-mc evil-ediff evil-anzu dumb-jump diminish coffee-mode auto-compile packed anaconda-mode aggressive-indent ace-window ace-link avy smartparens highlight evil flyspell-correct helm helm-core magit magit-popup git-commit with-editor async projectile hydra f haml-mode js2-mode alert log4e request dash spacemacs-theme yapfify ws-butler window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree tagedit spaceline smeargle slim-mode slack scss-mode sass-mode rainbow-delimiters quelpa pyvenv pytest pyenv-mode py-isort popwin pkg-info pip-requirements pcre2el paradox org-projectile org-present org-pomodoro org-bullets open-junk-file multiple-cursors magit-gitflow macrostep lorem-ipsum livid-mode linum-relative less-css-mode json-snatcher json-reformat js-doc ido-vertical-mode hy-mode htmlize hl-todo highlight-parentheses highlight-numbers helm-themes helm-swoop helm-pydoc helm-mode-manager helm-descbinds helm-css-scss goto-chg google-translate golden-ratio gnuplot gntp gitignore-mode gitconfig-mode gitattributes-mode git-messenger gh-md flyspell-correct-helm flx-ido fill-column-indicator fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args eval-sexp-fu emmet-mode elisp-slime-nav define-word cython-mode column-enforce-mode clean-aindent-mode bind-key auto-highlight-symbol auto-dictionary auctex-latexmk anzu adaptive-wrap ace-jump-helm-line)))
+    (lispyville lispy zoutline swiper org-mime zonokai-theme zen-and-art-theme yaml-mode xterm-color xkcd winum underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme slime-company slime shell-pop seti-theme reverse-theme ranger railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme spinner orgit organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme multi-term mu4e-maildirs-extension mu4e-alert ht monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme skewer-mode simple-httpd light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme parent-mode heroku-theme hemisu-theme helm-spotify multi helm-company helm-c-yasnippet hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme fuzzy flycheck-pos-tip pos-tip epl flx flatui-theme flatland-theme firebelly-theme farmhouse-theme iedit evil-commentary espresso-theme eshell-z eshell-prompt-extras esh-help dracula-theme django-theme disaster darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company common-lisp-snippets color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmake-mode clues-theme clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-map badwolf-theme auto-yasnippet auctex apropospriate-theme anti-zenburn-theme pythonic s ample-zen-theme ample-theme alect-themes afternoon-theme ac-ispell auto-complete popup which-key web-mode use-package toc-org tide typescript-mode flycheck restart-emacs pug-mode persp-mode org-plus-contrib org-download neotree move-text mmm-mode markdown-toc markdown-mode live-py-mode link-hint json-mode js2-refactor yasnippet info+ indent-guide hungry-delete highlight-indentation hide-comnt help-fns+ helm-projectile helm-make helm-gitignore helm-flx helm-ag git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-surround evil-nerd-commenter evil-mc evil-ediff evil-anzu dumb-jump diminish coffee-mode auto-compile packed anaconda-mode aggressive-indent ace-window ace-link avy smartparens highlight evil flyspell-correct helm helm-core magit magit-popup git-commit with-editor async projectile hydra f haml-mode js2-mode alert log4e request dash spacemacs-theme yapfify ws-butler window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree tagedit spaceline smeargle slim-mode slack scss-mode sass-mode rainbow-delimiters quelpa pyvenv pytest pyenv-mode py-isort popwin pkg-info pip-requirements pcre2el paradox org-projectile org-present org-pomodoro org-bullets open-junk-file multiple-cursors magit-gitflow macrostep lorem-ipsum livid-mode linum-relative less-css-mode json-snatcher json-reformat js-doc ido-vertical-mode hy-mode htmlize hl-todo highlight-parentheses highlight-numbers helm-themes helm-swoop helm-pydoc helm-mode-manager helm-descbinds helm-css-scss goto-chg google-translate golden-ratio gnuplot gntp gitignore-mode gitconfig-mode gitattributes-mode git-messenger gh-md flyspell-correct-helm flx-ido fill-column-indicator fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args eval-sexp-fu emmet-mode elisp-slime-nav define-word cython-mode column-enforce-mode clean-aindent-mode bind-key auto-highlight-symbol auto-dictionary auctex-latexmk anzu adaptive-wrap ace-jump-helm-line)))
  '(paradox-github-token t)
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(quote
