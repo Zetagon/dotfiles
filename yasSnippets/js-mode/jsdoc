@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: jsdoc
+# key: jsdoc
+# --
+/**
+ * ${1:Function_description}
+ * @returns { ${2:return_type} } ${3:return_description}
+ */

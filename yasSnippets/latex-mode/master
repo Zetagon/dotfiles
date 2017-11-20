@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: master
+# key: master
+# --
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 
+

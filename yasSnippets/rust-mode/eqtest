@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: eqtest
+# key: eqtest
+# --
+
+#[test]
+fn ${1: test_name} () {
+   let expected = $2;
+
+   let result = $3;
+
+   assert_eq!( expected, result );
+}
