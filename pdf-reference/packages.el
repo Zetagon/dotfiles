@@ -64,6 +64,7 @@ Each entry is either:
    (use-package helm-bibtex
      :config
      (setq helm-bibtex-bibliography "~/Dropbox/org/references/articles.bib"
+           reftex-default-bibliography '("~/Dropbox/org/references/articles.bib")
            helm-bibtex-library-path "~/Dropbox/org/references/pdfs"
            helm-bibtex-notes-path "~/Dropbox/org/references/articles.org")
      )
