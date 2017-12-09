@@ -82,12 +82,22 @@ Each entry is either:
      (progn
      (spacemacs/declare-prefix "ab" "Bibliography")
      (spacemacs/set-leader-keys "abh" 'helm-bibtex
-                                "abi" 'interleave
-                                "abn" 'org-ref-open-bibtex-notes
-                                "abd" 'doi-add-bibtex-entry
-                                "abc" 'crossref-add-bibtex-entry)))
+       "abi" 'interleave
+       "abn" 'org-ref-open-bibtex-notes
+       "abd" 'doi-add-bibtex-entry
+       "abc" 'crossref-add-bibtex-entry
+       "abs" 'sync-external-bib-file
+       )))
  )
 
+(defun sync-external-bib-file ()
+  (interactive)
+  (let ((default-directory (file-name-directory buffer-file-name)))
+       (shell-command-to-string (concat "biber "
+                                        (file-name-sans-extension (buffer-name))
+                                        " --output-format bibtex"))))
  (defun pdf-reference/init-interleave()
    (use-package interleave))
  ;;; packages.el ends here
+(buffer-name)
+
