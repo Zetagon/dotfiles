@@ -319,8 +319,8 @@
         "Add functionality to org
        so that :ignore: tag can be used on org-headlines. Those headlines will not be exported
        but their subtrees will"
-        (require 'ox-extra)
-        (ox-extras-activate '(ignore-headlines))
+        ;; (require 'ox-extra)
+        ;; (ox-extras-activate '(ignore-headlines))
         (setq-default dotspacemacs-line-numbers 'relative)
 
         "Set indentation to 4 spaces"
@@ -368,6 +368,8 @@
           (setq
            auto-completion-return-key-behavior nil
            auto-completion-tab-key-behavior 'complete)
+
+      (define-key evil-insert-state-map "§" "~")
 
     (setq cider-cljs-lein-repl  "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
       )
