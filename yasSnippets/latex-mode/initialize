@@ -5,6 +5,7 @@
 \RequirePackage[l2tabu, orthodox]{nag}% Complain about old and bad habits
 \usepackage[utf8]{inputenc}
 \usepackage[swedish]{babel}
+\usepackage[T1]{fontenc}%for inserting åäö in sections etc
 \usepackage{microtype}
 \usepackage{todonotes}
 
