@@ -99,5 +99,4 @@ Each entry is either:
  (defun pdf-reference/init-interleave()
    (use-package interleave))
  ;;; packages.el ends here
-(buffer-name)
 
