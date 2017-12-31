@@ -9,8 +9,10 @@
 \usepackage{microtype}
 \usepackage{todonotes}
 
-\usepackage[backend=biber, style=ieee]{biblatex}
+\usepackage[backend=biber, style=ieee, autocite=footnote]{biblatex}
 \addbibresource{bib.bib} % <----- Rename bibtex file!
+\usepackage[autostyle=true]{csquotes}
+\SetCiteCommand{\footcite}
 
 \author{Leo Okawa Ericson}
 \title{$1}
