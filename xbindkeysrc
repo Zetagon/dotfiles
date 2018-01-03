@@ -65,31 +65,43 @@
 #"rxvt"
 #  Control + b:2 + Release
 
+# Capture to orgcapture.org
 "orgcapture-subheader"
 Mod4+Shift+grave
+
+# Capture to orgcapture.org
 "orgcapture"
 Mod4+grave
+
+# Mute
 "amixer -D pulse set Master toggle"
 XF86AudioMute
 
+# Play/pause spotify
 "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
 XF86AudioPlay
 
+# Previous spotify song
 "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
 Mod4+XF86AudioLowerVolume
 
+# Next spotify song
 "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 Mod4+XF86AudioRaiseVolume
 
+# Lower volume
 "amixer -D pulse set Master 5%-"
 XF86AudioLowerVolume
 
+# Increase volume
 "amixer -D pulse set Master 5%+"
 XF86AudioRaiseVolume
 
+# Screenshot
 "import ~/screenshots/temp.png; xclip -selection clipboard -target image/png ~/screenshots/temp.png"
 Mod4 + a
 
+# Unmap Menu
 ""
 Menu
 ##################################
