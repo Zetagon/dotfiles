@@ -20,6 +20,7 @@ spotify &
 dropbox start
 guake  &
 
+xbindkeys
     # Log stderror to a file 
 exec awesome 
     # No error logging
