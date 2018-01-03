@@ -89,6 +89,9 @@ XF86AudioRaiseVolume
 
 "import ~/screenshots/temp.png; xclip -selection clipboard -target image/png ~/screenshots/temp.png"
 Mod4 + a
+
+""
+Menu
 ##################################
 # End of xbindkeys configuration #
 ##################################
