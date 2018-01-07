@@ -319,7 +319,69 @@
      This function is mostly useful for variables that need to be set
     before packages are loaded. If you are unsure, you should try in setting them in
     `dotspacemacs/user-config' first."
-        (my-user-init))
+        (setq-default evil-escape-key-sequence "jk")
+
+  "Add functionality to org
+       so that :ignore: tag can be used on org-headlines. Those headlines will not be exported
+       but their subtrees will"
+  ;; (require 'ox-extra)
+  ;; (ox-extras-activate '(ignore-headlines))
+  (setq-default dotspacemacs-line-numbers 'relative)
+
+  "Set indentation to 4 spaces"
+  (setq-default indent-tabs-mode nil)
+  (setq-default save-place t)
+  (setq-default tab-width 2)
+  (setq indent-line-function 'insert-tab)
+  (setq-default
+   ;;js2-mode
+   js2-basic-offset 2
+   ;;web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+  (add-hook 'js2-mode-hook  (function (lambda()
+                                        (setq evil-shift-width 2)
+                                        )))
+  (defun hide-org-radio-targets ()
+    (defcustom org-hidden-links-additional-re "\\(<<<\\)[[:print:]]+\\(>>>\\)"
+      "Regular expression that matches strings where the invisible-property of the sub-matches 1 and 2 is set to org-link."
+      :type '(choice (const :tag "Off" nil) regexp)
+      :group 'org-link)
+    (make-variable-buffer-local 'org-hidden-links-additional-re)
+
+    (defun org-activate-hidden-links-additional (limit)
+      "Put invisible-property org-link on strings matching `org-hide-links-additional-re'."
+      (if org-hidden-links-additional-re
+          (re-search-forward org-hidden-links-additional-re limit t)
+        (goto-char limit)
+        nil))
+
+    (defun org-hidden-links-hook-function ()
+      "Add rule for `org-activate-hidden-links-additional' to `org-font-lock-extra-keywords'.
+      You can include this function in `org-font-lock-set-keywords-hook'."
+      (add-to-list 'org-font-lock-extra-keywords
+                   '(org-activate-hidden-links-additional
+                     (1 '(face org-target invisible org-link))
+                     (2 '(face org-target invisible org-link)))))
+
+
+    (add-hook 'org-font-lock-set-keywords-hook #'org-hidden-links-hook-function))
+
+  (add-hook 'latex-mode-hook '(lambda ()
+                                outline-minor-mode))
+  (add-hook 'text-mode-hook (lambda() linum-relative-global-mode nil))
+  (add-hook 'prog-mode-hook 'linum-relative-global-mode)
+  (add-hook 'prog-mode-hook 'linum-relative-global-mode)
+  (add-hook 'web-mode-hook 'electric-pair-mode)
+  (hide-org-radio-targets)
+  (setq
+   auto-completion-return-key-behavior nil
+   auto-completion-tab-key-behavior 'complete)
+
+  (setq cider-cljs-lein-repl  "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))"))
 
       (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
