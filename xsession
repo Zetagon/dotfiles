@@ -14,7 +14,8 @@ amixer -D pulse set Master 50%
 
 
 emacs --daemon
-firefox &
+# firefox &
+qutebrowser &
 slack &
 spotify &
 dropbox start
