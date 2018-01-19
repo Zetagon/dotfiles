@@ -101,6 +101,25 @@ XF86AudioRaiseVolume
 "import ~/screenshots/temp.png; xclip -selection clipboard -target image/png ~/screenshots/temp.png"
 Mod4 + a
 
+# Put on Spotify rock playlist
+"dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:1167428692:playlist:3NcV7PA1yxtXp2ZxrWKrFE"
+XF86Launch5
+
+# Put on Spotify two cellos playlist
+"dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:1167428692:playlist:2HSKmdgEqkuEjwUz1LvxW6"
+XF86Launch6
+
+# Put on Spotify power ballads playlist
+"dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:spotify:playlist:37i9dQZF1DX82Zzp6AKx64"
+XF86Launch7
+
+# Put on Spotify soft rock playlist
+"dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:spotify:playlist:37i9dQZF1DX6xOPeSOGone"
+XF86Launch8
+
+# Put on Spotify pop goes classical playlist
+"dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:ndpeters4:playlist:6t5fso5B4PzpV4Jn1ifXPR"
+XF86Launch9
 # Unmap Menu
 ""
 Menu
