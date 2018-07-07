@@ -7,12 +7,15 @@
 \usepackage[swedish]{babel}
 \usepackage[T1]{fontenc}%for inserting åäö in sections etc
 \usepackage{microtype}
-\usepackage{todonotes}
 
-\usepackage[backend=biber, style=ieee, autocite=footnote]{biblatex}
+\usepackage[backend=biber, style=authoryear, autocite=footnote]{biblatex}
 \addbibresource{bib.bib} % <----- Rename bibtex file!
+
 \usepackage[autostyle=true]{csquotes}
 \SetCiteCommand{\footcite}
+
+\usepackage[perpage]{manyfoot}
+\DeclareNewFootnote{A}[fnsymbol]
 
 \author{Leo Okawa Ericson}
 \title{$1}
@@ -20,5 +23,5 @@ $2
 \begin{document}
 \maketitle{}
 
-\printbibliography
+\printbibliography{}
 \end{document}
