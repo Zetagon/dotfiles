@@ -198,7 +198,14 @@ Each entry is either:
     "http://devdocs.io/#q=javascript %s"
     :docstring "Search devdocs with javascript tag")
 
+  (push '(rust-docs
+          :name "Rust Docs")
+        search-engine-alist)
+  (defengine rust-docs
+    "https://doc.rust-lang.org/std/?search= %s"
+    :docstring "Search Rust documentation")
 
+  
   (global-company-mode)
   (setq-default TeX-master nil)
   (spacemacs/set-leader-keys "tt" 'hl-todo-mode)
