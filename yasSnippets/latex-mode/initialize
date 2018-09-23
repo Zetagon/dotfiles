@@ -1,21 +1,33 @@
 # key: init
 # name: initialize
 # --
-\documentclass[a4paper, twocolumn]{article}
+\documentclass[a4paper, twocolumn, swedish]{article}
 \RequirePackage[l2tabu, orthodox]{nag}% Complain about old and bad habits
 \usepackage[utf8]{inputenc}
 \usepackage[swedish]{babel}
 \usepackage[T1]{fontenc}%for inserting åäö in sections etc
 \usepackage{microtype}
 
-\usepackage[backend=biber, style=authoryear, autocite=footnote]{biblatex}
-\addbibresource{bib.bib} % <----- Rename bibtex file!
 
-\usepackage[autostyle=true]{csquotes}
-\SetCiteCommand{\footcite}
+\usepackage[]{hyperref}
+\usepackage[hyperref=true, % Klickbara länkar
+            url=false, % Visa inte länkar,
+            backend=biber,
+            style=authoryear,
+            autocite=footnote,
+            isbn=false,
+            backref=true,
+            % citereset=chapter,
+            maxcitenames=3, % Hur många författar som får vara med i citat
+            maxbibnames=100, % Hur många författare som får vara med i Referenser
+            block=none]{biblatex}
+\addbibresource{/home/leo/Dropbox/org/references/Zotero_articles.bib} % <----- Rename bibtex file!
 
-\usepackage[perpage]{manyfoot}
-\DeclareNewFootnote{A}[fnsymbol]
+% \usepackage[autostyle=true]{csquotes}
+% \SetCiteCommand{\footcite}
+
+% \usepackage[perpage]{manyfoot}
+% \DeclareNewFootnote{A}[fnsymbol]
 
 \author{Leo Okawa Ericson}
 \title{$1}
