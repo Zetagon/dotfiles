@@ -6,9 +6,8 @@
                            "~/org/orgzly/skolarbete.org"
                            "~/org/orgzly/begrepp.org"))
   (add-to-list 'org-modules 'org-habit))
-(setq org-refile-targets '(("~/org/orgzly/skolarbete.org" :maxlevel . 1)
-                           ("~/org/orgzly/Todo.org" :maxlevel . 1)
-                           ("~/org/orgzly/Later.org" :maxlevel . 1)))
+(setq org-log-into-drawer t)
+
 (map! :after org
       :map org-mode-map
       :n "gr" #'leo/org-refile-hydra/body)
