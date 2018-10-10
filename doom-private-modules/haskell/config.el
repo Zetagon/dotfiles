@@ -13,10 +13,9 @@
 (map! :after intero
       :map intero-mode-map
       :localleader
-      "fd" #'intero-goto-definition
-      "fr" #'intero-uses-at
-      "sS" #'intero-repl-eval-region
-      "ss" #'intero-repl-load
-      "ht" #'intero-type-at
-      "hs" #'intero-apply-suggestions)
-
+      :n "fd" #'intero-goto-definition
+      :n "fr" #'intero-uses-at
+      :nv "sS" #'intero-repl-eval-region
+      :n "ss" #'intero-repl-load
+      :n "ht" #'intero-type-at
+      :n "hs" #'intero-apply-suggestions)
