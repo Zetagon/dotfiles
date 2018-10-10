@@ -11,9 +11,9 @@
 (map! :after latex
       :localleader
       :map TeX-mode-map
-      "m" #'TeX-insert-macro
-      "b" #'latex/build
-      "s" #'LaTeX-section
+      :n "m" #'TeX-insert-macro
+      :n "b" #'latex/build
+      :n "s" #'LaTeX-section
       (:desc "fonts" :prefix "x"
           :desc "bold" :vn "b"  #'latex/font-bold
           :desc "code" :vn "c"  #'latex/font-code
