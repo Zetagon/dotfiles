@@ -16,12 +16,14 @@
             style=authoryear,
             autocite=footnote,
             isbn=false,
+            doi=false,
             backref=true,
             % citereset=chapter,
             maxcitenames=3, % Hur många författar som får vara med i citat
             maxbibnames=100, % Hur många författare som får vara med i Referenser
             block=none]{biblatex}
-\addbibresource{/home/leo/Dropbox/org/references/Zotero_articles.bib} % <----- Rename bibtex file!
+\addbibresource{/home/leo/Dropbox/org/references/Zotero_articles.bib} % <----- Use this at home
+%\addbibresource{./main_biber.bib} % <----- Use this when committing
 
 % \usepackage[autostyle=true]{csquotes}
 % \SetCiteCommand{\footcite}
