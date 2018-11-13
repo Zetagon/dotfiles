@@ -46,9 +46,14 @@
   (setq browse-url-firefox-arguments '("-new-window"))
 
   (setq exwm-input-simulation-keys
-      '(([\C-t] . [\C-n])))
+        '(([\C-t] . [\C-n])))
+;;;; Settings
+  (setq exwm-workspace-show-all-buffers t)
+  (setq exwm-layout-show-all-buffers t)
 ;;;; Initialize
-  (exwm-config-default))
+  (exwm-config-default)
+  ;; (exwm-enable)
+  )
 
 
 ;;; config.el ends here
