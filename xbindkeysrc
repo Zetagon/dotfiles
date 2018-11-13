@@ -123,6 +123,10 @@ XF86Launch9
 # Unmap Menu
 ""
 Menu
+
+"mono /usr/lib/keepass2/KeePass.exe --auto-type"
+# Control+Alt+Mod2 + a
+
 ##################################
 # End of xbindkeys configuration #
 ##################################
