@@ -7,7 +7,10 @@
                                  ([?\s-h] . evil-window-left )
                                  ([?\s-k] . evil-window-up )
                                  ([?\s-j] . evil-window-down )
-                                 ([?\s-b] . helm-buffers-list)))
+                                 ([?\s-b] . ivy-switch-buffer)
+                                 ([?\s-d] . (lambda (command)
+                                              (interactive (list (read-shell-command "$ ")))
+                                              (start-process-shell-command command nil command)))))
 ;;;; Helm bindings
   (map! :after helm
         :leader
