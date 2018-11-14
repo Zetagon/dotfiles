@@ -213,7 +213,7 @@ exec_always ~/startup.sh
 assign [class="Emacs24"] $workspace1
 assign [class="Firefox"] $workspace2
 assign [class="Thunderbird"] $workspace5
-assign [class="Keepassx" tiling] $workspace8
+assign [class="Keepassx"] $workspace8
 assign [class="discord"] $workspace9
 assign [class="Slack"] $workspace9
 assign [class="spotify"] $workspace10
