@@ -7,6 +7,17 @@
                           '("LatexMk" "latexmk"
                             TeX-run-TeX nil t :help "Run latexmk" t) t)
              (setq TeX-command-default "latex Make"))))
+;; TODO add fill paragraph
+;;
+
+(defun sync-external-bib-file ()
+  (interactive)
+  (let ((default-directory (file-name-directory buffer-file-name)))
+       (shell-command-to-string (concat "biber "
+                                        (file-name-sans-extension (buffer-name))
+                                        " --output-format bibtex"))))
+ (defun pdf-reference/init-interleave()
+   (use-package interleave))
 
 (map! :after latex
       :localleader
@@ -14,6 +25,7 @@
       :n "m" #'TeX-insert-macro
       :n "b" #'latex/build
       :n "s" #'LaTeX-section
+      :n "rs" #'sync-external-bib-file
       (:desc "fonts" :prefix "x"
           :desc "bold" :vn "b"  #'latex/font-bold
           :desc "code" :vn "c"  #'latex/font-code

@@ -1,9 +1,12 @@
-;;; private/bindings/config.el -*- lexical-binding: t; -*-
+;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
+
 (map! :after proof
       :map proof-mode-map
-      :n "RET" #'proof-goto-point
-      :n ":" #'proof-assert-next-command-interactive)
+      :n ":" #'proof-assert-next-command-interactive
+      :i "." (λ!
+                 (insert ".")
+                 (proof-goto-point)))
 (after! org
   (setq org-agenda-files '("~/org/orgzly/Todo.org"
                            "~/org/orgzly/Inbox.org"
