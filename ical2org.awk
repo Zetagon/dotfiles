@@ -80,10 +80,10 @@ BEGIN {
     trimdots = 1;
 
     # change this to your name
-    author = "Eric S Fraga"
+    author = "Leo Ericson"
 
     # and to your email address
-    emailaddress = "e.fraga@ucl.ac.uk"
+    emailaddress = "example@example.com"
 
     ### end config section
 
@@ -97,11 +97,11 @@ BEGIN {
     max_age_seconds = max_age*24*60*60
 
     if (header) {
-        print "#+TITLE:       Main Google calendar entries"
+        print "#+TITLE:       Schema för kand-dv1b"
         print "#+AUTHOR:     ", author
         print "#+EMAIL:      ", emailaddress
         print "#+DESCRIPTION: converted using the ical2org awk script"
-        print "#+CATEGORY:    google"
+        print "#+CATEGORY:    "
         print "#+STARTUP:     hidestars"
         print "#+STARTUP:     overview"
         print ""
@@ -278,7 +278,7 @@ BEGIN {
             print ":STATUS:   " status
         print ":END:"
         if (! condense)
-            print "<" date ">"
+            print "SCHEDULED: <" date ">"
         print ""
         # translate \n sequences to actual newlines and unprotect commas (,)
         if(length(entry)>1)
