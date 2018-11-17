@@ -11,8 +11,14 @@
   (setq org-agenda-files '("~/org/orgzly/Todo.org"
                            "~/org/orgzly/Inbox.org"
                            "~/org/orgzly/skolarbete.org"
-                           "~/org/orgzly/begrepp.org"))
+                           "~/org/orgzly/begrepp.org"
+                           "~/org/orgzly/schema.org"))
   (add-to-list 'org-modules 'org-habit))
+(def-package! org-super-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:name "Schema"
+                 :tag "schema"))))
 (setq org-log-into-drawer t)
 
 (map! :after org
