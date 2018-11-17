@@ -1,6 +1,5 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
-
 (map! :after proof
       :map proof-mode-map
       :n ":" #'proof-assert-next-command-interactive
@@ -18,16 +17,31 @@
 (def-package! org-super-agenda
   :config
   (setq org-super-agenda-groups
-        '((:name "Schema"
-                 :tag "schema")
+        '((:log t)
+          (:name "Schedule"
+                 :time-grid t)
+          (:name "Schedule"
+                 :time-grid t
+                 :scheduled today)
           (:name "Inlämningar"
-                 :children t            ;Detta kan bli långasamt
                  :tag "inlämning"
                  :face (:background "black" :foreground "orange" :underline t))
           (:name "Tenta"
-                 :children t
                  :tag "tenta"
-                 :face (:background  "black":foreground"red" )))))
+                 :face (:background  "black":foreground"red" ))
+          (:name "Tenta"
+                 :tag ""
+                 :face (:background  "black":foreground"red" ))
+          (:name "Scheduled earlier"
+                 :scheduled past)
+          (:name "Schema"
+                 :tag "schema"
+                 :time-grid t
+                 :face (:background "#527a45" :foreground "white" :underline t))))
+  (org-super-agenda-mode)
+  ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
+  (org-icalendar-export-agenda-files))
+
 (setq org-log-into-drawer t)
 
 (map! :after org
