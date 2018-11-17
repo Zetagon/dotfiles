@@ -14,11 +14,20 @@
                            "~/org/orgzly/begrepp.org"
                            "~/org/orgzly/schema.org"))
   (add-to-list 'org-modules 'org-habit))
+
 (def-package! org-super-agenda
   :config
   (setq org-super-agenda-groups
         '((:name "Schema"
-                 :tag "schema"))))
+                 :tag "schema")
+          (:name "Inlämningar"
+                 :children t            ;Detta kan bli långasamt
+                 :tag "inlämning"
+                 :face (:background "black" :foreground "orange" :underline t))
+          (:name "Tenta"
+                 :children t
+                 :tag "tenta"
+                 :face (:background  "black":foreground"red" )))))
 (setq org-log-into-drawer t)
 
 (map! :after org
