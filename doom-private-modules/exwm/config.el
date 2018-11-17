@@ -18,7 +18,7 @@
         :n "B" #'helm-buffer-list)
 ;;;; Multple monitors
   (require 'exwm-randr)
-  (setq exwm-randr-workspace-output-plist '(0 "VGA-0" 1 "HDMI-0"))
+  (setq exwm-randr-workspace-output-plist '(0 "VGA-0" 9 "HDMI-0"))
   (add-hook 'exwm-randr-screen-change-hook
             (lambda ()
               (start-process-shell-command
@@ -31,12 +31,9 @@
   (add-hook 'exwm-manage-finish-hook
             (defun pnh-exwm-manage-hook ()
               (when (string-match "Firefox" exwm-class-name)
-                (exwm-workspace-move-window 3)
+                (exwm-workspace-move-window 2)
                 (exwm-layout-hide-mode-line)
-                (setq ido-make-buffer-list-hook 'pnh-trim-non-ff))
-              (when (string-match "Chromium" exwm-class-name)
-                (exwm-workspace-move-window 1)
-                (exwm-layout-hide-mode-line))))
+                (setq ido-make-buffer-list-hook 'pnh-trim-non-ff))))
 
   (add-hook 'exwm-update-title-hook
             (defun pnh-exwm-title-hook ()
@@ -48,8 +45,11 @@
   (setq exwm-input-simulation-keys
         '(([\C-t] . [\C-n])))
 ;;;; Settings
-  (setq exwm-workspace-show-all-buffers t)
-  (setq exwm-layout-show-all-buffers t)
+  ;; (setq exwm-workspace-show-all-buffers t)
+  ;; (setq exwm-layout-show-all-buffers t)
+  (setq exwm-input-simulation-keys
+        '(([?\C-f] . [?\C-f])
+          ([?\C-t] . [?\C-n])))
 ;;;; Initialize
   (exwm-config-default)
   ;; (exwm-enable)
