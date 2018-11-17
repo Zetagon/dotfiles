@@ -16,10 +16,13 @@
 
 (def-package! org-super-agenda
   :config
+  (setq org-agenda-window-setup 'reorganize-frame)
   (setq org-super-agenda-groups
         '((:log t)
-          (:name "Schedule"
-                 :time-grid t)
+
+          (:name "Schema"
+                 :tag "schema"
+                 :face (:background "#527a45" :foreground "black" :underline t))
           (:name "Schedule"
                  :time-grid t
                  :scheduled today)
@@ -32,12 +35,10 @@
           (:name "Tenta"
                  :tag ""
                  :face (:background  "black":foreground"red" ))
+          (:name "Habits"
+                 :habit t)
           (:name "Scheduled earlier"
-                 :scheduled past)
-          (:name "Schema"
-                 :tag "schema"
-                 :time-grid t
-                 :face (:background "#527a45" :foreground "white" :underline t))))
+                 :scheduled past)))
   (org-super-agenda-mode)
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
   (org-icalendar-export-agenda-files))
