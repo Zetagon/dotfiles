@@ -48,6 +48,10 @@
   (org-super-agenda-mode)
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
   (org-icalendar-export-agenda-files))
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((alltodo "")
+          (agenda "")))))
 
 (setq org-log-into-drawer t)
 
