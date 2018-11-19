@@ -7,6 +7,7 @@
                                  ([?\s-k] . evil-window-up )
                                  ([?\s-j] . evil-window-down )
                                  ([?\s-b] . helm-buffers-list)))
+  (setq helm-buffer-max-length 60)
 
   (defun pnh-trim-non-ff ()
     (delete-if-not (apply-partially 'string-match "- Mozilla Firefox$")
