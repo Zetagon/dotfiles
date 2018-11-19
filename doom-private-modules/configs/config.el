@@ -12,6 +12,9 @@
                            "~/org/orgzly/skolarbete.org"
                            "~/org/orgzly/begrepp.org"
                            "~/org/orgzly/schema.org"))
+
+  ;; Start agenda on today
+  (setq org-agenda-start-day "-0d")
   (setq org-agenda-window-setup 'reorganize-frame)
   (setq org-capture-templates
         '(("w" "Weekly Review" entry (file+datetree "~/Dropbox/org/reviews.org")
