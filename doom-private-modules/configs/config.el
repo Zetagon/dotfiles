@@ -12,6 +12,13 @@
                            "~/org/orgzly/skolarbete.org"
                            "~/org/orgzly/begrepp.org"
                            "~/org/orgzly/schema.org"))
+  (setq org-agenda-window-setup 'reorganize-frame)
+  (setq org-capture-templates
+        '(("w" "Weekly Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+           (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
+          ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+           (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))))
+  (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
 
 (def-package! org-super-agenda
