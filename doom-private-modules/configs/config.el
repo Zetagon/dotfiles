@@ -26,24 +26,20 @@
 
 (def-package! org-super-agenda
   :config
-  (setq org-agenda-window-setup 'reorganize-frame)
   (setq org-super-agenda-groups
         '((:log t)
 
           (:name "Schema"
                  :tag "schema"
                  :face (:background "#527a45" :foreground "black" :underline t))
-          (:name "Schedule"
-                 :time-grid t
-                 :scheduled today)
           (:name "Inlämningar"
                  :tag "inlämning"
                  :face (:background "black" :foreground "orange" :underline t))
+          (:name "Schedule"
+                 :time-grid t
+                 :scheduled today)
           (:name "Tenta"
                  :tag "tenta"
-                 :face (:background  "black":foreground"red" ))
-          (:name "Tenta"
-                 :tag ""
                  :face (:background  "black":foreground"red" ))
           (:name "Habits"
                  :habit t)
