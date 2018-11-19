@@ -1,6 +1,5 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
-
 (map! :after proof
       :map proof-mode-map
       :n ":" #'proof-assert-next-command-interactive
@@ -11,8 +10,49 @@
   (setq org-agenda-files '("~/org/orgzly/Todo.org"
                            "~/org/orgzly/Inbox.org"
                            "~/org/orgzly/skolarbete.org"
-                           "~/org/orgzly/begrepp.org"))
+                           "~/org/orgzly/begrepp.org"
+                           "~/org/orgzly/schema.org"))
+
+  ;; Start agenda on today
+  (setq org-agenda-start-day "-0d")
+  (setq org-agenda-window-setup 'reorganize-frame)
+  (setq org-capture-templates
+        '(("w" "Weekly Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+           (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
+          ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+           (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))))
+  (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
+
+(def-package! org-super-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:log t)
+
+          (:name "Schema"
+                 :tag "schema"
+                 :face (:background "#527a45" :foreground "black" :underline t))
+          (:name "Inlämningar"
+                 :tag "inlämning"
+                 :face (:background "black" :foreground "orange" :underline t))
+          (:name "Schedule"
+                 :time-grid t
+                 :scheduled today)
+          (:name "Tenta"
+                 :tag "tenta"
+                 :face (:background  "black":foreground"red" ))
+          (:name "Habits"
+                 :habit t)
+          (:name "Scheduled earlier"
+                 :scheduled past)))
+  (org-super-agenda-mode)
+  ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
+  (org-icalendar-export-agenda-files))
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((alltodo "")
+          (agenda "")))))
+
 (setq org-log-into-drawer t)
 
 (map! :after org

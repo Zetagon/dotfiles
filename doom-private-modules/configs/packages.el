@@ -4,4 +4,5 @@
 
 (provide 'packages)
 (package! proof-general)
+(package! org-super-agenda)
 ;;; packages.el ends here
