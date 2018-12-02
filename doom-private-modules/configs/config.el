@@ -20,8 +20,9 @@
         '(("w" "Weekly Review" entry (file+datetree "~/Dropbox/org/reviews.org")
            (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
           ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
-           (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))))
-  (add-hook 'org-capture-mode-hook 'make-frame)
+           (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
+          ("t" "Todo" entry (file "~/Dropbox/org/orgzly/Inbox.org")
+           "* TODO %? ")))
   (add-to-list 'org-modules 'org-habit))
 
 (def-package! org-super-agenda
