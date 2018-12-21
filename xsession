@@ -28,4 +28,5 @@ xbindkeys
 #    #dwm >/dev/null 2>&1
 setxkbmap -option "caps:ctrl_modifier"
 setxkbmap -layout us,se -option grp:shifts_toggle
-exec emacs
+emacs --daemon
+xmonad
