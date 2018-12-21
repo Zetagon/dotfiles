@@ -27,6 +27,7 @@ main = do
                , ("M4-d", switchActiveProject)
                , ("M4-1", goToActiveProject)
                , ("M4-C-/", shiftToProjectPrompt def)]
+               `removeKeysP` ["M4-p"]
 
 data CurrentActiveProject = CAProject Project deriving Typeable
 instance ExtensionClass CurrentActiveProject where

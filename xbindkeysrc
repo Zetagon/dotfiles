@@ -127,6 +127,10 @@ Menu
 "mono /usr/lib/keepass2/KeePass.exe --auto-type"
 # Control+Alt+Mod2 + a
 
+"rofi -show window"
+Mod4 + o
+"rofi -show run"
+Mod4 + p
 ##################################
 # End of xbindkeys configuration #
 ##################################
