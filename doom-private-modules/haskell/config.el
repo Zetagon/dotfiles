@@ -10,6 +10,10 @@
                              (haskell-indentation-mode -1)
                              (haskell-indent-mode 1))); haskell-indentation-mode fucks with evil-mode
 
+(add-hook haskell-mode-hook
+          '(lambda ()
+             (setq-local outline-regexp "-- [*\f]+")))
+
 (map! :after intero
       :map intero-mode-map
       :localleader
