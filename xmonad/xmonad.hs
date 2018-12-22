@@ -29,9 +29,6 @@ main = do
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9])
                `removeKeysP` ["M4-p"]
 
-data CurrentActiveProject = CAProject Project deriving Typeable
-instance ExtensionClass CurrentActiveProject where
-    initialValue = CAProject $ head mainProjects
 
 data ActiveProjects = AProjects [Project] deriving Typeable
 instance ExtensionClass ActiveProjects where
@@ -55,10 +52,6 @@ makeEmacsProject name path files =
                              spawn "konsole"
                              spawn $ "emacsclient -c " ++ files}
 
-mainProjects =
-    [ makeEmacsProject "Emacs" "~/" ""
-    , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
-    , Project { projectName = "Watch"
 goToProjectNr n = do
   AProjects projects <- XS.get
   switchProject $ projects !! n
@@ -72,9 +65,6 @@ switchActiveProjectNr n = do
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
               , projectDirectory = "~/"
-              , projectStartHook = Just $ spawn "crunchyroll"}]
-projects = mainProjects ++
-    [ Project { projectName = "Terminals"
               , projectDirectory = "~/Documents"
               , projectStartHook = Just $ do
                                      replicateM_ 3 $ spawn "konsole"
