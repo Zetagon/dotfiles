@@ -1,3 +1,4 @@
+-- * Imports
 {-# LANGUAGE DeriveDataTypeable #-}
 import XMonad
 import XMonad.Hooks.DynamicLog
@@ -14,12 +15,13 @@ import XMonad.Layout.ThreeColumns
 import System.IO
 import Control.Monad
 
+-- * Entry point
 main = do
-  xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc"
-  xmonad $ dynamicProjects projects
+  xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc" -- Start xmobar with config
+  xmonad $ dynamicProjects projects -- Launch dynamic projects
          $ def
              { manageHook = manageDocks <+> manageHook def
-             , layoutHook = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5
+             , layoutHook = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 -- Define two layouts
              , handleEventHook = handleEventHook def <+> docksEventHook
              , logHook = dynamicLogWithPP xmobarPP
                          { ppOutput = hPutStrLn xmproc
@@ -28,11 +30,12 @@ main = do
                `additionalKeysP`
                ([ ("M4-/", switchProjectPrompt def)
                 , ("M4-C-/", shiftToProjectPrompt def)]
-               ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9]
-               ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9])
-               `removeKeysP` ["M4-p"]
+               ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
+               ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
+               `removeKeysP` ["M4-p"] -- Reserved for rofi using xbindkeys
 
---- Project list
+-- * Dynamic Projects
+-- ** Project list
 emacsP =  makeEmacsProject "Emacs" "~/" ""
 
 xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
@@ -54,13 +57,7 @@ projects = [ terminalsP
            , emacsP
            , xmonadConfigP
            , watchP]
-
-data ActiveProjects = AProjects [Project] deriving Typeable
-instance ExtensionClass ActiveProjects where
-    initialValue = AProjects $ [terminalsP, emacsP, browserP] ++
-                   (replicate 7 $ terminalsP)
-
-
+-- ** Project utility functions
 makeEmacsProject name path files =
     Project
       { projectName = name
@@ -76,6 +73,14 @@ makeSimpleProject name programs =
             , projectStartHook = Just $
                                    mapM_ spawn programs
             }
+-- ** Active Projects
+-- TODO Make a better name for this
+data ActiveProjects = AProjects [Project] deriving Typeable
+instance ExtensionClass ActiveProjects where
+    initialValue = AProjects $ [terminalsP, emacsP, browserP] ++
+                   (replicate 7 $ terminalsP)
+
+
 
 goToProjectNr n = do
   AProjects projects <- XS.get
