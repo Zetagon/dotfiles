@@ -23,10 +23,10 @@ main = do
                          , ppTitle = xmobarColor "green" "" . shorten 50}
              , modMask = mod4Mask}
                `additionalKeysP`
-               [ ("M4-/", switchProjectPrompt def)
-               , ("M4-d", switchActiveProject)
-               , ("M4-1", goToActiveProject)
-               , ("M4-C-/", shiftToProjectPrompt def)]
+               ([ ("M4-/", switchProjectPrompt def)
+                , ("M4-C-/", shiftToProjectPrompt def)]
+               ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9]
+               ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9])
                `removeKeysP` ["M4-p"]
 
 data CurrentActiveProject = CAProject Project deriving Typeable
