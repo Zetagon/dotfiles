@@ -33,6 +33,11 @@ data CurrentActiveProject = CAProject Project deriving Typeable
 instance ExtensionClass CurrentActiveProject where
     initialValue = CAProject $ head mainProjects
 
+data ActiveProjects = AProjects [Project] deriving Typeable
+instance ExtensionClass ActiveProjects where
+    initialValue = AProjects $ [terminalsP, emacsP, browserP] ++
+                   (replicate 7 $ terminalsP)
+
 goToActiveProject = do
   CAProject project <- XS.get
   switchProject project
@@ -54,6 +59,18 @@ mainProjects =
     [ makeEmacsProject "Emacs" "~/" ""
     , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
     , Project { projectName = "Watch"
+goToProjectNr n = do
+  AProjects projects <- XS.get
+  switchProject $ projects !! n
+
+switchActiveProjectNr n = do
+    switchProjectPrompt def
+    project <- currentProject
+    AProjects activeProjects <- XS.get :: X ActiveProjects
+    XS.put $ AProjects $ switch n project activeProjects
+
+switch :: Int -> a -> [a] -> [a]
+switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
               , projectDirectory = "~/"
               , projectStartHook = Just $ spawn "crunchyroll"}]
 projects = mainProjects ++
