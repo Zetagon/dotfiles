@@ -32,6 +32,28 @@ main = do
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9])
                `removeKeysP` ["M4-p"]
 
+--- Project list
+emacsP =  makeEmacsProject "Emacs" "~/" ""
+
+xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+
+watchP = Project { projectName = "Watch"
+              , projectDirectory = "~/"
+              , projectStartHook = Just $ spawn "crunchyroll"}
+
+terminalsP = Project { projectName = "Terminals"
+              , projectDirectory = "~/Documents"
+              , projectStartHook = Just $ do
+                                     replicateM_ 3 $ spawn "konsole"
+              }
+
+browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
+
+projects = [ terminalsP
+           , browserP
+           , emacsP
+           , xmonadConfigP
+           , watchP]
 
 data ActiveProjects = AProjects [Project] deriving Typeable
 instance ExtensionClass ActiveProjects where
@@ -68,20 +90,3 @@ switchActiveProjectNr n = do
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
-emacsP =  makeEmacsProject "Emacs" "~/" ""
-xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
-watchP = Project { projectName = "Watch"
-              , projectDirectory = "~/"
-              , projectStartHook = Just $ spawn "crunchyroll"}
-terminalsP = Project { projectName = "Terminals"
-              , projectDirectory = "~/Documents"
-              , projectStartHook = Just $ do
-                                     replicateM_ 3 $ spawn "konsole"
-              }
-browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
-
-projects = [ terminalsP
-           , browserP
-           , emacsP
-           , xmonadConfigP
-           , watchP]
