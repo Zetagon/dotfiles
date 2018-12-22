@@ -14,10 +14,10 @@ import Control.Monad
 main = do
   xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc"
   xmonad $ dynamicProjects projects
-         $ defaultConfig
-             { manageHook = manageDocks <+> manageHook defaultConfig
-             , layoutHook = avoidStruts $ layoutHook defaultConfig
-             , handleEventHook = handleEventHook defaultConfig <+> docksEventHook
+         $ def
+             { manageHook = manageDocks <+> manageHook def
+             , layoutHook = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5
+             , handleEventHook = handleEventHook def <+> docksEventHook
              , logHook = dynamicLogWithPP xmobarPP
                          { ppOutput = hPutStrLn xmproc
                          , ppTitle = xmobarColor "green" "" . shorten 50}
