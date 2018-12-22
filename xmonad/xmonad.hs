@@ -51,6 +51,14 @@ makeEmacsProject name path files =
       , projectStartHook = Just $ do
                              spawn "konsole"
                              spawn $ "emacsclient -c " ++ files}
+      }
+
+makeSimpleProject name programs =
+    Project { projectName = name
+            , projectDirectory = "~/"
+            , projectStartHook = Just $
+                                   mapM_ spawn programs
+            }
 
 goToProjectNr n = do
   AProjects projects <- XS.get
