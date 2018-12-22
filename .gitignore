@@ -1,1 +1,7 @@
 *.swp
+/xmonad/xmonad.state
+/xmonad/xmonad.o
+/xmonad/xmonad.hi
+/xmonad/xmonad.errors
+/xmonad/xmonad-x86_64-linux
+/xmonad/prompt-history
