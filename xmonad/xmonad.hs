@@ -35,22 +35,14 @@ instance ExtensionClass ActiveProjects where
     initialValue = AProjects $ [terminalsP, emacsP, browserP] ++
                    (replicate 7 $ terminalsP)
 
-goToActiveProject = do
-  CAProject project <- XS.get
-  switchProject project
-
-switchActiveProject =  do
-    switchProjectPrompt def
-    project <- currentProject
-    XS.put (CAProject project)
 
 makeEmacsProject name path files =
     Project
       { projectName = name
       , projectDirectory = path
       , projectStartHook = Just $ do
+                             spawn $ "emacsclient -c " ++ files
                              spawn "konsole"
-                             spawn $ "emacsclient -c " ++ files}
       }
 
 makeSimpleProject name programs =
@@ -72,9 +64,21 @@ switchActiveProjectNr n = do
 
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
+
+emacsP =  makeEmacsProject "Emacs" "~/" ""
+xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+watchP = Project { projectName = "Watch"
               , projectDirectory = "~/"
+              , projectStartHook = Just $ spawn "crunchyroll"}
+terminalsP = Project { projectName = "Terminals"
               , projectDirectory = "~/Documents"
               , projectStartHook = Just $ do
                                      replicateM_ 3 $ spawn "konsole"
               }
-    ]
+browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
+
+projects = [ terminalsP
+           , browserP
+           , emacsP
+           , xmonadConfigP
+           , watchP]
