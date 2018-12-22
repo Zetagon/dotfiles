@@ -21,19 +21,26 @@ main = do
   xmonad $ dynamicProjects projects -- Launch dynamic projects
          $ def
              { manageHook = manageDocks <+> manageHook def
-             , layoutHook = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 -- Define two layouts
-             , handleEventHook = handleEventHook def <+> docksEventHook
-             , logHook = dynamicLogWithPP xmobarPP
-                         { ppOutput = hPutStrLn xmproc
-                         , ppTitle = xmobarColor "green" "" . shorten 50}
+             , layoutHook = myLayouts
+             , handleEventHook = myEvents
+             , logHook = myLog xmproc
              , modMask = mod4Mask}
                `additionalKeysP`
-               ([ ("M4-/", switchProjectPrompt def)
+               myKeymap
+               `removeKeysP` ["M4-p"] -- Reserved for rofi using xbindkeys
+-- * Layouts
+myLayouts = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 -- Define two layouts
+-- * Events
+myEvents = handleEventHook def <+> docksEventHook
+-- * Logging to xmobar
+myLog xmproc = dynamicLogWithPP xmobarPP
+        { ppOutput = hPutStrLn xmproc
+        , ppTitle = xmobarColor "green" "" . shorten 50}
+-- * Keymaps
+myKeymap = ([ ("M4-/", switchProjectPrompt def)
                 , ("M4-C-/", shiftToProjectPrompt def)]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
-               `removeKeysP` ["M4-p"] -- Reserved for rofi using xbindkeys
-
 -- * Dynamic Projects
 -- ** Project list
 emacsP =  makeEmacsProject "Emacs" "~/" ""
