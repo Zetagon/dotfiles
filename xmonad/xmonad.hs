@@ -3,10 +3,13 @@ import XMonad
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.EZConfig(additionalKeys)
+import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
 import XMonad.Actions.DynamicProjects
-import XMonad.Util.EZConfig
+import XMonad.Prompt (mkXPrompt, mkComplFunFromList)
+import XMonad.Prompt.Input
 import qualified XMonad.Util.ExtensibleState as XS
+import XMonad.Util.NamedScratchpad
+import XMonad.Layout.ThreeColumns
 
 import System.IO
 import Control.Monad
