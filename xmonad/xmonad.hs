@@ -50,6 +50,7 @@ xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs
 watchP = Project { projectName = "Watch"
               , projectDirectory = "~/"
               , projectStartHook = Just $ spawn "crunchyroll"}
+thunderbirdP = makeSimpleProject "Mail" ["thunderbird"]
 
 terminalsP = Project { projectName = "Terminals"
               , projectDirectory = "~/Documents"
@@ -59,11 +60,26 @@ terminalsP = Project { projectName = "Terminals"
 
 browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
 
+messagingP = makeSimpleProject "Messaging" ["discord", "slack"]
 projects = [ terminalsP
            , browserP
            , emacsP
            , xmonadConfigP
-           , watchP]
+           , watchP
+           , thunderbirdP
+           , messagingP]
+
+defaultProjectList = [ terminalsP -- 0
+                     , emacsP -- 1
+                     , browserP -- 2
+                     , terminalsP -- 3
+                     , terminalsP -- 4
+                     , thunderbirdP -- 5
+                     , terminalsP -- 6
+                     , terminalsP -- 7
+                     , terminalsP -- 8
+                     , messagingP -- 9
+                     ]
 -- ** Project utility functions
 makeEmacsProject name path files =
     Project
@@ -84,8 +100,7 @@ makeSimpleProject name programs =
 -- TODO Make a better name for this
 data ActiveProjects = AProjects [Project] deriving Typeable
 instance ExtensionClass ActiveProjects where
-    initialValue = AProjects $ [terminalsP, emacsP, browserP] ++
-                   (replicate 7 $ terminalsP)
+    initialValue = AProjects $ defaultProjectList
 
 
 
