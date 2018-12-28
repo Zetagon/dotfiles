@@ -61,7 +61,7 @@ terminalsP = Project { projectName = "Terminals"
 
 browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
 
-messagingP = makeSimpleProject "Messaging" ["discord", "slack"]
+messagingP = makeSimpleProject "Messaging" ["firefox --new-window discord.com", "slack"]
 projects = [ terminalsP
            , browserP
            , emacsP
