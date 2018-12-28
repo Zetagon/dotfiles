@@ -50,7 +50,7 @@ xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs
 watchP = Project { projectName = "Watch"
               , projectDirectory = "~/"
               , projectStartHook = Just $ spawn "crunchyroll"}
-keepassP = makeSimpleProject "Mail" ["keepassx"]
+keepassP = makeSimpleProject "Keepass" ["keepassx"]
 thunderbirdP = makeSimpleProject "Mail" ["thunderbird"]
 
 terminalsP = Project { projectName = "Terminals"
@@ -68,17 +68,18 @@ projects = [ terminalsP
            , xmonadConfigP
            , watchP
            , thunderbirdP
-           , messagingP]
+           , messagingP
+           , keepassP]
 
 defaultProjectList = [ terminalsP -- 0
                      , emacsP -- 1
                      , browserP -- 2
-                     , keepassP -- 3
+                     , terminalsP -- 3
                      , terminalsP -- 4
                      , thunderbirdP -- 5
                      , terminalsP -- 6
                      , terminalsP -- 7
-                     , terminalsP -- 8
+                     , keepassP -- 8
                      , messagingP -- 9
                      ]
 -- ** Project utility functions
