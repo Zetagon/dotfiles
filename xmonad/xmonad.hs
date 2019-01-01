@@ -43,44 +43,31 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
 -- * Dynamic Projects
 -- ** Project list
-emacsP =  makeEmacsProject "Emacs" "~/" ""
+projects = [ makeEmacsProject "Emacs" "~/" ""
+           , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+           , makeSimpleProject "Watch" ["crunchyroll"]
+           , makeSimpleProject "Keepass" ["keepassx"]
+           , makeSimpleProject "Mail" ["thunderbird"]
+           , makeSimpleProject "Terminals" $ replicate 3 "konsole"
+           , makeSimpleProject "Browser" ["firejail --noprofile firefox"]
+           , makeSimpleProject "Messaging" ["firefox --new-window https://discordapp.com/login", "slack"]
+           , makeSimpleProject "VLC" ["vlc"]
+           ]
 
-xmonadConfigP = makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+terminalsP = getP "Terminals"
 
-watchP = Project { projectName = "Watch"
-              , projectDirectory = "~/"
-              , projectStartHook = Just $ spawn "crunchyroll"}
-keepassP = makeSimpleProject "Keepass" ["keepassx"]
-thunderbirdP = makeSimpleProject "Mail" ["thunderbird"]
 
-terminalsP = Project { projectName = "Terminals"
-              , projectDirectory = "~/Documents"
-              , projectStartHook = Just $ do
-                                     replicateM_ 3 $ spawn "konsole"
-              }
-
-browserP = makeSimpleProject "Browser" ["firejail --noprofile firefox"]
-
-messagingP = makeSimpleProject "Messaging" ["firefox --new-window discord.com", "slack"]
-projects = [ terminalsP
-           , browserP
-           , emacsP
-           , xmonadConfigP
-           , watchP
-           , thunderbirdP
-           , messagingP
-           , keepassP]
 
 defaultProjectList = [ terminalsP -- 0
-                     , emacsP -- 1
-                     , browserP -- 2
+                     , getP "Emacs" -- 1
+                     , getP "Browser"-- 2
                      , terminalsP -- 3
                      , terminalsP -- 4
-                     , thunderbirdP -- 5
+                     , getP "Mail" -- 5
                      , terminalsP -- 6
                      , terminalsP -- 7
-                     , keepassP -- 8
-                     , messagingP -- 9
+                     , getP "Keepass" -- 8
+                     , getP "Messaging" -- 9
                      ]
 -- ** Project utility functions
 makeEmacsProject name path files =
@@ -98,8 +85,17 @@ makeSimpleProject name programs =
             , projectStartHook = Just $
                                    mapM_ spawn programs
             }
+
+-- UNSAFE! Only use this with literals as a string that is not in projects will crash XMonad
+getP = getProject projects
+    where getProject :: [Project] -> String -> Project
+          getProject xs name = head $ filter (\x -> projectName x == name) xs
+
+
 -- ** Active Projects
 -- TODO Make a better name for this
+
+
 data ActiveProjects = AProjects [Project] deriving Typeable
 instance ExtensionClass ActiveProjects where
     initialValue = AProjects $ defaultProjectList
