@@ -6,7 +6,10 @@
              (add-to-list 'TeX-command-list
                           '("LatexMk" "latexmk"
                             TeX-run-TeX nil t :help "Run latexmk" t) t)
+             (hl-todo-mode 1)
+             (auto-fill-mode 1)
              (setq TeX-command-default "latex Make")
+             (setq-default TeX-master nil)
              (setq helm-bibtex-bibliography  "~/Dropbox/org/references/Zotero_articles.bib"))))
 ;; TODO add fill paragraph
 ;;
