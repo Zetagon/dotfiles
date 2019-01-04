@@ -6,7 +6,8 @@
              (add-to-list 'TeX-command-list
                           '("LatexMk" "latexmk"
                             TeX-run-TeX nil t :help "Run latexmk" t) t)
-             (setq TeX-command-default "latex Make"))))
+             (setq TeX-command-default "latex Make")
+             (setq helm-bibtex-bibliography  "~/Dropbox/org/references/Zotero_articles.bib"))))
 ;; TODO add fill paragraph
 ;;
 
@@ -26,6 +27,7 @@
       :n "b" #'latex/build
       :n "s" #'LaTeX-section
       :n "rs" #'sync-external-bib-file
+      :n "rh" #'helm-bibtex
       (:desc "fonts" :prefix "x"
           :desc "bold" :vn "b"  #'latex/font-bold
           :desc "code" :vn "c"  #'latex/font-code
