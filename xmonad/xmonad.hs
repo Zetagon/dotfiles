@@ -103,7 +103,7 @@ getP = getProject projects
 
 -- ** Active Projects
 -- TODO Make a better name for this
-
+-- Assign Projects to keybindings dynamically
 
 data ActiveProjects = AProjects [Project] deriving Typeable
 instance ExtensionClass ActiveProjects where
@@ -127,9 +127,16 @@ switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
 
 -- ** Super Projects
+
+-- Super Projects are different contexts for different projects.
+-- Each Super Project has a Dynamic Project bound to S-[0..9]
+-- Switching Super Project is a way to switch between a different set of applications and workspaces
+-- Ex.
+--  - Super Project Code:
+--    Emacs | Browser | Terminals | Terminals | Terminals | Terminals | Terminals | Terminals | Terminals | Music
+--  - Super Project Browsing:
+--    Browser | Terminals | Terminals | Terminals | Terminals | Terminals | Keepass | Messaging | Slack | Music
 data SuperProjects = SProjects [[Project]] deriving Typeable
--- instance ExtensionClass SuperProjects where
-    -- initialValue = SProjects $ [defaultProjectList]
 
 data SPPrompt = SPPrompt
 instance XPrompt SPPrompt where
@@ -137,6 +144,7 @@ instance XPrompt SPPrompt where
 spprompt = SPPrompt
 
 
+-- Bring forth a prompt for switching Super Project
 switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultSuperProjectList) f
     where
       f :: String -> X()
@@ -148,7 +156,15 @@ switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaul
                  let chosenProject = head sprojects
                  XS.put $ AProjects $ snd chosenProject
 
-
+-- mkProjectList [(i, Name)]
+-- Make a list of length 10. Each Name is placed at index i in the resulting list.
+-- An index that does not have a Name from xs gets a terminalsP
+--
+-- Note: Name must be in defaultProjectList
+--
+-- Ex.
+-- map projectName $ mkProjectList [(3, "Emacs"), (0, "Browser")]
+-- => ["Browser","Terminals","Terminals","Emacs","Terminals","Terminals","Terminals","Terminals","Terminals","Terminals"]
 mkProjectList :: [(Int, ProjectName)] -> [Project]
 mkProjectList xs =
     let sorted = sortWith fst xs
