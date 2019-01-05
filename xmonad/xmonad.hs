@@ -6,7 +6,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
 import XMonad.Actions.DynamicProjects
-import XMonad.Prompt (mkXPrompt, mkComplFunFromList)
+import XMonad.Prompt (mkXPrompt, mkComplFunFromList, XPrompt, showXPrompt)
 import XMonad.Prompt.Input
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedScratchpad
@@ -14,6 +14,8 @@ import XMonad.Layout.ThreeColumns
 
 import System.IO
 import Control.Monad
+
+import GHC.Exts (sortWith)
 
 -- * Entry point
 main = do
@@ -38,7 +40,8 @@ myLog xmproc = dynamicLogWithPP xmobarPP
         , ppTitle = xmobarColor "green" "" . shorten 50}
 -- * Keymaps
 myKeymap = ([ ("M4-/", switchProjectPrompt def)
-                , ("M4-C-/", shiftToProjectPrompt def)]
+            , ("M4-C-/", shiftToProjectPrompt def)
+            , ("M4-s", switchSuperProject)]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
 -- * Dynamic Projects
@@ -118,3 +121,47 @@ switchActiveProjectNr n = do
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
+
+-- * Dynamic Super Projects
+defaultSuperProjectList = [ ("default" , defaultProjectList)
+                          , ("watch", mkProjectList [(1, "Watch")])
+                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Browser"), (0, "Mpsyt")])
+                          , ("xmonad", mkProjectList [ (1, "XMonadConfig")
+                                                     , (2, "Browser")
+                                                     , (0, "Mpsyt")])
+                          , ("numbered", mkProjectList $ zip [0..9] $ map show [0..9])]
+
+
+data SuperProjects = SProjects [[Project]] deriving Typeable
+-- instance ExtensionClass SuperProjects where
+    -- initialValue = SProjects $ [defaultProjectList]
+
+data SPPrompt = SPPrompt
+instance XPrompt SPPrompt where
+    showXPrompt _ = "Super Project:"
+spprompt = SPPrompt
+
+
+switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultSuperProjectList) f
+    where
+      f :: String -> X()
+      f name = do
+        let chosenSuperProjects = filter ((==name) . fst) defaultSuperProjectList
+        case chosenSuperProjects of
+          [] -> return ()
+          sprojects -> do
+                 let chosenProject = head sprojects
+                 XS.put $ AProjects $ snd chosenProject
+
+
+mkProjectList :: [(Int, ProjectName)] -> [Project]
+mkProjectList xs =
+    let sorted = sortWith fst xs
+    in f sorted 0
+      where
+        f _ 10 = []
+        f [] i = terminalsP : f [] (i + 1)
+        f projects@((index, name):xs) i =
+            if i == index
+            then getP name: f xs (i+1)
+            else terminalsP :f projects (i+1)
