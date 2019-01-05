@@ -73,11 +73,11 @@ Each entry is either:
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
   (setq org-log-done t)
-  (setq org-agenda-files '( "~/Dropbox/org/skola.org" "~/Dropbox/org/todo.org" "~/Dropbox/org/ifft_capture.org" "~/Dropbox/org/begrepp.org" "~/Dropbox/org/references/articles.org"))
-  (setq org-refile-targets (quote (("~/org/skola.org" :maxlevel . 1)
-                                   ("~/org/todo.org" :level . 1)
+  (setq org-agenda-files '( "~/Dropbox/org/orgzly/skolarbete.org" "~/Dropbox/org/orgzly/Todo.org" "~/Dropbox/org/orgzly/begrepp.org" "~/Dropbox/org/references/articles.org"))
+  (setq org-refile-targets (quote (("~/org/orgzly/skola.org" :maxlevel . 1)
+                                   ("~/org/orgzly/Todo.org" :level . 1)
                                    ("~/org/brain/programming.org" :level . 1)
-                                   ("~/org/someday.org" :maxlevel . 1))))
+                                   ("~/org/orgzly/someday.org" :maxlevel . 1))))
 
   "Org todo keywords"
   (setq org-todo-keywords

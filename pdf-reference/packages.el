@@ -63,7 +63,7 @@ Each entry is either:
  (defun pdf-reference/init-helm-bibtex()
    (use-package helm-bibtex
      :config
-     (setq helm-bibtex-bibliography "~/Dropbox/org/references/articles.bib"
+     (setq helm-bibtex-bibliography "~/Dropbox/org/references/Zotero_articles.bib"
            reftex-default-bibliography '("~/Dropbox/org/references/articles.bib")
            helm-bibtex-library-path "~/Dropbox/org/references/pdfs"
            helm-bibtex-notes-path "~/Dropbox/org/references/articles.org")
