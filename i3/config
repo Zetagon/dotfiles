@@ -220,7 +220,6 @@ assign [class="spotify"] $workspace10
 
 exec dropbox start
 
-exec_always curl https://cloud.timeedit.net/uu/web/schema/ri657QgQY01Zx9Q5Q86n52Z6yQZZ685350.ics -o /tmp/schema.ics ; ical2org.awk < /tmp/schema.ics > /home/leo/Dropbox/org/orgzly/schema.org
 
 exec guake
 exec deja-dup
