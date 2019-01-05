@@ -1,5 +1,13 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
+;; Notmuch
+;;
+(require 'notmuch)
+(add-to-list 'load-path "/usr/share/org-mode/lisp")
+(require 'org-notmuch)
+(setq notmuch-search-oldest-first nil)
+;;
+;;
 (map! :after proof
       :map proof-mode-map
       :n ":" #'proof-assert-next-command-interactive
