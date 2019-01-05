@@ -2,7 +2,11 @@
 
 (def-package! intero
   :config
-  (add-hook 'haskell-mode-hook 'intero-mode))
+  (add-hook 'haskell-mode-hook
+            '(lambda ()
+               (setq-local outline-regexp "-- [*\f]+")
+               (outline-minor-mode)
+               (intero-mode))))
 
 (def-package! haskell-mode)
 (add-hook 'intero-mode-hook (λ!
@@ -10,9 +14,6 @@
                              (haskell-indentation-mode -1)
                              (haskell-indent-mode 1))); haskell-indentation-mode fucks with evil-mode
 
-(add-hook 'haskell-mode-hook
-          '(lambda ()
-             (setq-local outline-regexp "-- [*\f]+")))
 
 (map! :after intero
       :map intero-mode-map
