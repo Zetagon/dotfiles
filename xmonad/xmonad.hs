@@ -47,7 +47,9 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
 -- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+           , makeSimpleProject "XMonad Browser" ["firejail --noprofile firefox - --new-window"]
            , makeEmacsProject "Spirited Away" "~/Documents/texter/analys-spirited-away" "~/Documents/texter/analys-spirited-away/master.tex"
+           , makeSimpleProject "Spirited Away Browser" ["firejail --noprofile firefox - --new-window"]
            , makeSimpleProject "Watch" ["crunchyroll"]
            , makeSimpleProject "Keepass" ["keepassx"]
            , makeSimpleProject "Mail" ["thunderbird"]
@@ -72,10 +74,11 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
 -- * Super Project List
 defaultSuperProjectList = [ ("default" , defaultProjectList)
                           , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
-                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Browser"), (0, "Mpsyt")])
+                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
-                                                     , (2, "Browser")
+                                                     , (2, "XMonad Browser")
                                                      , (0, "Mpsyt")])
+                          , ("browser", mkProjectList [(2, "Browser")])
                           ]
 -- * Code
 -- ** Dynamic Project utility functions
