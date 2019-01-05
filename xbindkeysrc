@@ -121,10 +121,13 @@ XF86Launch8
 "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:ndpeters4:playlist:6t5fso5B4PzpV4Jn1ifXPR"
 XF86Launch9
 # Unmap Menu
-""
+"~/.emacs_anywhere/bin/run"
+XF86Mail
+
+"bash ~/dotfiles/focus-firefox.sh; sleep 1; wkhtmltopdf $(xclip -o) ~/Downloads/temp.pdf"
 Menu
 
-"mono /usr/lib/keepass2/KeePass.exe --auto-type"
+# "mono /usr/lib/keepass2/KeePass.exe --auto-type"
 # Control+Alt+Mod2 + a
 
 "rofi -show window"
