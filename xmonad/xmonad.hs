@@ -45,6 +45,7 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
 -- ** Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
+           , makeEmacsProject "Spirited Away" "~/Documents/texter/analys-spirited-away" "~/Documents/texter/analys-spirited-away/master.tex"
            , makeSimpleProject "Watch" ["crunchyroll"]
            , makeSimpleProject "Keepass" ["keepassx"]
            , makeSimpleProject "Mail" ["thunderbird"]
@@ -52,6 +53,8 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeSimpleProject "Browser" ["firejail --noprofile firefox"]
            , makeSimpleProject "Messaging" ["firefox --new-window https://discordapp.com/login", "slack"]
            , makeSimpleProject "VLC" ["vlc"]
+           , makeSimpleProject "Mpsyt" ["xterm -e \"firejail --noprofile mpsyt\""]
+           , makeSimpleProject "Zotero" ["zotero"]
            ]
 
 terminalsP = getP "Terminals"
