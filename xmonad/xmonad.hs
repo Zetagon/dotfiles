@@ -44,8 +44,7 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-s", switchSuperProject)]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
--- * Dynamic Projects
--- ** Project list
+-- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
            , makeEmacsProject "Spirited Away" "~/Documents/texter/analys-spirited-away" "~/Documents/texter/analys-spirited-away/master.tex"
@@ -70,7 +69,16 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
                                    , (5, "Mail")
                                    , (8, "Keepass")
                                    , (9, "Messaging")]
--- ** Project utility functions
+-- * Super Project List
+defaultSuperProjectList = [ ("default" , defaultProjectList)
+                          , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
+                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Browser"), (0, "Mpsyt")])
+                          , ("xmonad", mkProjectList [ (1, "XMonadConfig")
+                                                     , (2, "Browser")
+                                                     , (0, "Mpsyt")])
+                          ]
+-- * Code
+-- ** Dynamic Project utility functions
 makeEmacsProject name path files =
     Project
       { projectName = name
@@ -117,17 +125,8 @@ switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
 
--- * Dynamic Super Projects
--- ** Configs
-defaultSuperProjectList = [ ("default" , defaultProjectList)
-                          , ("watch", mkProjectList [(1, "Watch")])
-                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Browser"), (0, "Mpsyt")])
-                          , ("xmonad", mkProjectList [ (1, "XMonadConfig")
-                                                     , (2, "Browser")
-                                                     , (0, "Mpsyt")])
-                          ]
 
--- ** Code
+-- ** Super Projects
 data SuperProjects = SProjects [[Project]] deriving Typeable
 -- instance ExtensionClass SuperProjects where
     -- initialValue = SProjects $ [defaultProjectList]
