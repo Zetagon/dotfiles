@@ -11,7 +11,8 @@
                            "~/org/orgzly/Inbox.org"
                            "~/org/orgzly/skolarbete.org"
                            "~/org/orgzly/begrepp.org"
-                           "~/org/orgzly/schema.org"))
+                           "~/org/orgzly/schema.org"
+                           "~/org/orgzly/Events.org"))
 
   ;; Start agenda on today
   (setq org-agenda-start-day "-0d")
@@ -22,7 +23,10 @@
           ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
            (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
           ("t" "Todo" entry (file "~/Dropbox/org/orgzly/Inbox.org")
-           "* TODO %? ")))
+           "* TODO %? ")
+          ("f" "Todo" entry (file "~/Dropbox/org/orgzly/Inbox.org")
+           "* TODO %?\n %a %f ")))
+  ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
 
 (def-package! org-super-agenda
@@ -42,17 +46,32 @@
           (:name "Tenta"
                  :tag "tenta"
                  :face (:background  "black":foreground"red" ))
+          (:name "Events"
+                 :tag "event"
+                 :face (:background "#88bbf7" :foreground "black" :underline t))
+
           (:name "Habits"
                  :habit t)
           (:name "Scheduled earlier"
                  :scheduled past)))
   (org-super-agenda-mode)
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
-  (org-icalendar-export-agenda-files))
+  ;; (org-icalendar-export-agenda-files)
+  )
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
-         ((alltodo "")
+         ((tags "STYLE=\"habit\"")
+          (alltodo ""
+                   ((org-agenda-skip-function 'air-org-skip-subtree-if-habit)))
           (agenda "")))))
+
+(defun air-org-skip-subtree-if-habit ()
+  "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t))))
+    (if (string= (org-entry-get nil "STYLE") "habit")
+        subtree-end
+      nil)))
+
 
 (setq org-log-into-drawer t)
 
