@@ -64,17 +64,12 @@ terminalsP = getP "Terminals"
 
 
 
-defaultProjectList = [ terminalsP -- 0
-                     , getP "Emacs" -- 1
-                     , getP "Browser"-- 2
-                     , terminalsP -- 3
-                     , terminalsP -- 4
-                     , getP "Mail" -- 5
-                     , terminalsP -- 6
-                     , terminalsP -- 7
-                     , getP "Keepass" -- 8
-                     , getP "Messaging" -- 9
-                     ]
+
+defaultProjectList = mkProjectList [ (1, "Emacs")
+                                   , (2, "Browser")
+                                   , (5, "Mail")
+                                   , (8, "Keepass")
+                                   , (9, "Messaging")]
 -- ** Project utility functions
 makeEmacsProject name path files =
     Project
@@ -123,15 +118,16 @@ switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
 
 -- * Dynamic Super Projects
+-- ** Configs
 defaultSuperProjectList = [ ("default" , defaultProjectList)
                           , ("watch", mkProjectList [(1, "Watch")])
                           , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Browser"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
                                                      , (2, "Browser")
                                                      , (0, "Mpsyt")])
-                          , ("numbered", mkProjectList $ zip [0..9] $ map show [0..9])]
+                          ]
 
-
+-- ** Code
 data SuperProjects = SProjects [[Project]] deriving Typeable
 -- instance ExtensionClass SuperProjects where
     -- initialValue = SProjects $ [defaultProjectList]
