@@ -66,7 +66,9 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeSimpleProject "Mail" ["thunderbird"]
            , makeSimpleProject "Terminals" $ replicate 3 "konsole"
            , makeSimpleProject "Browser" ["firejail --noprofile firefox"]
-           , makeSimpleProject "Messaging" ["firefox --new-window https://discordapp.com/login", "slack"]
+           , makeSimpleProject "Messaging" [ "firefox --new-window https://discordapp.com/login"
+                                           , "firefox --new-window https://perpetuality.slack.com/"
+                                           , "firefox --new-window https://styrelsedv.slack.com/"]
            , makeSimpleProject "VLC" ["vlc"]
            , makeSimpleProject "Mpsyt" ["xterm -e \"firejail --noprofile mpsyt\""]
            , makeSimpleProject "Zotero" ["zotero"]
@@ -81,11 +83,12 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
                                    , (2, "Browser")
                                    , (5, "Mail")
                                    , (8, "Keepass")
-                                   , (9, "Messaging")]
+                                   , (9, "Messaging")
+                                   , (0, "Mpsyt")]
 -- * Super Project List
 defaultSuperProjectList = [ ("default" , defaultProjectList)
                           , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
-                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (0, "Mpsyt")])
+                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
                                                      , (2, "XMonad Browser")
                                                      , (0, "Mpsyt")])
