@@ -35,6 +35,12 @@ xmodmap -e "remove mod4 = Hyper_L"
 xmodmap -e "keycode any = Tab"
 xcape -e "Hyper_L=Tab"
 
+# Make backslash a superkey when held down, backslash when pressed alone
+xmodmap -e "keysym backslash = Hyper_R"
+xmodmap -e "remove mod4 = Hyper_R"
+xmodmap -e "keycode any = backslash"
+xcape -e "Hyper_R=backslash"
+
 node ~/bin/nasaApodImage.js
 feh --bg-max ~/Pictures/background.jpg
 deja-dup &
