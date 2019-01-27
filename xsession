@@ -31,5 +31,6 @@ setxkbmap -layout us,se -option grp:shifts_toggle
 node ~/bin/nasaApodImage.js
 feh --bg-max ~/Pictures/background.jpg
 deja-dup &
+dropbox start &
 emacs --daemon
 xmonad
