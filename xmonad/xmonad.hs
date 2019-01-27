@@ -11,7 +11,9 @@ import XMonad.Prompt.Input
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.ThreeColumns
-
+import qualified XMonad.StackSet as W
+import XMonad.ManageHook
+import XMonad.Util.NamedScratchpad
 import System.IO
 import Control.Monad
 
@@ -22,7 +24,7 @@ main = do
   xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc" -- Start xmobar with config
   xmonad $ dynamicProjects projects -- Launch dynamic projects
          $ def
-             { manageHook = manageDocks <+> manageHook def
+             { manageHook = myManageHook
              , layoutHook = myLayouts
              , handleEventHook = myEvents
              , logHook = myLog xmproc
@@ -30,6 +32,8 @@ main = do
                `additionalKeysP`
                myKeymap
                `removeKeysP` ["M4-p"] -- Reserved for rofi using xbindkeys
+-- * ManageHook
+myManageHook = namedScratchpadManageHook scratchpads <+> manageDocks <+> manageHook def
 -- * Layouts
 myLayouts = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 -- Define two layouts
 -- * Events
@@ -42,8 +46,14 @@ myLog xmproc = dynamicLogWithPP xmobarPP
 myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-s", switchSuperProject)]
+            , ("M4-t", namedScratchpadAction scratchpads "htop")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
+-- * Scratchpads
+
+scratchpads =
+-- run htop in xterm, find it by title, use default floating window placement
+    [ NS "htop" "xterm -e htop" (title =? "htop") defaultFloating ]
 -- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
