@@ -45,7 +45,8 @@ myLog xmproc = dynamicLogWithPP xmobarPP
 -- * Keymaps
 myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-C-/", shiftToProjectPrompt def)
-            , ("M4-s", switchSuperProject)]
+            , ("M4-d", XS.put $ AProjects defaultProjectList)
+            , ("M4-s", switchSuperProject)
             , ("M4-t", namedScratchpadAction scratchpads "htop")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
