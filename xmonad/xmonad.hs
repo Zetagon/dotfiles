@@ -48,6 +48,7 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
             , ("M4-t", namedScratchpadAction scratchpads "htop")
+            , ("M4-g", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
@@ -56,7 +57,10 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
 scratchpads =
 -- run htop in xterm, find it by title, use default floating window placement
     [ NS "htop" "xterm -e htop" (title =? "htop") defaultFloating
-    , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating]
+    , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
+    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"a\")'"
+          (title =? "org-agenda")
+          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
 -- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
