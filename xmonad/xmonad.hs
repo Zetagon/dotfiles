@@ -5,6 +5,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
+import XMonad.Util.SpawnOnce
 import XMonad.Actions.DynamicProjects
 import XMonad.Prompt (mkXPrompt, mkComplFunFromList, XPrompt, showXPrompt)
 import XMonad.Prompt.Input
@@ -15,8 +16,10 @@ import qualified XMonad.StackSet as W
 import XMonad.ManageHook
 import XMonad.Util.NamedScratchpad
 import System.IO
+import System.Process
 import Control.Monad
-
+import XMonad.Prompt
+import XMonad.Prompt.Shell
 import GHC.Exts (sortWith)
 import XMonad.Config.Kde
 
@@ -50,7 +53,7 @@ myLog xmproc = dynamicLogWithPP xmobarPP
         { ppOutput = hPutStrLn xmproc
         , ppTitle = xmobarColor "green" "" . shorten 50}
 -- * Keymaps
-myKeymap = ([ ("M4-/", switchProjectPrompt def)
+myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
@@ -86,8 +89,18 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeSimpleProject "VLC" ["vlc"]
            , makeSimpleProject "Mpsyt" ["xterm -e \"firejail --noprofile mpsyt\""]
            , makeSimpleProject "Zotero" ["zotero"]
+           , makeSimpleProject "1" []
+           , makeSimpleProject "2" []
+           , makeSimpleProject "3" []
+           , makeSimpleProject "4" []
+           , makeSimpleProject "5" []
+           , makeSimpleProject "6" []
+           , makeSimpleProject "7" []
+           , makeSimpleProject "8" []
+           , makeSimpleProject "9" []
+           , makeSimpleProject "0" []
            ]
-
+numberP n = getP $ show n
 terminalsP = getP "Terminals"
 
 
@@ -131,6 +144,12 @@ getP = getProject projects
     where getProject :: [Project] -> String -> Project
           getProject xs name = head $ filter (\x -> projectName x == name) xs
 
+dmenuSwitchProjectPrompt = do
+  wspaceName <- io $ dmenu $ map projectName projects
+  project <- lookupProject wspaceName
+  case project of
+    Nothing -> return ()
+    Just project -> switchProject project
 
 -- ** Active Projects
 -- TODO Make a better name for this
@@ -176,7 +195,10 @@ spprompt = SPPrompt
 
 
 -- Bring forth a prompt for switching Super Project
-switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultSuperProjectList) f
+-- switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultSuperProjectList) f
+switchSuperProject = do
+  pName <- io $ dmenu (map fst defaultSuperProjectList)
+  f pName
     where
       f :: String -> X()
       f name = do
@@ -206,4 +228,10 @@ mkProjectList xs =
         f projects@((index, name):xs) i =
             if i == index
             then getP name: f xs (i+1)
-            else terminalsP :f projects (i+1)
+            else (numberP i):f projects (i+1)--terminalsP :f projects (i+1)
+
+dmenu :: [String] -> IO(String)
+dmenu xs =
+    do
+      (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
+      hGetLine hout
