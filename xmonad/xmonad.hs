@@ -18,13 +18,15 @@ import System.IO
 import Control.Monad
 
 import GHC.Exts (sortWith)
+import XMonad.Config.Kde
 
 -- * Entry point
 main = do
   xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc" -- Start xmobar with config
   xmonad $ dynamicProjects projects -- Launch dynamic projects
-         $ def
-             { manageHook = myManageHook
+         $ kdeConfig
+             { manageHook = manageHook kdeConfig <+> myManageHook
+             , startupHook = myStartupHook
              , layoutHook = myLayouts
              , handleEventHook = myEvents
              , logHook = myLog xmproc
@@ -32,6 +34,11 @@ main = do
                `additionalKeysP`
                myKeymap
                `removeKeysP` ["M4-p"] -- Reserved for rofi using xbindkeys
+-- * StartupHook
+myStartupHook = sequence_ [spawnOnce s | s <- startupList]
+startupList =
+  [ "sleep 5 && for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done"
+  ]
 -- * ManageHook
 myManageHook = namedScratchpadManageHook scratchpads <+> manageDocks <+> manageHook def
 -- * Layouts
@@ -47,6 +54,7 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
+            , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-t", namedScratchpadAction scratchpads "htop")
             , ("M4-g", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
