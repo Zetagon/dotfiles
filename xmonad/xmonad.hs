@@ -58,8 +58,9 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
-            , ("M4-t", namedScratchpadAction scratchpads "htop")
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
+            , ("M4-m", namedScratchpadAction scratchpads "htop")
+            , ("M4-S-x", namedScratchpadAction scratchpads "capture")
             , ("M4-g", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
@@ -70,6 +71,8 @@ scratchpads =
 -- run htop in xterm, find it by title, use default floating window placement
     [ NS "htop" "xterm -e htop" (title =? "htop") defaultFloating
     , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
+    , NS "capture" "org-capture" (title =? "org-capture")
+      (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"a\")'"
           (title =? "org-agenda")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
