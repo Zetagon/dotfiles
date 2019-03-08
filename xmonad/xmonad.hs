@@ -64,7 +64,7 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-S-x", namedScratchpadAction scratchpads "capture")
             , ("M4-g", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
-               ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
+               ++ map (\x -> ("M4-S-" ++ show x, shiftToProjectNr x)) [0..9] -- Move window to project nr x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
 -- * Scratchpads
 
@@ -183,6 +183,10 @@ instance ExtensionClass ActiveProjects where
 goToProjectNr n = do
   AProjects projects <- XS.get
   switchProject $ projects !! n
+
+shiftToProjectNr n = do
+  AProjects projects <- XS.get
+  shiftToProject $ projects !! n
 
 switchActiveProjectNr n = do
     switchProjectPrompt def
