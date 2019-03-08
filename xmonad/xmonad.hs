@@ -59,6 +59,7 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-s", switchSuperProject)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-t", namedScratchpadAction scratchpads "htop")
+            , ("M4-f", spawn "~/dotfiles/keyboard.sh")
             , ("M4-g", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
