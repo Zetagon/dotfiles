@@ -54,6 +54,7 @@ myLog xmproc = dynamicLogWithPP xmobarPP
         , ppTitle = xmobarColor "green" "" . shorten 50}
 -- * Keymaps
 myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
+            , ("M4-S-<Return>", spawn "xfce4-terminal")
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
@@ -79,20 +80,25 @@ scratchpads =
 -- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
-           , makeSimpleProject "XMonad Browser" ["firejail --noprofile firefox - --new-window"]
+           , makeSimpleProject "XMonad Browser" ["firefox - --new-window"]
            , makeEmacsProject "Spirited Away" "~/Documents/texter/analys-spirited-away" "~/Documents/texter/analys-spirited-away/master.tex"
            , makeSimpleProject "Spirited Away Browser" ["firejail --noprofile firefox - --new-window"]
            , makeSimpleProject "Watch" ["crunchyroll"]
            , makeSimpleProject "Keepass" ["keepassx"]
            , makeSimpleProject "Mail" ["thunderbird"]
-           , makeSimpleProject "Terminals" $ replicate 3 "konsole"
-           , makeSimpleProject "Browser" ["firejail --noprofile firefox"]
+           , makeSimpleProject "Terminals" $ replicate 3 "xfce4-terminal"
+           , makeSimpleProject "Browser" ["firefox"]
            , makeSimpleProject "Messaging" [ "firefox --new-window https://discordapp.com/login"
-                                           , "firefox --new-window https://perpetuality.slack.com/"
-                                           , "firefox --new-window https://styrelsedv.slack.com/"]
+                                           , "firefox --new-window https://perpetuality.slack.com/"]
            , makeSimpleProject "VLC" ["vlc"]
            , makeSimpleProject "Mpsyt" ["xterm -e \"firejail --noprofile mpsyt\""]
            , makeSimpleProject "Zotero" ["zotero"]
+
+           , makeEmacsProject "SchoolEmacs" "~/Documents/dvkand" "~/Documents/dvkand/"
+           , makeSimpleProject "SchoolBrowser" ["firefox --new-window"]
+
+           , makeEmacsProject "SekreterareEmacs" "~/Documents/styrelsemöten" "~/Documents/styrelsemöten/"
+           , makeSimpleProject "SekreterareSlack" ["firefox --new-window https://styrelsedv.slack.com/"]
            , makeSimpleProject "1" []
            , makeSimpleProject "2" []
            , makeSimpleProject "3" []
@@ -124,6 +130,15 @@ defaultSuperProjectList = [ ("default" , defaultProjectList)
                                                      , (2, "XMonad Browser")
                                                      , (0, "Mpsyt")])
                           , ("browser", mkProjectList [(2, "Browser")])
+                          , ("school", mkProjectList [ (1, "SchoolEmacs")
+                                                     , (2, "SchoolBrowser")
+                                                     , (5, "Mail")
+                                                     , (8, "Keepass")])
+                          , ("sekreterare", mkProjectList [ (1, "SekreterareEmacs")
+                                                          , (2, "Browser")
+                                                          , (5, "Mail")
+                                                          , (9, "SekreterareSlack")])
+                          , ("numbered", mkProjectList $ map (\n -> (n, show n)) [0..9])
                           ]
 -- * Code
 -- ** Dynamic Project utility functions
@@ -133,7 +148,7 @@ makeEmacsProject name path files =
       , projectDirectory = path
       , projectStartHook = Just $ do
                              spawn $ "emacsclient -c " ++ files
-                             spawn "konsole"
+                             spawn "xfce4-terminal"
       }
 
 makeSimpleProject name programs =
@@ -228,7 +243,7 @@ mkProjectList xs =
     in f sorted 0
       where
         f _ 10 = []
-        f [] i = terminalsP : f [] (i + 1)
+        f [] i = (numberP i) : f [] (i + 1)
         f projects@((index, name):xs) i =
             if i == index
             then getP name: f xs (i+1)
