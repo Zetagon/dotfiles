@@ -43,18 +43,19 @@
   (setq org-super-agenda-groups
         '((:log t)
 
-          (:name "Schema"
-                 :tag "schema"
-                 :face (:background "#527a45" :foreground "black" :underline t))
-          (:name "Inlämningar"
-                 :tag "inlämning"
-                 :face (:background "black" :foreground "orange" :underline t))
-          (:name "Schedule"
-                 :time-grid t
-                 :scheduled today)
           (:name "Tenta"
                  :tag "tenta"
                  :face (:background  "black":foreground"red" ))
+          (:name "Inlämningar"
+                 :tag "inlämning"
+                 :face (:background "black" :foreground "orange" :underline t))
+          (:name "Schema"
+                 :tag "schema"
+                 :face (:background "#527a45" :foreground "black" :underline t))
+          
+          (:name "Schedule"
+                 ;; :time-grid t
+                 :scheduled today)
           (:name "Events"
                  :tag "event"
                  :face (:background "#88bbf7" :foreground "black" :underline t))
@@ -69,9 +70,14 @@
   )
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
-         ((tags "STYLE=\"habit\"")
-          (alltodo ""
-                   ((org-agenda-skip-function 'air-org-skip-subtree-if-habit)))
+         (;; (tags "STYLE=\"habit\"")
+          (todo ""
+                (
+                 (org-super-agenda-groups
+                  '((:name "Unscheduled nexts"
+                           :and (:todo "NEXT"
+                                         :scheduled nil))
+                    (:discard (:anything t))))))
           (agenda "")))))
 
 (defun air-org-skip-subtree-if-habit ()
