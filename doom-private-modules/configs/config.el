@@ -18,6 +18,7 @@
   (setq org-agenda-files '("~/org/orgzly/Todo.org"
                            "~/org/orgzly/Inbox.org"
                            "~/org/orgzly/skolarbete.org"
+                           "~/org/orgzly/Projects.org"
                            "~/org/orgzly/begrepp.org"
                            "~/org/orgzly/schema.org"
                            "~/org/orgzly/Events.org"))
@@ -30,9 +31,9 @@
            (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
           ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
            (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
-          ("t" "Todo" entry (file "~/Dropbox/org/orgzly/Inbox.org")
+          ("t" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %? ")
-          ("f" "Todo" entry (file "~/Dropbox/org/orgzly/Inbox.org")
+          ("f" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %?\n %a %f ")))
   ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
@@ -90,6 +91,10 @@
 (map! :after magit
       :map magit-mode-map
       :n "%" #'magit-gitflow-popup)
+(setq org-refile-targets
+      '(("Projects.org"  :maxlevel . 2)
+        ("Todo.org" :maxlevel . 1)
+        ("Later.org" :maxlevel . 2)))
 
 (defhydra leo/org-refile-hydra (:foreign-keys run)
   "Refile"
