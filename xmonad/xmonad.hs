@@ -99,6 +99,7 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
 
            , makeEmacsProject "SekreterareEmacs" "~/Documents/styrelsemöten" "~/Documents/styrelsemöten/"
            , makeSimpleProject "SekreterareSlack" ["firefox --new-window https://styrelsedv.slack.com/"]
+           , makeSimpleProject "SekreterareBrowser" ["firefox --new-window"]
            , makeSimpleProject "1" []
            , makeSimpleProject "2" []
            , makeSimpleProject "3" []
@@ -128,6 +129,7 @@ defaultProjectContextList = [ ("default" , defaultProjectList)
                           , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
                                                      , (2, "XMonad Browser")
+                                                     , (8, "Keepass")
                                                      , (0, "Mpsyt")])
                           , ("browser", mkProjectList [(2, "Browser")])
                           , ("school", mkProjectList [ (1, "SchoolEmacs")
@@ -135,7 +137,8 @@ defaultProjectContextList = [ ("default" , defaultProjectList)
                                                      , (5, "Mail")
                                                      , (8, "Keepass")])
                           , ("sekreterare", mkProjectList [ (1, "SekreterareEmacs")
-                                                          , (2, "Browser")
+                                                          , (2, "SekreterareBrowser")
+                                                          , (8, "Keepass")
                                                           , (5, "Mail")
                                                           , (9, "SekreterareSlack")])
                           , ("numbered", mkProjectList $ map (\n -> (n, show n)) [0..9])
