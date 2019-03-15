@@ -57,7 +57,7 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-S-<Return>", spawn "xfce4-terminal")
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
-            , ("M4-s", switchSuperProject)
+            , ("M4-s", switchProjectContext)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
             , ("M4-m", namedScratchpadAction scratchpads "htop")
@@ -122,8 +122,8 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
                                    , (8, "Keepass")
                                    , (9, "Messaging")
                                    , (0, "Mpsyt")]
--- * Super Project List
-defaultSuperProjectList = [ ("default" , defaultProjectList)
+-- * Project Context List
+defaultProjectContextList = [ ("default" , defaultProjectList)
                           , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
                           , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
@@ -199,34 +199,34 @@ switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
 
 
 
--- ** Super Projects
+-- ** Project Contexts
 
--- Super Projects are different contexts for different projects.
--- Each Super Project has a Dynamic Project bound to S-[0..9]
--- Switching Super Project is a way to switch between a different set of applications and workspaces
+-- Project Context are different contexts for different projects.
+-- Each Project Context has a Dynamic Project bound to S-[0..9]
+-- Switching Project Context is a way to switch between a different set of applications and workspaces
 -- Ex.
---  - Super Project Code:
+--  - Project Context Code:
 --    Emacs | Browser | Terminals | Terminals | Terminals | Terminals | Terminals | Terminals | Terminals | Music
---  - Super Project Browsing:
+--  - Project Context Browsing:
 --    Browser | Terminals | Terminals | Terminals | Terminals | Terminals | Keepass | Messaging | Slack | Music
-data SuperProjects = SProjects [[Project]] deriving Typeable
+data ProjectContexts = PContexts [[Project]] deriving Typeable
 
 data SPPrompt = SPPrompt
 instance XPrompt SPPrompt where
-    showXPrompt _ = "Super Project:"
+    showXPrompt _ = "Project Context:"
 spprompt = SPPrompt
 
 
--- Bring forth a prompt for switching Super Project
--- switchSuperProject = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultSuperProjectList) f
-switchSuperProject = do
-  pName <- io $ dmenu (map fst defaultSuperProjectList)
+-- Bring forth a prompt for switching Project Context
+-- switchProjectContext = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultProjectContextList) f
+switchProjectContext = do
+  pName <- io $ dmenu (map fst defaultProjectContextList)
   f pName
     where
       f :: String -> X()
       f name = do
-        let chosenSuperProjects = filter ((==name) . fst) defaultSuperProjectList
-        case chosenSuperProjects of
+        let chosenProjectContext = filter ((==name) . fst) defaultProjectContextList
+        case chosenProjectContext of
           [] -> return ()
           sprojects -> do
                  let chosenProject = head sprojects
