@@ -19,6 +19,7 @@ import System.IO
 import System.Process
 import Control.Monad
 import XMonad.Prompt
+import XMonad.Operations
 import XMonad.Prompt.Shell
 import GHC.Exts (sortWith)
 import XMonad.Config.Kde
@@ -185,7 +186,8 @@ instance ExtensionClass ActiveProjects where
 
 goToProjectNr n = do
   AProjects projects <- XS.get
-  switchProject $ projects !! n
+  -- W.view $ projectName projects !! n
+  windows (\windowset -> W.view (projectName $ projects !! n) windowset)
 
 shiftToProjectNr n = do
   AProjects projects <- XS.get
