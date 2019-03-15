@@ -63,7 +63,7 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
             , ("M4-m", namedScratchpadAction scratchpads "htop")
             , ("M4-S-x", namedScratchpadAction scratchpads "capture")
-            , ("M4-g", namedScratchpadAction scratchpads "agenda")
+            , ("M4-r", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, shiftToProjectNr x)) [0..9] -- Move window to project nr x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
@@ -75,7 +75,7 @@ scratchpads =
     , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
     , NS "capture" "org-capture" (title =? "org-capture")
       (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
-    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"a\")'"
+    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"c\")'"
           (title =? "org-agenda")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
 -- * Project list
