@@ -6,6 +6,24 @@
 (add-to-list 'load-path "/usr/share/org-mode/lisp")
 (require 'org-notmuch)
 (setq notmuch-search-oldest-first nil)
+
+(require 'org-mu4e)
+(setq org-mu4e-link-query-in-headers-mode nil)
+(setq mu4e-get-mail-command "offlineimap")
+(setq mu4e-sent-folder        "/bak.skickat")
+(setq mu4e-drafts-folder      "/bak.utkast")
+(setq mu4e-trash-folder       "/bak.papperskorgen")
+(setq smtpmail-smtp-user      "dv-sekreterare@utn.se")
+(setq user-mail-address       "dv-sekreterare@utn.se")
+(setq mu4e-compose-signature  "--
+Leo Okawa Ericson
+Sekreterare
+Uppsala Datavetare (UD)
+076-032 54 33
+dv-sekreterare@utn.se
+
+www.datavetenskap.nu
+")
 ;;
 ;;
 (map! :after proof
