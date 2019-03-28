@@ -1,5 +1,16 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
+
+;; yas-snippets
+(after! yas
+  (setq yas-buffer-local-condition t)
+
+  (define-key yas-minor-mode-map (kbd "SPC")
+    ;; Expand if snippet has condition: force-with-space-press
+    '(menu-item "" yas-expand :filter
+                (lambda (cmd) (interactive)
+                  (let ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press)))
+                    (yas-expand cmd))))))
 ;; Notmuch
 ;;
 (require 'notmuch)
