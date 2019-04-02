@@ -13,10 +13,12 @@
     (if matched-index
         (progn
           (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
-          (delete-region matched-buffer-index (point))
-          (let ((snippet (yas-lookup-snippet snippet)))
-            (yas-expand-snippet snippet)
-            t))
+          (let ((snippet (yas-lookup-snippet snippet nil t)))
+            (if snippet
+                (progn
+                  (delete-region matched-buffer-index (point))
+                  (yas-expand-snippet snippet nil nil '((yas-indent-line 'fixed)))
+                  t))))
       nil)))
 
 (defun my-yas-expand-regex (regex-snippets)
@@ -45,7 +47,8 @@
     ;; Expand if snippet has condition: force-with-space-press
     (lambda ()
       (interactive)
-      (my-yas-expand-regex [("[0-9]+//$" . "regex-frac")]))))
+      (my-yas-expand-regex [("[0-9]+//$" . "regex-frac")
+                            ("[a|t|v|s][0-9]$" . "register")]))))
 ;; Notmuch
 ;;
 (require 'notmuch)
