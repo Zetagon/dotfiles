@@ -3,47 +3,43 @@
 
 ;; yas-snippets
 
-(after! yas
-  (setq yas-buffer-local-condition t)
+;;; Code:
+(defun my-try-yas-regex-expand (text regex-snippet)
+  (interactive)
+  (let* ((regex (car regex-snippet))
+         (snippet (cdr regex-snippet))
+         (matched-index (string-match regex text))
+         (matched-buffer-index (if matched-index (+ (line-beginning-position) matched-index) nil)))
+    (if matched-index
+        (progn
+          (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
+          (delete-region matched-buffer-index (point))
+          (let ((snippet (yas-lookup-snippet snippet)))
+            (yas-expand-snippet snippet)
+            t))
+      nil)))
 
-  (define-key yas-minor-mode-map (kbd "SPC")
-    ;; Expand if snippet has condition: force-with-space-press
-    (lambda ()
-      (interactive)
-      (my-yas-expand-regex [("[0..9]+//$" . "regex-frac")])))
-
-  (defun my-try-yas-regex-expand (regex-snippet text)
-    (interactive)
-    (let* ((regex (car regex-snippet))
-           (snippet (cdr regex-snippet))
-           (matched-index (string-match "[0-9]+//" text))
-           (matched-buffer-index (if matched-index (+ (line-beginning-position) matched-index) nil)))
-      (if matched-index
-          (progn
-            (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
-            (delete-region matched-buffer-index (point))
-            (let ((snippet (yas-lookup-snippet "regex-frac")))
-              (yas-expand-snippet snippet)
-              t))
-        nil)))
-
-  (defun my-yas-expand-regex ()
-    (interactive)
-    (let* ((text (buffer-substring-no-properties (line-beginning-position) (point)))
-           (matched-index (string-match "[0-9]+//" text))
-           (matched-buffer-index (if matched-index (+ (line-beginning-position) matched-index) nil)))
-      (if matched-index
-          (progn
-            (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
-            (delete-region matched-buffer-index (point))
-            (let ((snippet (yas-lookup-snippet "regex-frac")))
-              (yas-expand-snippet snippet)))
+(defun my-yas-expand-regex (regex-snippets)
+  (interactive)
+  (let* ((text (buffer-substring-no-properties (line-beginning-position) (point)))
+         (could-expand (apply (lambda (args) (or args)) (map 'list (apply-partially 'my-try-yas-regex-expand text) regex-snippets))))
+    (if (not could-expand)
         (let* ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press))
                (cmd (yas-maybe-expand-abbrev-key-filter t)))
           (if cmd
               (yas-expand)
             (insert " "))))))
-  )
+
+
+(after! yas-minor-mode
+  (setq yas-buffer-local-condition t)
+
+  ;; TODO: This key-binding is not loaded by default
+  (define-key yas-minor-mode-map (kbd "SPC")
+    ;; Expand if snippet has condition: force-with-space-press
+    (lambda ()
+      (interactive)
+      (my-yas-expand-regex [("[0-9]+//$" . "regex-frac")]))))
 ;; Notmuch
 ;;
 (require 'notmuch)
