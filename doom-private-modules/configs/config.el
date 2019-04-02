@@ -7,10 +7,27 @@
 
   (define-key yas-minor-mode-map (kbd "SPC")
     ;; Expand if snippet has condition: force-with-space-press
-    '(menu-item "" yas-expand :filter
-                (lambda (cmd) (interactive)
-                  (let ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press)))
-                    (yas-expand cmd))))))
+    'my-yas-expand-regex)
+
+
+
+  (defun my-yas-expand-regex ()
+    (interactive)
+    (let* ((text (buffer-substring-no-properties (line-beginning-position) (point)))
+           (matched-index (string-match "[0-9]+//" text))
+           (matched-buffer-index (if matched-index (+ (line-beginning-position) matched-index) nil)))
+      (if matched-index
+          (progn
+            (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
+            (delete-region matched-buffer-index (point))
+            (let ((snippet (yas-lookup-snippet "regex-frac")))
+              (yas-expand-snippet snippet)))
+        (let* ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press))
+               (cmd (yas-maybe-expand-abbrev-key-filter t)))
+          (if cmd
+            (yas-expand)
+            (insert " "))))))
+  )
 ;; Notmuch
 ;;
 (require 'notmuch)
