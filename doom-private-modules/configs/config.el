@@ -2,14 +2,30 @@
 ;; (def-package! proof-general)
 
 ;; yas-snippets
+
 (after! yas
   (setq yas-buffer-local-condition t)
 
   (define-key yas-minor-mode-map (kbd "SPC")
     ;; Expand if snippet has condition: force-with-space-press
-    'my-yas-expand-regex)
+    (lambda ()
+      (interactive)
+      (my-yas-expand-regex [("[0..9]+//$" . "regex-frac")])))
 
-
+  (defun my-try-yas-regex-expand (regex-snippet text)
+    (interactive)
+    (let* ((regex (car regex-snippet))
+           (snippet (cdr regex-snippet))
+           (matched-index (string-match "[0-9]+//" text))
+           (matched-buffer-index (if matched-index (+ (line-beginning-position) matched-index) nil)))
+      (if matched-index
+          (progn
+            (setq my-regex-snippet-matched-string (buffer-substring-no-properties matched-buffer-index (point)))
+            (delete-region matched-buffer-index (point))
+            (let ((snippet (yas-lookup-snippet "regex-frac")))
+              (yas-expand-snippet snippet)
+              t))
+        nil)))
 
   (defun my-yas-expand-regex ()
     (interactive)
@@ -25,7 +41,7 @@
         (let* ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press))
                (cmd (yas-maybe-expand-abbrev-key-filter t)))
           (if cmd
-            (yas-expand)
+              (yas-expand)
             (insert " "))))))
   )
 ;; Notmuch
