@@ -22,7 +22,7 @@
 (defun my-yas-expand-regex (regex-snippets)
   (interactive)
   (let* ((text (buffer-substring-no-properties (line-beginning-position) (point)))
-         (could-expand (apply (lambda (args) (or args)) (map 'list (apply-partially 'my-try-yas-regex-expand text) regex-snippets))))
+         (could-expand (or-map (apply-partially 'my-try-yas-regex-expand text) regex-snippets)))
     (if (not could-expand)
         (let* ((yas-buffer-local-condition '(require-snippet-condition . force-with-space-press))
                (cmd (yas-maybe-expand-abbrev-key-filter t)))
@@ -30,6 +30,12 @@
               (yas-expand)
             (insert " "))))))
 
+(defun or-map (my-fun sequence)
+  (catch 'or-map-end
+    (loop for i from 0 below (length sequence) do
+          (if (funcall my-fun (aref sequence i))
+              (throw 'or-map-end t)))
+    nil))
 
 (after! yas-minor-mode
   (setq yas-buffer-local-condition t)
