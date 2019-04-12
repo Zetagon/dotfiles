@@ -140,17 +140,37 @@ www.datavetenskap.nu
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
   ;; (org-icalendar-export-agenda-files)
   )
+
+;; A stuck project is a project tagged with :project: and is at level two,
+;; usually this means entries in Projects.org
+(setq org-stuck-projects
+      '("+LEVEL=2+project/-LATER-DONE"
+        ("TODO" "NEXT")))
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
          (;; (tags "STYLE=\"habit\"")
           (todo ""
-                (
-                 (org-super-agenda-groups
+                ((org-super-agenda-groups
                   '((:name "Unscheduled nexts"
                            :and (:todo "NEXT"
-                                         :scheduled nil))
-                    (:discard (:anything t))))))
-          (agenda "")))))
+                                       :scheduled nil))
+                    (:discard (:anything t))))
+                 ))
+          (agenda "")))
+        ("d" "Daily review"
+         (
+          (todo "" ((org-super-agenda-groups
+                       '((:name "Scheduled earlier"
+                                :scheduled past)
+                         (:discard (:anything t))))))
+          (;; Search inboxes for items that are not done
+           search "*" ((org-super-agenda-groups nil)
+                       (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))
+                       (org-agenda-files
+                        '("/home/leo/org/orgzly/Inbox.org"
+                          "/home/leo/org/orgzly/InboxComputer.org"))))
+          (stuck "")
+          (todo "TODO")))))
 
 (defun air-org-skip-subtree-if-habit ()
   "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
