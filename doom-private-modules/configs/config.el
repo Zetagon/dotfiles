@@ -123,14 +123,19 @@ www.datavetenskap.nu
           (:name "Schedule"
                  ;; :time-grid t
                  :scheduled today)
+          
           (:name "Events"
                  :tag "event"
                  :face (:background "#88bbf7" :foreground "black" :underline t))
-
           (:name "Habits"
                  :habit t)
+
           (:name "Scheduled earlier"
-                 :scheduled past)))
+                 :scheduled past)
+          (:name "Deadlines"
+                 :deadline future
+                 :face (:background  "black":foreground"red")
+                 :order -1)))
   (org-super-agenda-mode)
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
   ;; (org-icalendar-export-agenda-files)
