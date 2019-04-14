@@ -237,9 +237,11 @@ styrelseprotokoll%?
       :map magit-mode-map
       :n "%" #'magit-gitflow-popup)
 (setq org-refile-targets
-      '(("Projects.org"  :maxlevel . 2)
-        ("Todo.org" :maxlevel . 1)
-        ("Later.org" :maxlevel . 2)))
+      (append '(("Projects.org"  :maxlevel . 2)
+                ("Todo.org" :maxlevel . 1)
+                ("Later.org" :maxlevel . 2))
+              (mapcar (lambda (x) (cons x '(:maxlevel . 1)))
+                      (file-expand-wildcards "~/org/references/notes/*"))))
 
 (defhydra leo/org-refile-hydra (:foreign-keys run)
   "Refile"
