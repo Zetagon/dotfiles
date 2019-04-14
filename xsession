@@ -44,6 +44,7 @@ xcape -e "Hyper_R=backslash"
 node ~/bin/nasaApodImage.js
 feh --bg-max ~/Pictures/background.jpg
 deja-dup &
-dropbox start &
+# dropbox start &
+~/.dropbox-dist/dropboxd
 emacs --daemon
 xmonad
