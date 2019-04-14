@@ -109,7 +109,7 @@ styrelseprotokoll%?
           ("f" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %?\n %a "
            :created t)))
-
+ 
   ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
 
@@ -127,7 +127,6 @@ styrelseprotokoll%?
           (:name "Schema"
                  :tag "schema"
                  :face (:background "#527a45" :foreground "black" :underline t))
-          
           (:name "Schedule"
                  ;; :time-grid t
                  :scheduled today)
@@ -152,8 +151,16 @@ styrelseprotokoll%?
 ;; A stuck project is a project tagged with :project: and is at level two,
 ;; usually this means entries in Projects.org
 (setq org-stuck-projects
-      '("+LEVEL=2+project/-LATER-DONE"
-        ("TODO" "NEXT")))
+      '("+LEVEL=2+project/-LATER-DONE-CANCELLED"
+        ("NEXT")))
+(defvar my-gtd-context-agenda-group
+  '((:discard (:scheduled future))
+    (:name "Next"
+           :todo "NEXT")
+    (:name "Todo"
+           :todo "TODO"))
+  "Discard all items that are scheduled for the future.")
+
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
          (;; (tags "STYLE=\"habit\"")
@@ -165,20 +172,52 @@ styrelseprotokoll%?
                     (:discard (:anything t))))
                  ))
           (agenda "")))
+        ("gc" "Computer" tags"+@computer/+TODO|+NEXT"
+         ((org-agenda-overriding-header "At the computer")
+          (org-super-agenda-groups my-gtd-context-agenda-group)
+          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+        ("gh" "Home" tags"+@home/+TODO|+NEXT"
+         ((org-agenda-overriding-header "At home")
+          (org-super-agenda-groups my-gtd-context-agenda-group)
+          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+        ("gm" "Styerelsemöte" tags"+@meeting"
+         ((org-agenda-overriding-header "Styrelsemöte")
+          (org-super-agenda-groups my-gtd-context-agenda-group)
+          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
         ("d" "Daily review"
          (
-          (todo "" ((org-super-agenda-groups
-                       '((:name "Scheduled earlier"
-                                :scheduled past)
-                         (:discard (:anything t))))))
           (;; Search inboxes for items that are not done
            search "*" ((org-super-agenda-groups nil)
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))
                        (org-agenda-files
                         '("/home/leo/org/orgzly/Inbox.org"
                           "/home/leo/org/orgzly/InboxComputer.org"))))
+          (todo "" ((org-super-agenda-groups
+                     '((:name "Scheduled earlier"
+                              :scheduled past)
+                       (:discard (:anything t))))))
           (stuck "")
           (todo "TODO")))))
+
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (if (string-equal "Todo" (file-name-base (buffer-file-name)))
+    nil
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+        (setq should-skip-entry t))
+      (save-excursion
+        (while (and (not should-skip-entry) (org-goto-sibling t))
+          (when (org-current-is-todo)
+            (setq should-skip-entry t))))
+      (when should-skip-entry
+        (or (outline-next-heading)
+            (goto-char (point-max)))))))
+
+(defun org-current-is-todo ()
+  (let ((state (org-get-todo-state)))
+    (some (lambda (x) (string= x state))
+          '("TODO" "NEXT"))))
 
 (defun air-org-skip-subtree-if-habit ()
   "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
