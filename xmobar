@@ -2,6 +2,7 @@ Config { bgColor = "black"
        , fgColor = "grey"
        , position = Top
        , lowerOnStart = True
+       , font = "xft:SFNS Display:size=10,FontAwesome:size=10"
        , commands = [ Run Cpu ["-L", "3", "-H", "50", "--normal", "green", "--high", "red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Swap [] 10
@@ -21,8 +22,11 @@ Config { bgColor = "black"
                                          -- charged status
                                          , "-i"	, "<fc=#006000>Charged</fc>"
                                          ] 50
+                    , Run Com "/usr/bin/notmuch" ["count", "tag:unread"] "mail" 15
+                    , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat"] "bat0" 10
+                    , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat1"] "bat1" 10
                     , Run StdinReader]
        , sepChar = "%"
        , alignSep =  "}{}"
-       , template = "%StdinReader% }{ %battery% %cpu% | %memory% * %swap%  <fc=#ee9a00>%date%</fc>"
+       , template = "%StdinReader% }{%mail% | %bat0% %bat1% %cpu%   |%memory% * %swap%  <fc=#ee9a00>%date%</fc>"
 }
