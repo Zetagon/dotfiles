@@ -1,0 +1,5 @@
+# key: regex-frac
+# name: regex-frac
+# condition: (quote force-with-space-press)          
+# --
+\frac{`(substring my-regex-snippet-matched-string 0 -2)`}{${1}}

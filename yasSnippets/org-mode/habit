@@ -1,0 +1,7 @@
+# key: habit
+# name: habit
+# --
+SCHEDULED: <`(format-time-string "%Y-%m-%d")` ${1:Day} .+${2:low}d/${3:high}d>
+:PROPERTIES:
+:STYLE:    habit
+:END:

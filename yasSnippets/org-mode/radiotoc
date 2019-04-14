@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: radio-toc
+# key: radio-toc                       
+# --
+`(let ((re-seq (lambda (regexp string)
+                 ;;"Get a list of all regexp matches in a string"
+                 (save-match-data
+                   (let ((pos 0)
+                         matches)
+                     (while (string-match regexp string pos)
+                       (push (match-string 0 string) matches)
+                       (setq pos (match-end 0)))
+                     matches)))))
+   (let ((elements (funcall 're-seq "<<<.*>>>" (buffer-substring-no-properties 1 (buffer-end 1)))))
+     (apply 'concat
+            (map 'list (lambda (x) (insert (format "%s\n" (substring x 3 -3))))
+                 elements))))`

@@ -1,0 +1,5 @@
+# key: sekr
+# name: sekr
+# condition: (quote force-with-space-press)
+# --
+\sekreterare{}$0

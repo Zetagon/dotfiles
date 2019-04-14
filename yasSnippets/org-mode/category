@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: category
+# key: category
+# --
+:PROPERTIES:
+:CATEGORY: $1
+:END:
+$0

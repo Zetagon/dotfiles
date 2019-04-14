@@ -1,0 +1,79 @@
+# -*- mode: snippet -*-
+# name: kallelse
+# key: kallelse
+# --
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[margin = 0.8in]{geometry}
+\usepackage{amssymb}
+\usepackage{titling}
+\usepackage{fancyhdr}
+\usepackage{transparent}
+\usepackage{eso-pic}
+
+
+
+\newcommand{\ordf}{Sofia Engström}
+\newcommand{\vordf}{Anton Jäger}
+\newcommand{\sekreterare}{Leo Okawa Ericson}
+\newcommand{\studie}{Hanna Gjöthlén}
+\newcommand{\klubb}{Axel Lingestål}
+\newcommand{\tillgang}{Per Alonso}
+\newcommand{\info}{Sara Liljefors}
+\newcommand{\studiesoc}{Travis Georgios Persson}
+
+\newcommand{\mdatum}{${1:datum}}
+\newcommand{\mplats}{${2:plats}}
+\newcommand{\mtid}{${3:tid}}
+\newcommand{\mnamn}{${4:namn}}
+
+\input{kallelse.tex}
+
+
+\AddToShipoutPicture{%
+    \put(0,0){%
+        \parbox[b][\paperheight]{\paperwidth}{%
+            \vfill
+            \centering
+              {\transparent{0.05}\includegraphics[width=1\textwidth]{UD_center.png}}
+            \vfill
+        }
+    }
+}
+
+
+\title{\mnamn}
+
+
+\date{}
+\begin{document}
+\maketitle
+
+% Närvarande
+\kallinfo[\ordf, \vordf,  \sekreterare, \klubb, \studie, \tillgang, \info, \studiesoc]
+
+
+\section{Mötets öppnande}
+
+$0
+
+\section{Formalia}
+
+\section{Övriga Frågor}
+
+\section{Mötets avslutande}
+
+
+\underskrifter
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

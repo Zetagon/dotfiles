@@ -1,0 +1,10 @@
+# key: inline
+# name: inline
+# --
+\$${1:math}\$${2:$$(if (not (string-equal "" yas-text))
+                        (let ((c (substring yas-text 0 1)))
+                          (if c
+                              (yas-auto-next
+                                (if (string-match "[,|\.]" c)
+                                    yas-text
+                                  (concat " " yas-text))))))}d

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: clock
+# key: clock
+# --
+`(format-time-string "%H:%M")`

@@ -1,0 +1,5 @@
+# key: ordf
+# name: ordf
+# condition: (quote force-with-space-press)
+# --
+\ordf{}$0

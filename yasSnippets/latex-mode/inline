@@ -1,0 +1,11 @@
+# name: inline
+# key: mk
+# https://github.com/joaotavora/yasnippet/issues/767
+# --
+\$${1:math}\$${2:$$(if (not (string-equal "" yas-text))
+                        (let ((c (substring yas-text 0 1)))
+                             (yas-auto-next
+                             (if c
+                                 (if (string-match "[,|\.| ]" c)
+                                     yas-text
+                                     (concat " " yas-text))))))}

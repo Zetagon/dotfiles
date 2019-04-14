@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: section labelless
+# key: secl
+# --
+\section{$1}$0

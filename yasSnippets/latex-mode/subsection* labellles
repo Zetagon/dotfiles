@@ -1,0 +1,6 @@
+# key: sub*l
+# name: subsection* labellles
+# --
+\subsection*{$1}
+
+$0

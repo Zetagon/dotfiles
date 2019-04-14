@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: hat
+# key: hat
+# --
+\hat{`(if my-regex-snippet-matched-string
+          (substring my-regex-snippet-matched-string 0 -3)
+        "")`}

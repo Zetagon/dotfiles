@@ -1,0 +1,4 @@
+# key: condition
+# name: force-with-space-press
+# --
+condition: 'force-with-space-press

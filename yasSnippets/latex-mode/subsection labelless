@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: subsection labelless
+# key: subl
+# --
+\subsection{$1}$0

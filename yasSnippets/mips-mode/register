@@ -1,0 +1,4 @@
+# key: register
+# name: register
+# --
+`(substring my-regex-snippet-matched-string 0 1)`\$`(substring my-regex-snippet-matched-string 1)`

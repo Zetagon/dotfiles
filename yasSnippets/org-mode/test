@@ -1,0 +1,4 @@
+# key: test
+# name: test
+# --
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)`

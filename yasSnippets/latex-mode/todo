@@ -1,0 +1,5 @@
+# key: todo
+# name: todo
+# condition: 'force-with-space-press
+# --
+\todo{$0}

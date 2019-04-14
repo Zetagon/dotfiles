@@ -1,0 +1,8 @@
+# key: sec
+# name: section
+# condition: 'force-with-space-press
+# --
+\section{${1:name}}
+\label{sec:${2:label}}
+
+$0

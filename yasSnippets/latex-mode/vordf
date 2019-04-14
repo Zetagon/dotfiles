@@ -1,0 +1,5 @@
+# key: vordf
+# name: vordf
+# condition: (quote force-with-space-press)
+# --
+\vordf{}$0

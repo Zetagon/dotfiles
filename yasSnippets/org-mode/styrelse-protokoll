@@ -1,0 +1,30 @@
+# key: styrelseprotokoll
+# name: styrelse-protokoll
+# --
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Mötets öppnanade
+
+`(make-string (+ 2 (org-get-previous-line-level)) ?*)` Närvarande
+
+${2:närvarande}
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Tid
+
+${3:tid}
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Formalia
+
+`(make-string (+ 2 (org-get-previous-line-level)) ?*)` Val av justerare
+
+${4:justerare} valdes till justerare.
+
+`(make-string (+ 2 (org-get-previous-line-level)) ?*)` Godkännande av dagordning
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Lägesrapport
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Mötesfrågor
+
+`(make-string (+ 2 (org-get-previous-line-level)) ?*)`  ${1:rubrik}
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Övriga frågor
+
+`(make-string (+ 1 (org-get-previous-line-level)) ?*)` Mötets avslutande

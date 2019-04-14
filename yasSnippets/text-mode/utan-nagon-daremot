@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: utan någon däremot
+# key: und
+# condition: 'force-with-space-press
+# --
+utan någon däremot$0
