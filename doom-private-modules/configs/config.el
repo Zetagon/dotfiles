@@ -98,10 +98,18 @@ www.datavetenskap.nu
            (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
           ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
            (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
+          ("m" "Mötesprotokoll" entry (file+headline "~/Dropbox/org/orgzly/Projects.org" "Sekreterare")
+           "* NEXT Renskriva protokoll %t
+styrelseprotokoll%?
+* TODO Skriva ut protokoll"
+           :jump-to-captured t
+           )
           ("t" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %? ")
           ("f" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
-           "* TODO %?\n %a %f ")))
+           "* TODO %?\n %a "
+           :created t)))
+
   ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
 
