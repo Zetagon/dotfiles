@@ -193,11 +193,62 @@ styrelseprotokoll%?
                         '("/home/leo/org/orgzly/Inbox.org"
                           "/home/leo/org/orgzly/InboxComputer.org"))))
           (todo "" ((org-super-agenda-groups
-                     '((:name "Scheduled earlier"
-                              :scheduled past)
+                     '((:name "Daily Review is done! Congratulations!"
+                              :and (:heading-regexp "Daily review"
+                                                    :tag "review")
+                              :order 100)
+                       (:name "Habits"
+                              :habit t
+                              :order 2)
+                       (:name "Scheduled earlier"
+                              :scheduled past
+                              :order 1)
+                       (:name "Review Todos\n\tSet tags\n\tChange relevant tasks to NEXT"
+                              :and (:todo ("TODO")
+                                          :file-path "Todo.org")
+                              :order 3)
+                       (:name "Review Nexts\n\tSet tags\n\tChange irrelevant tasks to TODO"
+                              :and (:todo ("NEXT")
+                                          :file-path "Todo.org")
+                              :order 4)
                        (:discard (:anything t))))))
-          (stuck "")
-          (todo "TODO")))))
+          (stuck "")))
+        ("w" "Weekly Review"
+         ((todo "" ((org-agenda-files (cons "/home/leo/org/orgzly/Later.org" org-agenda-files))
+                    (org-super-agenda-groups
+                     '((:name "Clock in!"
+                              :and (:tag "weeklyreview"
+                                         :heading-regexp "Weekly review"))
+                       (:name "Review Later or Waiting tasks\n\tCan they be done this week?"
+                              :todo ("WAITING" "LATER")
+                              :file-path "Later.org"
+                              :order 5)
+                       (:name "Schedule these tasks for next week"
+                              :and (:not (:todo ("DONE" "CANCELLED"))
+                                         :tag "weeklyschedule")
+                              :order 5)
+                       (:name "Tasks related to weekly review"
+                              :and (:not (:todo ("DONE" "CANCELLED"))
+                                         :tag "weeklyreview")
+                              :order 1)
+                       (:name "Review Next tasks\n\tCan they be done this week?"
+                              :todo "NEXT"
+                              :order 3)
+                       (:name "Which tasks are Next?"
+                              :and (:todo "TODO"
+                                          :not (:scheduled future)
+                                          :not (:tag "project")
+                                          :not (:habit t))
+                              :order 4)
+                       (:discard (:tag "project"))))))
+          (todo "" ((org-agenda-files '("/home/leo/org/orgzly/Projects.org"))
+                      (org-agenda-overriding-header "Clock Out!")
+                      (org-super-agenda-groups
+                       '((:name ""
+                          :and (:heading-regexp "Weekly review"
+                                           :tag "weeklyreview"))
+                         (:discard (:anything t
+                                              :habit ))))))))))
 
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
