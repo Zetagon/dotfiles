@@ -228,8 +228,17 @@ styrelseprotokoll%?
 
 
 (setq org-log-into-drawer t)
-
+;; Disable counsel-org-capture
+(global-set-key [remap org-capture] nil)
 (map! :after org
+      (:map org-super-agenda-header-map
+        :map org-super-agenda-header-map
+        "j" #'org-agenda-next-line
+        "k" #'org-agenda-previous-line
+        :map org-agenda-keymap
+        :map org-agenda-mode-map
+        "k" #'org-agenda-previous-line
+        "j" #'org-agenda-next-line)
       :map org-mode-map
       :n "gr" #'leo/org-refile-hydra/body)
 
