@@ -153,16 +153,35 @@ styrelseprotokoll%?
 (setq org-stuck-projects
       '("+LEVEL=2+project/-LATER-DONE-CANCELLED"
         ("NEXT")))
-(defvar my-gtd-context-agenda-group
-  '((:discard (:scheduled future))
+(defconst my-project-default-next-task-states '("NEXT")
+  "States that identifies which tasks in a project are considered next.")
+(defvar my-project-next-task-states my-project-default-next-task-states
+  "States that identifies which tasks in a project are considered next.")
+
+(defun my-gtd-context-agenda-group ()
+  `((:discard (:scheduled future :tag "think"))
+    (:name "Project Next Task"
+           :and (:file-path "Projects.org"
+                            :todo ,my-project-next-task-states))
     (:name "Next"
-           :todo "NEXT")
+           :and (:todo "NEXT"
+                       :not (:file-path "Projects.org")))
     (:name "Todo"
-           :todo "TODO"))
-  "Discard all items that are scheduled for the future.")
+           :and (:todo "TODO"
+                       :not (:file-path "Projects.org")))
+    (:discard (:anything t))))
+
+(defun my-gtd-context-tag-agenda-settings (search-string desc)
+  "Search for SEARCH-STRING with description DESC.
+My settings for context agenda views that are based on the tags keyword."
+  `((tags ,search-string
+         ((org-agenda-overriding-header ,desc)
+          (org-super-agenda-groups (my-gtd-context-agenda-group))))
+   (stuck "" ((org-super-agenda-groups nil)))))
+
 
 (setq org-agenda-custom-commands
-      '(("c" "Simple agenda view"
+      `(("c" "Simple agenda view"
          (;; (tags "STYLE=\"habit\"")
           (todo ""
                 ((org-super-agenda-groups
@@ -172,22 +191,21 @@ styrelseprotokoll%?
                     (:discard (:anything t))))
                  ))
           (agenda "")))
-        ("gc" "Computer" tags"+@computer/+TODO|+NEXT"
-         ((org-agenda-overriding-header "At the computer")
-          (org-super-agenda-groups my-gtd-context-agenda-group)
-          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
-        ("gh" "Home" tags"+@home/+TODO|+NEXT"
-         ((org-agenda-overriding-header "At home")
-          (org-super-agenda-groups my-gtd-context-agenda-group)
-          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+        ("gc" "Computer" ,(my-gtd-context-tag-agenda-settings "+@computer/+NEXT|+TODO" "At the computer"))
+        ("gh" "Home" ,(my-gtd-context-tag-agenda-settings "+@home/+NEXT|+TODO" "At home"))
         ("gm" "Styerelsemöte" tags"+@meeting"
          ((org-agenda-overriding-header "Styrelsemöte")
-          (org-super-agenda-groups my-gtd-context-agenda-group)
-          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+          (org-super-agenda-groups nil)))
         ("d" "Daily review"
          (
           (;; Search inboxes for items that are not done
-           search "*" ((org-super-agenda-groups nil)
+           search "*" ((org-agenda-overriding-header
+                        "Empty Inbox!
+\t- Tag stuff that is worth thinking about with 'think'
+\t- Refile project tasks to their corresponding target
+\t- Tag stuff that should be scheduled later than a week forwards with 'weeklyschedule'
+\t- Tag stuff that needs to be review with 'weeklyreview'")
+                       (org-super-agenda-groups nil)
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))
                        (org-agenda-files
                         '("/home/leo/org/orgzly/Inbox.org"
@@ -250,20 +268,24 @@ styrelseprotokoll%?
                          (:discard (:anything t
                                               :habit ))))))))))
 
-(defun my-org-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
-  (if (string-equal "Todo" (file-name-base (buffer-file-name)))
-    nil
-    (let (should-skip-entry)
-      (unless (org-current-is-todo)
-        (setq should-skip-entry t))
-      (save-excursion
-        (while (and (not should-skip-entry) (org-goto-sibling t))
-          (when (org-current-is-todo)
-            (setq should-skip-entry t))))
-      (when should-skip-entry
-        (or (outline-next-heading)
-            (goto-char (point-max)))))))
+(defun my-restrict-org-todo-list ()
+  (interactive)
+  (let ((temp-states my-project-next-task-states))
+    (setq my-project-next-task-states '("NEXT" "TODO"))
+    (let* ((marker (or (org-get-at-bol 'org-marker)
+                     (org-agenda-error)))
+         (buffer (marker-buffer marker))
+         (pos (marker-position marker)))
+    (with-current-buffer buffer
+      (goto-char pos)
+      (outline-up-heading 1 t)
+      (org-agenda-set-restriction-lock)))
+    ;; (org-todo-list)
+    (setq my-project-next-task-states
+          my-project-default-next-task-states)))
+
+
+
 
 (defun org-current-is-todo ()
   (let ((state (org-get-todo-state)))
@@ -289,9 +311,12 @@ styrelseprotokoll%?
         :map org-agenda-keymap
         :map org-agenda-mode-map
         "k" #'org-agenda-previous-line
-        "j" #'org-agenda-next-line)
+        "j" #'org-agenda-next-line
+        "<" #'my-restrict-org-todo-list
+        ">" #'org-agenda-remove-restriction-lock)
       :map org-mode-map
-      :n "gr" #'leo/org-refile-hydra/body)
+      :n "gr" #'leo/org-refile-hydra/body
+      :m "[]" #'outline-up-heading)
 
 (map! :after magit
       :map magit-mode-map
