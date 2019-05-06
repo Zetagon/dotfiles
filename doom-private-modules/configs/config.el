@@ -162,7 +162,14 @@ styrelseprotokoll%?
   `((:discard (:scheduled future :tag "think"))
     (:name "Project Next Task"
            :and (:file-path "Projects.org"
-                            :todo ,my-project-next-task-states))
+                            :and (:tag "focus"
+                                       :todo ,my-project-next-task-states)))
+    (:name "Unfocused Project Next Task"
+           :order 4
+           :face org-agenda-dimmed-todo-face
+           :and (:file-path "Projects.org"
+                            :and (:not (:tag "focus")
+                                       :todo ,my-project-next-task-states)))
     (:name "Next"
            :and (:todo "NEXT"
                        :not (:file-path "Projects.org")))
