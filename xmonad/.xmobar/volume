@@ -1,0 +1,18 @@
+#! /bin/zsh
+. $HOME/.xmonad/.xmobar/icons
+# get the current pulseaudio volume ( use amixer for alsa )
+# uncomment for pulseaudio
+# VOLUME=$(pamixer --get-volume)
+# uncomment for alsa
+POWER=$(amixer get Master -M | sed -n '5p' | cut -d ' ' -f 8 | grep -o on)
+if [ ! -z $POWER ]; then
+    VOLUME=$(amixer get Master -M | grep -oE '[[:digit:]]*%' | tr -d '%')
+    # Adapt icon for high and low volume
+    if [ $VOLUME -ge 50 ]; then
+        echo -e "$ICON_VOLUME_HIGH $VOLUME"
+    else
+        echo -e "$ICON_VOLUME_LOW $VOLUME"
+    fi
+else
+    echo -e "$ICON_VOLUME_MUTE  "
+fi

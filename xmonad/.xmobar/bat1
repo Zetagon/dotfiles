@@ -1,0 +1,40 @@
+#! /bin/bash
+. $HOME/.xmonad/.xmobar/icons
+# battery indicator
+# requires acpi
+# check if battery is present
+if [ -e /sys/class/power_supply/BAT1 ]; then
+  # get the battery info from acpi
+  ACPI_STAT=$(acpi)
+  # get the status: charging, discharging
+  BAT_STAT=$(cat /sys/class/power_supply/BAT1/status)
+  # get the current battery load percentage
+  BAT_PERC=$(cat /sys/class/power_supply/BAT1/capacity)
+  if [[ $BAT_STAT = "Discharging" ]]; then
+      if [ $BAT_PERC -lt 5 ]; then
+          echo -e "<fc=#ff0000>$ICON_BATTERY_EMPTY $BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 25 ]; then
+          echo -e "<fc=#ff9900>$ICON_BATTERY_QUARTER $BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 50 ]; then
+          echo -e "<fc=#ffff00>$ICON_BATTERY_HALF $BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 75 ]; then
+          echo -e "<fc=#00ff00>$ICON_BATTERY_THREEQUARTERS $BAT_PERC</fc>"
+      else
+          echo -e "<fc=#00ff00>$ICON_BATTERY_FULL $BAT_PERC</fc>"
+      fi
+  elif [[ $BAT_STAT = "Not" ]]; then
+      echo -e "$ICON_BATTERY_CHARGING <fc=#006000>Charged</fc>"
+  else
+      if [ $BAT_PERC -lt 5 ]; then
+          echo -e "$ICON_BATTERY_CHARGING <fc=#ff0000>$BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 25 ]; then
+          echo -e "$ICON_BATTERY_CHARGING <fc=#ff9900>$BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 50 ]; then
+          echo -e "$ICON_BATTERY_CHARGING <fc=#ffff00>$BAT_PERC</fc>"
+      elif [ $BAT_PERC -lt 75 ]; then
+          echo -e "$ICON_BATTERY_CHARGING <fc=#00ff00>$BAT_PERC</fc>"
+      else
+          echo -e "$ICON_BATTERY_CHARGING <fc=#00ff00>$BAT_PERC</fc>"
+      fi
+  fi
+fi

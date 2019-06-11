@@ -1,0 +1,22 @@
+#! /bin/zsh
+. $HOME/.xmonad/.xmobar/icons
+WIFI_INFO=$(iwconfig $WIFI_DEV)
+if [[ $WIFI_INFO = "Not connected." ]]; then
+  # display wifi disconnected
+  echo -e "$ICON_WIFI_DISCONNECTED diconnected"
+else
+  # get the ssid
+  #WIFI_SSID=$(echo $WIFI_INFO | grep "SSID" | sed 's/SSID: //')
+  # get the signal strength
+    #WIFI_SIGNAL=$(echo $WIFI_INFO | grep "signal" | sed 's/signal: //' | tr -d ' dBm')
+  WIFI_SIGNAL=$(iwconfig wlp2s0 | grep "Signal" | cut -b 44-46)    
+  if (( $WIFI_SIGNAL > -50 )); then
+    WIFI_SIGNAL_PERCENT="100"
+  elif (( $WIFI_SIGNAL < -100 )); then
+    WIFI_SIGNAL_PERCENT="0"
+  else
+    WIFI_SIGNAL_PERCENT=$(echo $((2 * (100 + $WIFI_SIGNAL))))
+  fi
+  # display all info
+  echo -e "<fc=#ffffff>$ICON_WIFI_CONNECTED</fc> $WIFI_SIGNAL_PERCENT"
+fi
