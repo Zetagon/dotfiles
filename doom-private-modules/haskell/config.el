@@ -24,3 +24,27 @@
       :n "ss" #'intero-repl-load
       :n "ht" #'intero-type-at
       :n "hs" #'intero-apply-suggestions)
+(map!
+ :map haskell-mode-map
+ :localleader
+ :nv "t" #'haskell-mode-show-type-at
+ :nv "rt" #'my-hspec-run-closest-test)
+
+(defun my-hspec-run-closest-test ()
+  (interactive)
+  (goto-char (line-end-position))
+  ;;                    v  match spaces
+  ;;                             v match the function describe
+  ;;                                          v match any spaces
+  ;;                                               v match anything inside quotes
+  (save-excursion
+    (re-search-backward "\\(^ *\\)\\(describe\\) *\"\\( *.+\\)\""))
+  (let ((test-name (match-string 3)))
+    (if test-name
+      (progn
+        (setq compile-command (concat "stack test --file-watch --test-arguments='-m\"" test-name "\"'"))
+        ;; (setenv "MYHSPECARG" test-name)
+        ;; (kill-compilation)
+        (compile compile-command)
+        )
+      (message "No tests found!"))))
