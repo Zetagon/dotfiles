@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: hspec-describe
+# key: describe
+# --
+describe "$1" $ do $0
