@@ -367,6 +367,12 @@ My settings for context agenda views that are based on the tags keyword."
       :map org-mode-map
       :n "gr" #'leo/org-refile-hydra/body
       :m "[]" #'outline-up-heading)
+(after! yasnippet
+  (add-hook 'post-self-insert-hook #'my-yas-try-expanding-auto-snippets)
+  (defun my-yas-try-expanding-auto-snippets ()
+    (when yas-minor-mode
+      (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
+        (yas-expand)))))
 
 (map! :after magit
       :map magit-mode-map
