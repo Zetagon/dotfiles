@@ -8,7 +8,7 @@
         org-ref-pdf-directory "~/Dropbox/org/references/pdfs/")
   (map!
    :leader
-   :n "nn" #'org-ref-open-bibtex-notes))
+   :n "nb" #'org-ref-open-bibtex-notes))
 
 (def-package! helm-bibtex
   :config
@@ -41,6 +41,12 @@
    :n "i" #'interleave-add-note
    :n "n" #'pdf-view-next-page-command
    :n "p" #'pdf-view-previous-page-command))
+(def-package! interleave
+  :config
+  (map!
+   :map interleave-mode-map
+   :leader
+   :n "nn" #'interleave-mode))
 
 (defun re-seq (regexp string)
   "Get a list of all regexp matches in a string"
