@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: itemize
+# key: it
+# --
+\begin{itemize}
+`yas-selected-text`$0
+\end{itemize}

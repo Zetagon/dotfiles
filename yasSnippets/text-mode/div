@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: div
+# regexp-key:  \(\([[:digit:]]+\)\|\(\([[:digit:]]*\)\([\]\)?\([A-Za-z]+\)\(\([_^]\)\([[:digit:]]\|{[[:digit:]]+}\)\)*\)\)//
+# condition: 'auto
+# --
+\div{`(yas-match-string 1)`}{$0

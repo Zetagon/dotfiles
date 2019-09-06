@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: new variable
+# key: new
+# --
+${1:$(concat (upcase (substring yas-text 0 1)) (substring yas-text 1))} ${1:name} = $0;

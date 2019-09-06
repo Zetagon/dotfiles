@@ -1,0 +1,5 @@
+# regexp-key: \([A-Za-z]\)\([0-9]\)
+# name: subscript
+# condition: 'auto                                                                                                                             
+# --
+`(yas-match-string 1)`_`(yas-match-string 2)`

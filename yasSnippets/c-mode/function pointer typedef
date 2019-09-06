@@ -1,0 +1,4 @@
+# key: funcdef
+# name: function pointer typedef
+# --
+typedef ${1:return_type}(*${2:name})(${3:argument});$0

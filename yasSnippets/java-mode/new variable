@@ -1,0 +1,4 @@
+# key: valineartaster
+# name: new variable                                                                  
+# --
+${1:$(concat (upcase (substring yas-text 0 1)) (substring yas-text 1))} ${1:name} = $0;

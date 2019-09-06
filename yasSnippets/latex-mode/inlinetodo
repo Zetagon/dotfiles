@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: inlinetodo
+# key: todoinl
+# --
+\todo[inlinepar]{${1:`yas-selected-text`}}$0

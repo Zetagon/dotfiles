@@ -1,0 +1,4 @@
+# key: fancy
+# name: fancy letter
+# --
+\mathcal{$1} $0

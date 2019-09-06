@@ -1,0 +1,6 @@
+# key: psv
+# name: public static void
+# --
+public static void ${1:name} {
+$0
+}

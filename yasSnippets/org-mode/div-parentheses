@@ -1,0 +1,19 @@
+# name: div-parentheses
+# regexp-key: ^.*)/
+# --
+\frac{`
+(let* ((text (substring (yas-match-string 0) 0 -1))
+       (depth 0)
+       (i (- (string-width text) 1)))
+  (block loop (while t
+                 (when (char-equal (aref text i)
+                                   ?\) )
+                   (setq depth (+ depth 1)))
+                 (when (char-equal (aref text i)
+                                   ?\( )
+                   (setq depth (- depth 1)))
+                 (when (= depth 0)
+                   (return-from loop))
+                 (setq i (- i 1))))
+  (substring  (yas-match-string 0) (+ i) -1))
+`}{$0}

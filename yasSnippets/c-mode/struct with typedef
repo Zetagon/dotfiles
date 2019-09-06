@@ -1,0 +1,7 @@
+# key: structd
+# name: struct with typedef
+# --
+struct ${1:name} {
+$0
+};
+typedef $1 $1_t;
