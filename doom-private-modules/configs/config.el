@@ -1,6 +1,10 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
 
+(setq display-line-numbers-type 'relative)
+(setq line-number-mode nil)
+(setq linum-mode nil)
+(add-to-list 'evil-insert-state-modes 'calc-mode)
 (evil-ex-define-cmd "c" #'my-evil-copy)
 (evil-define-command my-evil-copy (beg end address)
   "Copy lines in BEG END below line given by ADDRESS.
@@ -412,6 +416,25 @@ My settings for context agenda views that are based on the tags keyword."
 (map! :after magit
       :map magit-mode-map
       :n "%" #'magit-gitflow-popup)
+(defvar my-git-gutter-revision nil
+  "Store the revision for git gutter here.")
+(defun my-git-gutter-set-revision (rev)
+  (interactive)
+  (setq my-git-gutter-revision rev))
+(defun my-git-gutter-next-hunk ()
+  (interactive)
+  (git-gutter:set-start-revision my-git-gutter-revision)
+  (git-gutter:next-hunk 1))
+
+(defun my-git-gutter-prev-hunk ()
+  (interactive)
+  (git-gutter:set-start-revision my-git-gutter-revision)
+  (git-gutter:previous-hunk 1))
+(after! magit
+  (map! :map doom-leader-map
+        :leader
+        "g]" #'my-git-gutter-next-hunk
+        "g[" #'my-git-gutter-prev-hunk))
 (setq org-refile-targets
       (append '(("Projects.org"  :maxlevel . 2)
                 ("Todo.org" :maxlevel . 1)
