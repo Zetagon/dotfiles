@@ -1,8 +1,10 @@
 -- * Imports
 {-# LANGUAGE DeriveDataTypeable #-}
 import XMonad
+import System.Exit
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
 import XMonad.Util.SpawnOnce
@@ -12,17 +14,21 @@ import XMonad.Prompt.Input
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.ThreeColumns
+import XMonad.Layout.SimpleFloat
 import qualified XMonad.StackSet as W
 import XMonad.ManageHook
 import XMonad.Util.NamedScratchpad
 import System.IO
 import System.Process
 import Control.Monad
+import qualified Data.Map.Strict as Map
 import XMonad.Prompt
 import XMonad.Operations
 import XMonad.Prompt.Shell
 import GHC.Exts (sortWith)
 import XMonad.Config.Kde
+import XMonad.Hooks.EwmhDesktops
+import XMonad.Layout.NoBorders
 
 -- * Entry point
 main = do
@@ -44,11 +50,11 @@ startupList =
   [ "sleep 5 && for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done"
   ]
 -- * ManageHook
-myManageHook = namedScratchpadManageHook scratchpads <+> manageDocks <+> manageHook def
+myManageHook =   namedScratchpadManageHook scratchpads <+> manageDocks <+> (isFullscreen --> doFullFloat) <+> manageHook def
 -- * Layouts
-myLayouts = avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 -- Define two layouts
+myLayouts =  smartBorders $  avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1 0.03 0.5 ||| simpleFloat -- Define two layouts
 -- * Events
-myEvents = handleEventHook def <+> docksEventHook
+myEvents = fullscreenEventHook <+> handleEventHook def <+> docksEventHook
 -- * Logging to xmobar
 myLog xmproc = dynamicLogWithPP xmobarPP
         { ppOutput = hPutStrLn xmproc
@@ -61,9 +67,20 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-s", switchProjectContext)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
-            , ("M4-m", namedScratchpadAction scratchpads "htop")
+            , ("M4-m", do
+                 original <- withWindowSet (return . W.currentTag)
+                 ws0 <- screenWorkspace 0
+                 whenJust ws0 (windows . W.view)
+                 ws1 <- screenWorkspace 1
+                 whenJust ws1 (windows . W.greedyView)
+                 windows $ W.view original
+                 return ()
+                
+              )
             , ("M4-S-x", namedScratchpadAction scratchpads "capture")
             , ("M4-r", namedScratchpadAction scratchpads "agenda")
+            , ("M4-S-q", io (exitWith ExitSuccess))
+            , ("<F11>", toggleFloat)
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, shiftToProjectNr x)) [0..9] -- Move window to project nr x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
@@ -145,6 +162,20 @@ defaultProjectContextList = [ ("default" , defaultProjectList)
                           , ("numbered", mkProjectList $ map (\n -> (n, show n)) [0..9])
                           ]
 -- * Code
+-- ** Misc
+
+toggleFloat :: X()
+toggleFloat = do
+  windows (\windowset ->
+               let window = W.peek windowset
+                   rect =  W.RationalRect 0 0 1 1
+               in case window of
+                    Just w -> if Map.member w $ W.floating windowset
+                              then W.sink w windowset
+                              else W.float w rect windowset
+                    Nothing -> windowset)
+  withFocused (\w -> withDisplay (\d -> io $ raiseWindow d w))
+
 -- ** Dynamic Project utility functions
 makeEmacsProject name path files =
     Project
