@@ -1,6 +1,23 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
 
+(evil-ex-define-cmd "c" #'my-evil-copy)
+(evil-define-command my-evil-copy (beg end address)
+  "Copy lines in BEG END below line given by ADDRESS.
+Usage: -3,+4c. for copying the range to point"
+  :motion evil-line
+  (interactive "<r><addr>")
+  (goto-char (point-min))
+  (forward-line address)
+  (let* ((txt (buffer-substring-no-properties beg end))
+         (len (length txt)))
+    ;; ensure text consists of complete lines
+    (when (or (zerop len) (/= (aref txt (1- len)) ?\n))
+      (setq txt (concat txt "\n")))
+    (when (and (eobp) (not (bolp))) (newline)) ; incomplete last line
+    (forward-line -1)
+    (insert txt)
+    (forward-line -1)))
 ;; yas-snippets
 
 ;;; Code:
