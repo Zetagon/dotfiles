@@ -115,17 +115,27 @@ www.datavetenskap.nu
            (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
           ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
            (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
-          ("m" "Mötesprotokoll" entry (file+headline "~/Dropbox/org/orgzly/Projects.org" "Sekreterare")
-           "* NEXT Renskriva protokoll %t
+          ("m" "Mötesprotokoll" entry  (file+headline "~/Dropbox/org/orgzly/Projects.org" "Sekreterare")
+           "* Protokoll
+%t
+** NEXT Renskriva protokoll %t :@computer
 styrelseprotokoll%?
-* TODO Skriva ut protokoll"
+** WAITING Få godkänt av justerare %t :@computer:
+** WAITING Få godkänt av ordförande %t :@computer:
+** TODO Skriva ut protokoll  %t :@computer:
+** TODO Ladda upp protokoll på drive %t :@computer:
+  https://drive.google.com/drive/folders/1H_2oDyRqSyMhl_DubAwwcuCYxTRTPmvO"
            :jump-to-captured t
            )
           ("t" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %? ")
           ("f" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* TODO %?\n %a "
-           :created t)))
+           :created t)
+          ("x" "clipboard" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
+           "* %?
+%T
+%x")))
  
   ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
