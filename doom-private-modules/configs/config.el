@@ -225,8 +225,12 @@ My settings for context agenda views that are based on the tags keyword."
                     (:discard (:anything t))))
                  ))
           (agenda "")))
-        ("gc" "Computer" ,(my-gtd-context-tag-agenda-settings "+@computer/+NEXT|+TODO" "At the computer"))
-        ("gh" "Home" ,(my-gtd-context-tag-agenda-settings "+@home/+NEXT|+TODO" "At home"))
+        ("p" "List of projects" stuck "" ((org-agenda-overriding-header "List of all projects. Tag those that you want to focus on with 'foucs'")
+                                          (org-stuck-projects '("+LEVEL=2+project/-LATER-DONE-CANCELLED"
+                                                                ("")))))
+        ;; ("gc" "Computer" ,(my-gtd-context-tag-agenda-settings "+@computer/+NEXT|+TODO" "At the computer"))
+        ("gh" "Home" ,(my-gtd-context-tag-agenda-settings "+@computer|+@home/+NEXT|+TODO" "At home"))
+        ("gf" "Foobar" ,(my-gtd-context-tag-agenda-settings "+@computer|+@school|@foobar/+NEXT|+TODO" "In foobar"))
         ("gm" "Styerelsemöte" tags"+@meeting"
          ((org-agenda-overriding-header "Styrelsemöte")
           (org-super-agenda-groups nil)))
@@ -238,7 +242,8 @@ My settings for context agenda views that are based on the tags keyword."
 \t- Tag stuff that is worth thinking about with 'think'
 \t- Refile project tasks to their corresponding target
 \t- Tag stuff that should be scheduled later than a week forwards with 'weeklyschedule'
-\t- Tag stuff that needs to be review with 'weeklyreview'")
+\t- Tag stuff that needs to be review with 'weeklyreview'
+\t- Check inbox in drawer")
                        (org-super-agenda-groups nil)
                        (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("DONE" "CANCELLED")))
                        (org-agenda-files
@@ -264,6 +269,7 @@ My settings for context agenda views that are based on the tags keyword."
                                           :file-path "Todo.org")
                               :order 4)
                        (:discard (:anything t))))))
+          (agenda "")
           (stuck "")))
         ("w" "Weekly Review"
          ((todo "" ((org-agenda-files (cons "/home/leo/org/orgzly/Later.org" org-agenda-files))
@@ -284,7 +290,8 @@ My settings for context agenda views that are based on the tags keyword."
                                          :tag "weeklyreview")
                               :order 1)
                        (:name "Review Next tasks\n\tCan they be done this week?"
-                              :todo "NEXT"
+                              :and (:todo "NEXT"
+                                          :file-path "Todo.org")
                               :order 3)
                        (:name "Which tasks are Next?"
                               :and (:todo "TODO"
@@ -293,27 +300,36 @@ My settings for context agenda views that are based on the tags keyword."
                                           :not (:habit t))
                               :order 4)
                        (:discard (:tag "project"))))))
+          (stuck "" ((org-agenda-overriding-header "List of all projects. Tag those that you want to focus on with 'foucs'")
+                     (org-stuck-projects '("+LEVEL=2+project/-LATER-DONE-CANCELLED"
+                                           ("")))
+                     (org-super-agenda-groups
+                      '((:name "Focused"
+                               :tag "focus")
+                        (:name "Not Focused"
+                               :anything t)))))
           (todo "" ((org-agenda-files '("/home/leo/org/orgzly/Projects.org"))
-                      (org-agenda-overriding-header "Clock Out!")
-                      (org-super-agenda-groups
-                       '((:name ""
-                          :and (:heading-regexp "Weekly review"
-                                           :tag "weeklyreview"))
-                         (:discard (:anything t
-                                              :habit ))))))))))
+                    (org-agenda-overriding-header "Clock Out!")
+                    (org-super-agenda-groups
+                     '((:name ""
+                              :and (:heading-regexp "Weekly review"
+                                                    :tag "weeklyreview"))
+                       (:discard (:anything t
+                                            :habit ))))))))))
+
 
 (defun my-restrict-org-todo-list ()
   (interactive)
   (let ((temp-states my-project-next-task-states))
     (setq my-project-next-task-states '("NEXT" "TODO"))
     (let* ((marker (or (org-get-at-bol 'org-marker)
-                     (org-agenda-error)))
-         (buffer (marker-buffer marker))
-         (pos (marker-position marker)))
-    (with-current-buffer buffer
-      (goto-char pos)
-      (outline-up-heading 1 t)
-      (org-agenda-set-restriction-lock)))
+                       (org-agenda-error)))
+           (buffer (marker-buffer marker))
+           (pos (marker-position marker)))
+      (with-current-buffer buffer
+        (goto-char pos)
+        (outline-up-heading 1 t)
+        (org-agenda-set-restriction-lock)))
     ;; (org-todo-list)
     (setq my-project-next-task-states
           my-project-default-next-task-states)))
