@@ -26,9 +26,10 @@ Config { bgColor = "black"
                     , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat"] "bat0" 10
                     , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat1"] "bat1" 10
                     , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["offlineimap"] "offlineimapstatus" 10
-                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["dropbox"] "offlineimapstatus" 10
+                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["dropbox"] "dropbox" 10
+                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["emacs"] "emacs" 10
                     , Run StdinReader]
        , sepChar = "%"
        , alignSep =  "}{}"
-       , template = "%StdinReader% }{%offlineimapstatus% %mail% | %bat0% %bat1% %cpu%   |%memory% * %swap%  <fc=#ee9a00>%date%</fc>"
+       , template = "%StdinReader% }{%dropbox% %emacs% %offlineimapstatus% %mail% | %bat0% %bat1% %cpu%   |%memory% * %swap%  <fc=#ee9a00>%date%</fc>"
 }
