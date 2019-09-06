@@ -353,26 +353,61 @@ My settings for context agenda views that are based on the tags keyword."
 (setq org-log-into-drawer t)
 ;; Disable counsel-org-capture
 (global-set-key [remap org-capture] nil)
-(map! :after org
-      (:map org-super-agenda-header-map
-        :map org-super-agenda-header-map
-        "j" #'org-agenda-next-line
-        "k" #'org-agenda-previous-line
-        :map org-agenda-keymap
-        :map org-agenda-mode-map
-        "k" #'org-agenda-previous-line
-        "j" #'org-agenda-next-line
-        "<" #'my-restrict-org-todo-list
-        ">" #'org-agenda-remove-restriction-lock)
-      :map org-mode-map
-      :n "gr" #'leo/org-refile-hydra/body
-      :m "[]" #'outline-up-heading)
+
+(setq completion-styles '(initials basic partial-completion))
+(setq company-idle-delay 0.3)
+
 (after! yasnippet
   (add-hook 'post-self-insert-hook #'my-yas-try-expanding-auto-snippets)
   (defun my-yas-try-expanding-auto-snippets ()
     (when yas-minor-mode
       (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
         (yas-expand)))))
+(map!
+ (
+  :i "M-a" (λ! (insert "!"))
+  :i "M-s" (λ! (insert "@"))
+  :i "M-d" (λ! (insert "#"))
+  :i "M-f" (λ! (insert "$"))
+  :i "M-g" (λ! (insert "%"))
+  :i "M-h" (λ! (insert "^"))
+  :i "M-j" (λ! (insert "&"))
+  :i "M-k" (λ! (insert "*"))
+  :i "M-l" (λ! (insert "("))
+  :i "M-;" (λ! (insert "-"))
+  :i "M-'" (λ! (insert "="))
+  :i "M-:" (λ! (insert "_"))
+  :i "M-\"" (λ! (insert "+"))
+  (:map doom-leader-map
+    :leader
+    "gd" #'git-gutter:popup-diff
+    "ps" #'projectile-toggle-between-implementation-and-test)
+  :map yas-minor-mode-map
+  :i "SPC" '(menu-item "" yas-expand :filter
+                       (lambda (cmd)
+                         ;; (message "hej")
+                         ;; (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
+                         ;;   (yas-maybe-expand-abbrev-key-filter cmd))
+                         ))
+  :map company-mode-map
+  :i "M-/" #'company-complete
+  :i "M-?" #'counsel-company)
+ :after org
+ (:map org-super-agenda-header-map
+   :map org-super-agenda-header-map
+   "j" #'org-agenda-next-line
+   "k" #'org-agenda-previous-line
+   :map org-agenda-keymap
+   :map org-agenda-mode-map
+   "k" #'org-agenda-previous-line
+   "j" #'org-agenda-next-line
+   "<" #'my-restrict-org-todo-list
+   ">" #'org-agenda-remove-restriction-lock)
+ :map org-mode-map
+ :n "gr" #'leo/org-refile-hydra/body
+ :m "[]" #'outline-up-heading
+ :ni "<C-return>" #'org-insert-heading-after-current
+ :ni "<M-return>" #'org-insert-subheading)
 
 (map! :after magit
       :map magit-mode-map
