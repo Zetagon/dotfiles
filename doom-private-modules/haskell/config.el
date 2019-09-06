@@ -31,6 +31,16 @@
  :nv "rt" #'my-hspec-run-closest-test
  :nv "c" (λ! (compile compile-command)))
 
+(after! projectile
+  (setq projectile-project-types (assq-delete-all 'haskell-stack projectile-project-types))
+  (projectile-register-project-type 'haskell-stack '("stack.yaml")
+                                    :compile "stack build"
+                                    :run "stack run"
+                                    :test "stack test"
+                                    :src-dir "src"
+                                    :test-suffix "Spec"
+                                    :test-dir "test"))
+
 (defun my-hspec-run-closest-test ()
   (interactive)
 
