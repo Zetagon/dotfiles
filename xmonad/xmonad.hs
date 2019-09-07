@@ -62,6 +62,8 @@ myLog xmproc = dynamicLogWithPP xmobarPP
 -- * Keymaps
 myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-S-<Return>", spawn "xfce4-terminal")
+            , ("M4-<Return>", namedScratchpadAction scratchpads "quake")
+            , ("<F2>", namedScratchpadAction scratchpads "quake")
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchProjectContext)
@@ -87,14 +89,15 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
 -- * Scratchpads
 
 scratchpads =
--- run htop in xterm, find it by title, use default floating window placement
-    [ NS "htop" "xterm -e htop" (title =? "htop") defaultFloating
+-- run alot in xterm, find it by title, use default floating window placement
+    [ NS "alot" "xterm -e alot" (title =? "alot") defaultFloating
     , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
     , NS "capture" "org-capture" (title =? "org-capture")
       (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"c\")'"
           (title =? "org-agenda")
-          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
+          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
+    , NS "quake" "xfce4-terminal --title=quake-term" (title =? "quake-term") ( customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
 -- * Project list
 projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeEmacsProject "XMonadConfig" "~/.xmonad" "~/.xmonad/xmonad.hs ~/.xmobarrc "
