@@ -2,6 +2,7 @@
 -- * Imports
 {-# LANGUAGE DeriveDataTypeable #-}
 import XMonad
+import Codec.Binary.UTF8.String (encodeString)
 import System.Exit
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
@@ -30,7 +31,8 @@ import GHC.Exts (sortWith)
 import XMonad.Config.Kde
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Layout.NoBorders
-
+import XMonad.Util.NamedWindows (getName)
+import Data.List
 -- * Entry point
 main = do
   xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc" -- Start xmobar with config
@@ -57,23 +59,45 @@ myLayouts =  smartBorders $  avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1
 -- * Events
 myEvents = fullscreenEventHook <+> handleEventHook def <+> docksEventHook
 -- * Logging to xmobar
-myLog xmproc = -- dynamicLogWithPP def { ppCurrent = (\s -> if s == "Mail" then "MAIL" else xmobarColor "yellow" "" $ wrap "[" "]" s)
-               --                      -- , ppTitle   = xmobarColor "green"  "" . shorten 40
-               --                      , ppVisible = wrap "(" ")"
-               --                      , ppUrgent  = xmobarColor "red" "yellow"
-               --                      , ppOutput = hPutStrLn xmproc
-               --                      , ppTitle = xmobarColor "green" "" . shorten 50}
+myLog xmproc =
   do
-    activeProjects <- XS.get
-    current_project <- currentProject
-    io $ hPutStrLn xmproc $ (concat $ intersperse " " $ let lst = map (\name -> if name == projectName current_project
+    io . hPutStrLn xmproc =<< dynamicLogStringContext def
+
+      where
+        sepBy sep = concat . intersperse sep . filter (not . null)
+
+        -- TODO Respect configurations by PP
+        -- Like dynamicLogString but for project contexts
+        dynamicLogStringContext :: PP -> X String
+        dynamicLogStringContext pp = do
+
+        activeProjects <- XS.get -- get a list of projects in this context
+        current_project <- currentProject -- get the project that is currently focused
+    
+        winset <- gets windowset
+
+        -- layout description
+        let ld = description . W.layout . W.workspace . W.current $ winset
+
+        -- workspace list
+        let ws = (concat $ intersperse " " $ let lst = map (\name -> if name == projectName current_project
                                                                                 then xmobarColor "#bd58f4" "#3d383f" name
                                                                                 else name)$ map projectName (aprojects activeProjects)
-                                                            h = head lst
-                                                            t = tail lst
-                                                        in t ++ [h])
-        ++ "      " ++ xmobarColor "yellow" "black"  (projectName current_project)
+                                                 h = head lst
+                                                 t = tail lst
+                                             in t ++ [h])
 
+        -- window title
+        wt <- maybe (return "") (fmap show . getName) . W.peek $ winset
+
+        -- run extra loggers, ignoring any that generate errors.
+        extras <- mapM (flip catchX (return Nothing)) $ ppExtras pp
+
+        return $ encodeString . sepBy (ppSep pp) . ppOrder pp $
+                                [ ws
+                                , ppLayout pp ld
+                                , ppTitle  pp $ ppTitleSanitize pp wt
+                                ]
 
 -- * Keymaps
 myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
