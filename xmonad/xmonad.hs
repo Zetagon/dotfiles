@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- * Imports
 {-# LANGUAGE DeriveDataTypeable #-}
 import XMonad
@@ -5,7 +6,7 @@ import System.Exit
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Util.Run(spawnPipe)
+import XMonad.Util.Run(spawnPipe, safeSpawn, hPutStr)
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
 import XMonad.Util.SpawnOnce
 import XMonad.Actions.DynamicProjects
@@ -56,26 +57,46 @@ myLayouts =  smartBorders $  avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1
 -- * Events
 myEvents = fullscreenEventHook <+> handleEventHook def <+> docksEventHook
 -- * Logging to xmobar
-myLog xmproc = dynamicLogWithPP xmobarPP
-        { ppOutput = hPutStrLn xmproc
-        , ppTitle = xmobarColor "green" "" . shorten 50}
+myLog xmproc = -- dynamicLogWithPP def { ppCurrent = (\s -> if s == "Mail" then "MAIL" else xmobarColor "yellow" "" $ wrap "[" "]" s)
+               --                      -- , ppTitle   = xmobarColor "green"  "" . shorten 40
+               --                      , ppVisible = wrap "(" ")"
+               --                      , ppUrgent  = xmobarColor "red" "yellow"
+               --                      , ppOutput = hPutStrLn xmproc
+               --                      , ppTitle = xmobarColor "green" "" . shorten 50}
+  do
+    activeProjects <- XS.get
+    current_project <- currentProject
+    io $ hPutStrLn xmproc $ (concat $ intersperse " " $ let lst = map (\name -> if name == projectName current_project
+                                                                                then xmobarColor "#bd58f4" "#3d383f" name
+                                                                                else name)$ map projectName (aprojects activeProjects)
+                                                            h = head lst
+                                                            t = tail lst
+                                                        in t ++ [h])
+        ++ "      " ++ xmobarColor "yellow" "black"  (projectName current_project)
+
+
 -- * Keymaps
 myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-S-<Return>", spawn "xfce4-terminal")
             , ("M4-<Return>", namedScratchpadAction scratchpads "quake")
             , ("<F2>", namedScratchpadAction scratchpads "quake")
             , ("M4-C-/", shiftToProjectPrompt def)
-            , ("M4-d", XS.put $ AProjects defaultProjectList)
+            , ("M4-d", XS.put $ AProjects defaultProjectList 0)
             , ("M4-s", switchProjectContext)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
             , ("M4-m", do
+                 -- whenJust <$> (screenWorkspace 0) <*> pure (windows . W.view)
+                 --sw <- screenWorkspace 1
+                 --tag <- withWindowSet (return . W.currentTag)
+                 --whenJust sw (windows . W.view)
                  original <- withWindowSet (return . W.currentTag)
                  ws0 <- screenWorkspace 0
                  whenJust ws0 (windows . W.view)
                  ws1 <- screenWorkspace 1
                  whenJust ws1 (windows . W.greedyView)
                  windows $ W.view original
+                 --windows $ W.greedyView tag
                  return ()
                 
               )
@@ -117,6 +138,10 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
 
            , makeEmacsProject "SchoolEmacs" "~/Documents/dvkand" "~/Documents/dvkand/"
            , makeSimpleProject "SchoolBrowser" ["firefox --new-window"]
+
+           , makeEmacsProject "ProgrammingEmacs" "~/Documents/" ""
+           , makeSimpleProject "ProgrammingBrowser" ["firefox --new-window"]
+           , makeSimpleProject "ProgrammingTerminal" ["xfce4-terminal"]
 
            , makeEmacsProject "SekreterareEmacs" "~/Documents/styrelsemöten" "~/Documents/styrelsemöten/"
            , makeSimpleProject "SekreterareSlack" ["firefox --new-window https://styrelsedv.slack.com/"]
@@ -212,26 +237,32 @@ dmenuSwitchProjectPrompt = do
 -- TODO Make a better name for this
 -- Assign Projects to keybindings dynamically
 
-data ActiveProjects = AProjects [Project] deriving Typeable
+data ActiveProjects = AProjects {
+    aprojects :: ![Project]
+  , projectIndex :: !Int
+  } deriving Typeable
 instance ExtensionClass ActiveProjects where
-    initialValue = AProjects $ defaultProjectList
+    initialValue = AProjects defaultProjectList 0
 
 
 
 goToProjectNr n = do
-  AProjects projects <- XS.get
+  projects <- XS.get
   -- W.view $ projectName projects !! n
-  windows (\windowset -> W.view (projectName $ projects !! n) windowset)
+  XS.put $ projects { projectIndex = n }
+  windows (\windowset -> W.view (projectName $ (aprojects projects) !! n) windowset)
 
 shiftToProjectNr n = do
-  AProjects projects <- XS.get
+  projects' <- XS.get
+  let projects = aprojects projects'
   shiftToProject $ projects !! n
 
 switchActiveProjectNr n = do
     switchProjectPrompt def
     project <- currentProject
-    AProjects activeProjects <- XS.get :: X ActiveProjects
-    XS.put $ AProjects $ switch n project activeProjects
+    projects' <- XS.get :: X ActiveProjects
+    let activeProjects = aprojects projects'
+    XS.put $ AProjects (switch n project activeProjects) n
 
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
@@ -269,7 +300,7 @@ switchProjectContext = do
           [] -> return ()
           sprojects -> do
                  let chosenProject = head sprojects
-                 XS.put $ AProjects $ snd chosenProject
+                 XS.put $ AProjects ( snd chosenProject) 0
 
 -- mkProjectList [(i, Name)]
 -- Make a list of length 10. Each Name is placed at index i in the resulting list.
