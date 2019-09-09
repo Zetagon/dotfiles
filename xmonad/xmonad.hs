@@ -59,9 +59,9 @@ myLayouts =  smartBorders $  avoidStruts $  (Tall 1 0.03 0.80) ||| ThreeColMid 1
 -- * Events
 myEvents = fullscreenEventHook <+> handleEventHook def <+> docksEventHook
 -- * Logging to xmobar
-myLog xmproc =
+myLog xmproc = 
   do
-    io . hPutStrLn xmproc =<< dynamicLogStringContext def
+    io . hPutStrLn xmproc =<< dynamicLogStringContext xmobarPP
 
       where
         sepBy sep = concat . intersperse sep . filter (not . null)
@@ -80,15 +80,21 @@ myLog xmproc =
         let ld = description . W.layout . W.workspace . W.current $ winset
 
         -- workspace list
-        let ws = (concat $ intersperse " " $ let lst = map (\name -> if name == projectName current_project
-                                                                                then xmobarColor "#bd58f4" "#3d383f" name
-                                                                                else name)$ map projectName (aprojects activeProjects)
+        let ws = (concat $ intersperse " " $ let lst = map (\(highlightedName, normalName, textName) -> if textName == projectName current_project
+                                                                                                        then highlightedName
+                                                                                                        else normalName) $
+                                                   map (\name -> if  "Browser" `isInfixOf` name
+                                                                     then ( "<icon=/home/leo/.xmonad/.xmobar/Firefox_Logo.xpm/>", "<icon=/home/leo/.xmonad/.xmobar/Firefox_Logo-highlighted.xpm/>", name)
+                                                                     else if "Emacs" `isInfixOf` name
+                                                                          then ( "<icon=/home/leo/.xmonad/.xmobar/EmacsIcon.xpm/>", "<icon=/home/leo/.xmonad/.xmobar/EmacsIcon-highlighted.xpm/>", name)
+                                                                          else (xmobarColor "#bd58f4" "#3d383f" name, name, name)) $
+                                                   map projectName (aprojects activeProjects)
                                                  h = head lst
                                                  t = tail lst
                                              in t ++ [h])
 
         -- window title
-        wt <- maybe (return "") (fmap show . getName) . W.peek $ winset
+        wt <- (maybe (return "") (fmap show . getName) . W.peek $ winset)
 
         -- run extra loggers, ignoring any that generate errors.
         extras <- mapM (flip catchX (return Nothing)) $ ppExtras pp
