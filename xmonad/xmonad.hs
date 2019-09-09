@@ -202,6 +202,7 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
 -- * Project Context List
 defaultProjectContextList = [ ("default" , defaultProjectList)
                           , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
+                          , ("programming", mkProjectList [(1, "ProgrammingEmacs"), (2, "ProgrammingBrowser"), (3, "ProgrammingTerminal")])
                           , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
                                                      , (2, "XMonad Browser")
