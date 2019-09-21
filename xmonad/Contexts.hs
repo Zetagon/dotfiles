@@ -1,15 +1,23 @@
 -- |
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-module Contexts where
+module XMonad.Actions.Contexts where
 import qualified Data.Map.Strict as M
 import qualified XMonad.Actions.DynamicProjects as P
 import Data.Dynamic
-import XMonad
-import Control.Lens hiding (Context, contexts)
+import XMonad hiding (state)
 import qualified XMonad.Util.ExtensibleState as XS
 import qualified XMonad.StackSet as W
+import System.IO
+import System.Process
+import XMonad.Util.Stack(getI)
+
+
+initializeDynamicProjects :: [Project] -> XConfig a -> XConfig a
+initializeDynamicProjects projects =
+  P.dynamicProjects ( map _pProject projects )
 
 data Project = Project
   {
@@ -17,10 +25,10 @@ data Project = Project
   , _icon :: Maybe String
   , _iconHighlighted :: Maybe String
   }
-makeLenses ''Project
 
 projectName :: Project -> String
 projectName p = P.projectName $ _pProject p
+
 
 data Context = Context
   {
@@ -29,61 +37,79 @@ data Context = Context
   , _contextName :: String
   , _contextIcon :: Maybe String
   }
-makeLenses ''Context
+
 
 data ContextState = ContextState
   {
     _contexts :: M.Map String Context
-  , _currentContext_ :: Context
+  , _currentContext :: String
   } deriving Typeable
-makeLenses ''ContextState
 
-currentContext :: Lens' ContextState Context
-currentContext = lens getter setter
-  where
-    getter state = state^.currentContext_
-    setter state context = state
-      {
-        _contexts = M.adjust (\_ -> state ^. currentContext)
-                    (_contextName (state ^. currentContext))
-                    $ _contexts state
-      , _currentContext_ = context
-      }
--- currentContext = lens getter setter
---   where
---     getter state = state^?contexts.at (case (state ^? currentContextName) of
---                                         Just x -> x
---                                         Nothing -> "")
---     setter = undefined
+currentContext :: ContextState -> Maybe Context
+currentContext state = M.lookup (_currentContext state) (_contexts state)
 
--- currentContext =  prism' up down
---   where
---     up = undefined
---     down = undefined
+mapCurrentContext :: ContextState -> (Context -> Context) -> ContextState
+mapCurrentContext state f =
+     state
+     {
+       _contexts = M.adjust f (_currentContext state)$ _contexts state
+     }
 
-instance ExtensionClass ContextState where
-  initialValue = undefined
+getProjectNr :: ContextState -> Int -> Maybe Project
+getProjectNr state n =
+  do
+    context <- currentContext state
+    getI n (_allProjects context)
 
-goToProjectNr :: Int -> X ()
-goToProjectNr n = do
-  state <- XS.get
-  case (state^?(currentContext.allProjects.(ix n))) of
-    Just newProject -> do
-      XS.put (set (currentContext.activeProject)
-              newProject
-              (state :: ContextState))
-      XS.put state
-      let project_name = (projectName $ state^.currentContext.activeProject)
-      windows (\windowset -> W.view project_name
-                windowset)
-    Nothing -> return()
+setProject :: ContextState -> Int -> ContextState
+setProject state index =
+  mapCurrentContext state $
+  \context -> case getI index (_allProjects context) of
+    Just project -> context { _activeProject = project }
+    Nothing -> context
 
-moveWindowToProjectNr :: Int -> X ()
-moveWindowToProjectNr n = do
-  state <- XS.get
-  case state ^? currentContext . allProjects . ix n . pProject of
-    Just targetProject -> P.shiftToProject targetProject
-    Nothing -> return ()
+instance ExtensionClass (Maybe ContextState) where
+  initialValue = Nothing
 
-switchContextString :: String -> X ()
-switchContextString name = undefined
+-- goToProjectNr :: Int -> X ()
+-- goToProjectNr n = do
+--   Just state <- XS.get
+--   case (state^?(currentContext.allProjects.(ix n))) of
+--     Just newProject -> do
+--       XS.put $ Just $ (set (currentContext.activeProject)
+--                      newProject
+--                      (state :: ContextState))
+--       XS.put $ Just state
+--       let project_name = (projectName $ state^.currentContext.activeProject)
+--       windows (\windowset -> W.view project_name
+--                 windowset)
+--     Nothing -> return()
+
+-- moveWindowToProjectNr :: Int -> X ()
+-- moveWindowToProjectNr n = do
+--   Just state <- XS.get
+--   case state ^? currentContext . allProjects . ix n . pProject of
+--     Just targetProject -> P.shiftToProject targetProject
+--     Nothing -> return ()
+
+-- switchContextString :: String -> X ()
+-- switchContextString name =
+--   do
+--     Just state <- XS.get
+--     case (state ^. contexts . at name) of
+--       Just newContext -> XS.put $ Just $ state & currentContext .~ newContext
+--       Nothing -> return ()
+
+-- switchContextDmenu :: X ()
+-- switchContextDmenu =
+--   do
+--     Just state <- XS.get
+--     contextName <- dmenu $ state ^. contexts . (to M.keys)
+--     switchContextString contextName
+
+
+-- dmenu :: [String] -> X (String)
+-- dmenu xs = io $
+--     do
+--       (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
+--       hGetLine hout
