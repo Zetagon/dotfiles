@@ -122,7 +122,7 @@ www.datavetenskap.nu
           ("m" "Mötesprotokoll" entry  (file+headline "~/Dropbox/org/orgzly/Projects.org" "Sekreterare")
            "* Protokoll
 %t
-** NEXT Renskriva protokoll %t :@computer
+** NEXT Renskriva protokoll %t :@computer:
 styrelseprotokoll%?
 ** WAITING Få godkänt av justerare %t :@computer:
 ** WAITING Få godkänt av ordförande %t :@computer:
@@ -212,10 +212,12 @@ styrelseprotokoll%?
 (defun my-gtd-context-tag-agenda-settings (search-string desc)
   "Search for SEARCH-STRING with description DESC.
 My settings for context agenda views that are based on the tags keyword."
-  `((tags ,search-string
-         ((org-agenda-overriding-header ,desc)
-          (org-super-agenda-groups (my-gtd-context-agenda-group))))
-   (stuck "" ((org-super-agenda-groups nil)))))
+  `((agenda "" ((org-agenda-span 1)))
+    (tags ,search-string
+          ((org-agenda-overriding-header ,desc)
+           (org-super-agenda-groups (my-gtd-context-agenda-group))))
+    ;; (stuck "" ((org-super-agenda-groups nil)))
+    ))
 
 
 (setq org-agenda-custom-commands
@@ -235,7 +237,7 @@ My settings for context agenda views that are based on the tags keyword."
         ;; ("gc" "Computer" ,(my-gtd-context-tag-agenda-settings "+@computer/+NEXT|+TODO" "At the computer"))
         ("gh" "Home" ,(my-gtd-context-tag-agenda-settings "+@computer|+@home/+NEXT|+TODO" "At home"))
         ("gf" "Foobar" ,(my-gtd-context-tag-agenda-settings "+@computer|+@school|@foobar/+NEXT|+TODO" "In foobar"))
-        ("gm" "Styerelsemöte" tags"+@meeting"
+        ("gm" "Styerelsemöte" tags"+@meeting/+NEXT|TODO"
          ((org-agenda-overriding-header "Styrelsemöte")
           (org-super-agenda-groups nil)))
         ("d" "Daily review"
