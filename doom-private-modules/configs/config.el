@@ -173,6 +173,14 @@ styrelseprotokoll%?
           (:name "Deadlines"
                  :deadline future
                  :face (:background  "black":foreground"red")
+                 :order -1)
+          (:name "Past Deadlines"
+                 :deadline past
+                 :face (:background  "gray":foreground"red")
+                 :order -1)
+          (:name "Deadline Today"
+                 :deadline today
+                 :face (:background  "#302a2d":foreground"red")
                  :order -1)))
   (org-super-agenda-mode)
   ;; Export all agenda fils to ical files in the directory ~/Dropbox/org/.export/
@@ -212,11 +220,14 @@ styrelseprotokoll%?
 (defun my-gtd-context-tag-agenda-settings (search-string desc)
   "Search for SEARCH-STRING with description DESC.
 My settings for context agenda views that are based on the tags keyword."
-  `((agenda "" ((org-agenda-span 1)))
+  `((agenda "" ((org-agenda-span 1)
+               (org-agenda-dim-blocked-tasks nil) ))
     (tags ,search-string
-          ((org-agenda-overriding-header ,desc)
+          ((org-agenda-dim-blocked-tasks 'invisible)
+           (org-agenda-overriding-header ,desc)
            (org-super-agenda-groups (my-gtd-context-agenda-group))))
     ;; (stuck "" ((org-super-agenda-groups nil)))
+
     ))
 
 
@@ -275,8 +286,11 @@ My settings for context agenda views that are based on the tags keyword."
                                           :file-path "Todo.org")
                               :order 4)
                        (:discard (:anything t))))))
-          (agenda "")
-          (stuck "")))
+          (stuck "" ((org-super-agenda-groups
+                      '((:name "Focused"
+                               :tag "focus")
+                        (:name "Not Focused"
+                               :anything t)))))))
         ("w" "Weekly Review"
          ((todo "" ((org-agenda-files (cons "/home/leo/org/orgzly/Later.org" org-agenda-files))
                     (org-super-agenda-groups
