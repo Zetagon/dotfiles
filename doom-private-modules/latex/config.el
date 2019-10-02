@@ -29,9 +29,11 @@
       :n "m" #'TeX-insert-macro
       :n "b" #'latex/build
       :n "s" #'LaTeX-section
-      :n "rs" #'sync-external-bib-file
-      :n "rh" #'helm-bibtex
-      (:desc "fonts" :prefix "x"
+      (:prefix-map ("r" . "References")
+        :n "s" #'sync-external-bib-file
+        :n "h" #'helm-bibtex
+        :n "c" #'reftex-cleveref-cref)
+      (:prefix-map ("x" . "fonts")
           :desc "bold" :vn "b"  #'latex/font-bold
           :desc "code" :vn "c"  #'latex/font-code
           :desc "emph" :vn "e"  #'latex/font-emphasis
