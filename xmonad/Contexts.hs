@@ -48,6 +48,15 @@ data ContextState = ContextState
 currentContext :: ContextState -> Maybe Context
 currentContext state = M.lookup (_currentContext state) (_contexts state)
 
+currentContextU :: ContextState -> Context
+currentContextU state =
+  case currentContext state of
+    Just x -> x
+
+setCurrentContext :: ContextState -> String -> ContextState
+setCurrentContext  state str =
+  state { _currentContext = str }
+
 mapCurrentContext :: ContextState -> (Context -> Context) -> ContextState
 mapCurrentContext state f =
      state
@@ -67,6 +76,42 @@ setProject state index =
   \context -> case getI index (_allProjects context) of
     Just project -> context { _activeProject = project }
     Nothing -> context
+
+getCurrentProjectName :: ContextState -> String
+getCurrentProjectName state =
+  P.projectName $ getCurrentDynamicProject state
+
+getCurrentDynamicProject :: ContextState -> P.Project
+getCurrentDynamicProject state =
+  _pProject $ _activeProject $ case currentContext state of
+                                 Nothing -> undefined
+                                 Just x -> x
+goToProjectNr :: Int -> X ()
+goToProjectNr n =
+  do
+    Just state <- XS.get
+    XS.put $ Just $ setProject state n
+    windows (\wset ->
+               W.view (getCurrentProjectName state) wset)
+
+
+
+shiftToProjectNr :: Int -> X()
+shiftToProjectNr n = do
+    Just state <- XS.get
+    P.shiftToProject $ _pProject $ case getProjectNr state n of
+                                     Just x -> x
+
+switchContext :: X ()
+switchContext =
+  do
+    Just state <- XS.get
+    let contexts = M.keys $ _contexts state
+    chosenContext <- dmenu $ (contexts)
+    let state = setCurrentContext state chosenContext
+    XS.put $ Just $ state
+    P.switchProject (getCurrentDynamicProject state)
+
 
 instance ExtensionClass (Maybe ContextState) where
   initialValue = Nothing
@@ -108,8 +153,8 @@ instance ExtensionClass (Maybe ContextState) where
 --     switchContextString contextName
 
 
--- dmenu :: [String] -> X (String)
--- dmenu xs = io $
---     do
---       (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
---       hGetLine hout
+dmenu :: [String] -> X (String)
+dmenu xs = io $
+    do
+      (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
+      hGetLine hout
