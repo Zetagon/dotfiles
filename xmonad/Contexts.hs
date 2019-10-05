@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module XMonad.Actions.Contexts where
+import Codec.Binary.UTF8.String (encodeString)
 import qualified Data.Map.Strict as M
 import qualified XMonad.Actions.DynamicProjects as P
 import Data.Dynamic
@@ -13,14 +14,71 @@ import qualified XMonad.StackSet as W
 import System.IO
 import System.Process
 import XMonad.Util.Stack(getI)
+import XMonad.Hooks.DynamicLog
+import System.IO
+import System.Process
+import XMonad.Util.Run(spawnPipe, safeSpawn, hPutStr)
+import Data.List (intersperse, isInfixOf)
+import XMonad.Util.NamedWindows (getName)
 
 
-initializeDynamicProjects :: [Project] -> XConfig a -> XConfig a
-initializeDynamicProjects projects =
-  P.dynamicProjects ( map _pProject projects )
+initializeDynamicProjects :: [Context] -> Handle -> XConfig a -> XConfig a
+initializeDynamicProjects contexts xmproc c =
   P.dynamicProjects ( map _pProject $ concat $ map _allProjects contexts ) c
   { startupHook = contextStartupHook contexts <> startupHook c
+  , logHook = contextLogHook xmproc <> logHook c
   }
+
+contextLogHook :: Handle -> X()
+contextLogHook xmproc =
+  do
+    io . hPutStrLn xmproc =<< dynamicLogStringContext xmobarPP
+
+      where
+        sepBy sep = concat . intersperse sep . filter (not . null)
+
+        -- TODO Respect configurations by PP
+        -- Like dynamicLogString but for project contexts
+        dynamicLogStringContext :: PP -> X String
+        dynamicLogStringContext pp = do
+
+          state' <- XS.get -- get a list of projects in this context
+          let context' = case state' of
+                Nothing -> Nothing
+                Just state -> currentContext state
+          case context' of
+            Nothing -> return ""
+            Just context ->
+              do
+                current_project_name <- getCurrentProjectNameX -- get the project that is currently focused
+
+                winset <- gets windowset
+
+                -- layout description
+                let ld = description . W.layout . W.workspace . W.current $ winset
+
+                -- workspace list
+                let ws =
+                      concat $
+                      intersperse " " $
+                      map (\name -> if current_project_name == name
+                                    then xmobarColor "#bd58f4" "#3d383f" name
+                                    else name) $
+                      map ( P.projectName . _pProject)
+                      $ _allProjects context
+                  in
+                  do
+                    -- window title
+                    wt <- (maybe (return "") (fmap show . getName) . W.peek $ winset)
+
+                    -- run extra loggers, ignoring any that generate errors.
+                    extras <- mapM (flip catchX (return Nothing)) $ ppExtras pp
+
+                    return $ encodeString . sepBy (ppSep pp) . ppOrder pp $
+                      [ ws
+                      , ppLayout pp ld
+                      , ppTitle  pp $ ppTitleSanitize pp wt
+                      ]
 contextStartupHook :: [Context] -> X()
 contextStartupHook contexts =
   do
@@ -115,9 +173,11 @@ goToProjectNr :: Int -> X ()
 goToProjectNr n =
   do
     Just state <- XS.get
-    XS.put $ Just $ setProject state n
-    windows (\wset ->
-               W.view (getCurrentProjectName state) wset)
+    let newState = setProject state n
+    XS.put $ Just $ newState
+    P.switchProject (getCurrentDynamicProject newState)
+--    windows (\wset ->
+ --              W.view (getCurrentProjectName newState) wset)
 
 
 
@@ -133,9 +193,9 @@ switchContext =
     Just state <- XS.get
     let contexts = M.keys $ _contexts state
     chosenContext <- dmenu $ (contexts)
-    let state = setCurrentContext state chosenContext
-    XS.put $ Just state
-    P.switchProject (getCurrentDynamicProject state)
+    let chosen_state = setCurrentContext state chosenContext
+    XS.put $ Just chosen_state
+    P.switchProject (getCurrentDynamicProject chosen_state)
 
 
 instance ExtensionClass (Maybe ContextState) where
