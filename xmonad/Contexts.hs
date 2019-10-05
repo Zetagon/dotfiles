@@ -18,6 +18,16 @@ import XMonad.Util.Stack(getI)
 initializeDynamicProjects :: [Project] -> XConfig a -> XConfig a
 initializeDynamicProjects projects =
   P.dynamicProjects ( map _pProject projects )
+  P.dynamicProjects ( map _pProject $ concat $ map _allProjects contexts ) c
+  { startupHook = contextStartupHook contexts <> startupHook c
+  }
+contextStartupHook :: [Context] -> X()
+contextStartupHook contexts =
+  do
+    XS.put $ Just $
+      ContextState { _currentContext = _contextName $ head contexts
+                   , _contexts = M.fromList $ zip (map _contextName contexts) contexts
+                   }
 
 data Project = Project
   {
@@ -38,6 +48,13 @@ data Context = Context
   , _contextIcon :: Maybe String
   }
 
+mkContext :: String -> [Project] -> Context
+mkContext name projects =
+  Context { _allProjects = projects
+          , _activeProject = head projects
+          , _contextName = name
+          , _contextIcon = Nothing
+          }
 
 data ContextState = ContextState
   {
@@ -81,6 +98,14 @@ getCurrentProjectName :: ContextState -> String
 getCurrentProjectName state =
   P.projectName $ getCurrentDynamicProject state
 
+getCurrentProjectNameX :: X (String)
+getCurrentProjectNameX = do
+  state' <- XS.get
+  case state' of
+    Just state -> return $ getCurrentProjectName state
+    Nothing -> return ""
+
+
 getCurrentDynamicProject :: ContextState -> P.Project
 getCurrentDynamicProject state =
   _pProject $ _activeProject $ case currentContext state of
@@ -109,7 +134,7 @@ switchContext =
     let contexts = M.keys $ _contexts state
     chosenContext <- dmenu $ (contexts)
     let state = setCurrentContext state chosenContext
-    XS.put $ Just $ state
+    XS.put $ Just state
     P.switchProject (getCurrentDynamicProject state)
 
 

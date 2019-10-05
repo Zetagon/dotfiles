@@ -10,7 +10,9 @@
              (auto-fill-mode 1)
              (setq TeX-command-default "latex Make")
              (setq-default TeX-master nil)
-             (setq helm-bibtex-bibliography  "~/Dropbox/org/references/Zotero_articles.bib"))))
+             (setq helm-bibtex-bibliography  "~/Dropbox/org/references/Zotero_articles.bib")))
+  (setq reftex-ref-style-default-list
+        '( "Cleveref")))
 ;; TODO add fill paragraph
 ;;
 
