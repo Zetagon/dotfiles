@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- * Imports
 {-# LANGUAGE DeriveDataTypeable #-}
+import XMonad.Actions.Contexts
 import XMonad
 import Codec.Binary.UTF8.String (encodeString)
 import System.Exit
@@ -10,7 +11,7 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Util.Run(spawnPipe, safeSpawn, hPutStr)
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP, removeKeysP)
 import XMonad.Util.SpawnOnce
-import XMonad.Actions.DynamicProjects
+import qualified XMonad.Actions.DynamicProjects as P
 import XMonad.Prompt (mkXPrompt, mkComplFunFromList, XPrompt, showXPrompt)
 import XMonad.Prompt.Input
 import qualified XMonad.Util.ExtensibleState as XS
@@ -36,13 +37,13 @@ import Data.List
 -- * Entry point
 main = do
   xmproc <- spawnPipe "/usr/bin/xmobar /home/leo/.xmobarrc" -- Start xmobar with config
-  xmonad $ dynamicProjects projects -- Launch dynamic projects
+  xmonad $ initializeDynamicProjects defaultContextList xmproc -- Launch dynamic projects
          $ kdeConfig
              { manageHook = manageHook kdeConfig <+> myManageHook
              , startupHook = myStartupHook
              , layoutHook = myLayouts
              , handleEventHook = myEvents
-             , logHook = myLog xmproc
+             -- , logHook = myLog xmproc
              , modMask = mod4Mask}
                `additionalKeysP`
                myKeymap
@@ -72,7 +73,7 @@ myLog xmproc =
         dynamicLogStringContext pp = do
 
         activeProjects <- XS.get -- get a list of projects in this context
-        current_project <- currentProject -- get the project that is currently focused
+        current_project_name <- getCurrentProjectNameX -- get the project that is currently focused
     
         winset <- gets windowset
 
@@ -106,13 +107,11 @@ myLog xmproc =
                                 ]
 
 -- * Keymaps
-myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
-            , ("M4-S-<Return>", spawn "xfce4-terminal")
+myKeymap = ([ ("M4-S-<Return>", spawn "xfce4-terminal")
             , ("M4-<Return>", namedScratchpadAction scratchpads "quake")
             , ("<F2>", namedScratchpadAction scratchpads "quake")
-            , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList 0)
-            , ("M4-s", switchProjectContext)
+            , ("M4-s", switchContext)
             , ("M4-x", spawn "for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done") --bring xmobar to front
             , ("M4-f", spawn "~/dotfiles/keyboard.sh")
             , ("M4-m", do
@@ -135,8 +134,8 @@ myKeymap = ([ ("M4-/", dmenuSwitchProjectPrompt)
             , ("M4-S-q", io (exitWith ExitSuccess))
             , ("<F11>", toggleFloat)
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
-               ++ map (\x -> ("M4-S-" ++ show x, shiftToProjectNr x)) [0..9] -- Move window to project nr x
-               ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
+               ++ map (\x -> ("M4-S-" ++ show x, shiftToProjectNr x)) ([1..9] ++ [0])  -- Move window to project nr x
+               ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) ([1..9] ++ [0])) -- Assign a project to position x
 -- * Scratchpads
 
 scratchpads =
@@ -145,7 +144,7 @@ scratchpads =
     , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
     , NS "capture" "org-capture" (title =? "org-capture")
       (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
-    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"c\")'"
+    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"gf\")'"
           (title =? "org-agenda")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     , NS "quake" "xfce4-terminal --title=quake-term" (title =? "quake-term") ( customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
@@ -200,26 +199,32 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
                                    , (9, "Messaging")
                                    , (0, "Mpsyt")]
 -- * Project Context List
-defaultProjectContextList = [ ("default" , defaultProjectList)
-                          , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
-                          , ("programming", mkProjectList [(1, "ProgrammingEmacs"), (2, "ProgrammingBrowser"), (3, "ProgrammingTerminal")])
-                          , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
-                          , ("xmonad", mkProjectList [ (1, "XMonadConfig")
-                                                     , (2, "XMonad Browser")
-                                                     , (8, "Keepass")
-                                                     , (0, "Mpsyt")])
-                          , ("browser", mkProjectList [(2, "Browser")])
-                          , ("school", mkProjectList [ (1, "SchoolEmacs")
-                                                     , (2, "SchoolBrowser")
-                                                     , (5, "Mail")
-                                                     , (8, "Keepass")])
-                          , ("sekreterare", mkProjectList [ (1, "SekreterareEmacs")
-                                                          , (2, "SekreterareBrowser")
-                                                          , (8, "Keepass")
-                                                          , (5, "Mail")
-                                                          , (9, "SekreterareSlack")])
-                          , ("numbered", mkProjectList $ map (\n -> (n, show n)) [0..9])
-                          ]
+
+defaultContextList :: [Context]
+defaultContextList =
+  [ mkContext "default"  defaultProjectList
+  , mkContext "watch" $ mkProjectList [(1, "Watch"), (8, "Keepass")]
+  , mkContext "programming" $ mkProjectList [(1, "ProgrammingEmacs"), (2, "ProgrammingBrowser"), (3, "ProgrammingTerminal")]
+  , mkContext "spirited away" $ mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")]
+  , mkContext "xmonad" $ mkProjectList
+    [ (1, "XMonadConfig")
+    , (2, "XMonad Browser")
+    , (8, "Keepass")
+    , (0, "Mpsyt")]
+  , mkContext "browser" $ mkProjectList [(2, "Browser")]
+  , mkContext "school" $ mkProjectList
+    [ (1, "SchoolEmacs")
+    , (2, "SchoolBrowser")
+    , (5, "Mail")
+    , (8, "Keepass")]
+  , mkContext "sekreterare" $ mkProjectList
+    [ (1, "SekreterareEmacs")
+    , (2, "SekreterareBrowser")
+    , (8, "Keepass")
+    , (5, "Mail")
+    , (9, "SekreterareSlack")]
+  , mkContext "numbered" $ mkProjectList $ map (\n -> (n, show n)) [0..9]
+  ]
 -- * Code
 -- ** Misc
 
@@ -235,34 +240,44 @@ toggleFloat = do
                     Nothing -> windowset)
   withFocused (\w -> withDisplay (\d -> io $ raiseWindow d w))
 
+
 -- ** Dynamic Project utility functions
+makeEmacsProject :: String -> String -> String -> Project
 makeEmacsProject name path files =
-    Project
-      { projectName = name
-      , projectDirectory = path
-      , projectStartHook = Just $ do
-                             spawn $ "emacsclient -c " ++ files
-                             spawn "xfce4-terminal"
-      }
+  Project {
+    _iconHighlighted = Nothing
+  , _icon = Nothing
+  , _pProject = P.Project
+                { P.projectName = name
+                , P.projectDirectory = path
+                , P.projectStartHook = Just $ do
+                    spawn $ "emacsclient -c " ++ files
+                    spawn "xfce4-terminal"
+                }
+  }
 
 makeSimpleProject name programs =
-    Project { projectName = name
-            , projectDirectory = "~/"
-            , projectStartHook = Just $
-                                   mapM_ spawn programs
-            }
+  Project {
+    _iconHighlighted = Nothing
+  , _icon = Nothing
+  , _pProject = P.Project { P.projectName = name
+                          , P.projectDirectory = "~/"
+                          , P.projectStartHook = Just $
+                                                 mapM_ spawn programs
+                          }
+  }
 
 -- UNSAFE! Only use this with literals as a string that is not in projects will crash XMonad
 getP = getProject projects
     where getProject :: [Project] -> String -> Project
           getProject xs name = head $ filter (\x -> projectName x == name) xs
 
-dmenuSwitchProjectPrompt = do
-  wspaceName <- io $ dmenu $ map projectName projects
-  project <- lookupProject wspaceName
-  case project of
-    Nothing -> return ()
-    Just project -> switchProject project
+-- dmenuSwitchProjectPrompt = do
+--   wspaceName <- io $ dmenu $ map projectName projects
+--   project <- lookupProject wspaceName
+--   case project of
+--     Nothing -> return ()
+--     Just project -> switchProject project
 
 -- ** Active Projects
 -- TODO Make a better name for this
@@ -277,23 +292,23 @@ instance ExtensionClass ActiveProjects where
 
 
 
-goToProjectNr n = do
-  projects <- XS.get
-  -- W.view $ projectName projects !! n
-  XS.put $ projects { projectIndex = n }
-  windows (\windowset -> W.view (projectName $ (aprojects projects) !! n) windowset)
+-- goToProjectNr n = do
+--   projects <- XS.get
+--   -- W.view $ projectName projects !! n
+--   XS.put $ projects { projectIndex = n }
+--   windows (\windowset -> W.view (projectName $ (aprojects projects) !! n) windowset)
 
-shiftToProjectNr n = do
-  projects' <- XS.get
-  let projects = aprojects projects'
-  shiftToProject $ projects !! n
+-- shiftToProjectNr n = do
+--   projects' <- XS.get
+--   let projects = aprojects projects'
+--   shiftToProject $ projects !! n
 
-switchActiveProjectNr n = do
-    switchProjectPrompt def
-    project <- currentProject
-    projects' <- XS.get :: X ActiveProjects
-    let activeProjects = aprojects projects'
-    XS.put $ AProjects (switch n project activeProjects) n
+-- switchActiveProjectNr n = do
+--     switchProjectPrompt def
+--     project <- currentProject
+--     projects' <- XS.get :: X ActiveProjects
+--     let activeProjects = aprojects projects'
+--     XS.put $ AProjects (switch n project activeProjects) n
 
 switch :: Int -> a -> [a] -> [a]
 switch n x xs = (take n xs) ++ x:(drop (n + 1) xs)
@@ -318,20 +333,20 @@ instance XPrompt SPPrompt where
 spprompt = SPPrompt
 
 
--- Bring forth a prompt for switching Project Context
--- switchProjectContext = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultProjectContextList) f
-switchProjectContext = do
-  pName <- io $ dmenu (map fst defaultProjectContextList)
-  f pName
-    where
-      f :: String -> X()
-      f name = do
-        let chosenProjectContext = filter ((==name) . fst) defaultProjectContextList
-        case chosenProjectContext of
-          [] -> return ()
-          sprojects -> do
-                 let chosenProject = head sprojects
-                 XS.put $ AProjects ( snd chosenProject) 0
+-- -- Bring forth a prompt for switching Project Context
+-- -- switchProjectContext = mkXPrompt spprompt def (mkComplFunFromList $ map fst defaultProjectContextList) f
+-- switchProjectContext = do
+--   pName <- io $ dmenu (map fst defaultProjectContextList)
+--   f pName
+--     where
+--       f :: String -> X()
+--       f name = do
+--         let chosenProjectContext = filter ((==name) . fst) defaultProjectContextList
+--         case chosenProjectContext of
+--           [] -> return ()
+--           sprojects -> do
+--                  let chosenProject = head sprojects
+--                  XS.put $ AProjects ( snd chosenProject) 0
 
 -- mkProjectList [(i, Name)]
 -- Make a list of length 10. Each Name is placed at index i in the resulting list.
@@ -342,7 +357,7 @@ switchProjectContext = do
 -- Ex.
 -- map projectName $ mkProjectList [(3, "Emacs"), (0, "Browser")]
 -- => ["Browser","Terminals","Terminals","Emacs","Terminals","Terminals","Terminals","Terminals","Terminals","Terminals"]
-mkProjectList :: [(Int, ProjectName)] -> [Project]
+mkProjectList :: [(Int, P.ProjectName)] -> [Project]
 mkProjectList xs =
     let sorted = sortWith fst xs
     in f sorted 0
@@ -354,8 +369,8 @@ mkProjectList xs =
             then getP name: f xs (i+1)
             else (numberP i):f projects (i+1)--terminalsP :f projects (i+1)
 
-dmenu :: [String] -> IO(String)
-dmenu xs =
-    do
-      (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
-      hGetLine hout
+-- dmenu :: [String] -> IO(String)
+-- dmenu xs =
+--     do
+--       (_, Just hout, _, _) <- createProcess (shell ( "echo -e \"" ++ (tail $ concatMap ('\n':) xs) ++ "\" | dmenu")){std_out = CreatePipe}
+--       hGetLine hout
