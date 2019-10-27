@@ -101,6 +101,8 @@ XF86AudioRaiseVolume
 "import ~/screenshots/temp.png; xclip -selection clipboard -target image/png ~/screenshots/temp.png"
 Mod4 + a
 
+"~/dotfiles/copy-screenshot-here.fish"
+Mod4 + Shift + a
 # Put on Spotify rock playlist
 "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:spotify:user:1167428692:playlist:3NcV7PA1yxtXp2ZxrWKrFE"
 XF86Launch5
