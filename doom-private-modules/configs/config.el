@@ -108,6 +108,7 @@ www.datavetenskap.nu
                            "~/org/orgzly/skolarbete.org"
                            "~/org/orgzly/Projects.org"
                            "~/org/orgzly/begrepp.org"
+                           "~/org/orgzly/plan.org"
                            "~/org/orgzly/schema.org"
                            "~/org/orgzly/Events.org"))
 
@@ -139,7 +140,24 @@ styrelseprotokoll%?
           ("x" "clipboard" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
            "* %?
 %T
-%x")))
+%x")
+          ("s" "Clock in a subtask" entry (clock)
+           "* %?"
+           :clock-in t
+           :clock-resume t
+           )
+          ("o" "Clock in a other task" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
+           "* %?"
+           :clock-in t
+           :clock-resume t
+           )
+          ("p" "Plan" entry (file  "~/Dropbox/org/orgzly/plan.org")
+           "* %?
+%(cfw:org-capture-day)")))
+  (setq cfw:org-capture-template
+        '("p" "Inbox" entry (file  "~/Dropbox/org/orgzly/plan.org")
+          "* %?
+%(cfw:org-capture-day)"))
  
   ;; (add-hook 'org-capture-mode-hook 'make-frame)
   (add-to-list 'org-modules 'org-habit))
@@ -454,7 +472,8 @@ My settings for context agenda views that are based on the tags keyword."
 (setq org-refile-targets
       (append '(("Projects.org"  :maxlevel . 2)
                 ("Todo.org" :maxlevel . 1)
-                ("Later.org" :maxlevel . 2))
+                ("Later.org" :maxlevel . 2)
+                ("plan.org" :maxlevel . 1))
               (mapcar (lambda (x) (cons x '(:maxlevel . 1)))
                       (file-expand-wildcards "~/org/references/notes/*"))))
 
