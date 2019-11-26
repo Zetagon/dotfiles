@@ -5,7 +5,10 @@
   (setq org-ref-notes-directory "~/Dropbox/org/references/notes"
         org-ref-bibliography-notes "~/Dropbox/org/references/articles.org"
         org-ref-default-bibliography '("~/Dropbox/org/references/Zotero_articles.bib")
-        org-ref-pdf-directory "~/Dropbox/org/references/pdfs/")
+        org-ref-pdf-directory "~/Dropbox/org/references/pdfs/"
+        org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
+        org-ref-default-ref-type "cref"
+        org-ref-default-citation-link "autocite")
   (map!
    :leader
    :n "nb" #'org-ref-open-bibtex-notes))
