@@ -215,6 +215,29 @@ styrelseprotokoll%?
 (defvar my-project-next-task-states my-project-default-next-task-states
   "States that identifies which tasks in a project are considered next.")
 
+(defun my/org-hide-show-entries-with-tags (tags hide-show)
+  "Hide all entries that have one of the tags TAGS. if HIDE-SHOW is 'hide, hide all matches otherwise show only the matches."
+  (interactive)
+  (if (eq 'hide hide-show)
+      (save-excursion
+        (org-show-all)
+        (goto-char 0)
+        (outline-next-visible-heading 1)
+        (while (< (point) (point-max) )
+          (loop for tag in tags do
+                (when (member tag (org-get-tags))
+                  (outline-hide-entry)))
+          (outline-next-visible-heading 1)))
+    (save-excursion
+      (org-show-all)
+      (goto-char (point-max))
+      (outline-previous-visible-heading 1)
+      (while (> (point) (point-min))
+        (loop for tag in tags do
+              (unless (member tag (org-get-tags))
+                (outline-hide-entry))
+              (outline-previous-visible-heading 1))))))
+
 (defun my-gtd-context-agenda-group ()
   `((:discard (:scheduled future :tag "think"))
     (:name "Project Next Task"
@@ -442,6 +465,12 @@ My settings for context agenda views that are based on the tags keyword."
    "<" #'my-restrict-org-todo-list
    ">" #'org-agenda-remove-restriction-lock)
  :map org-mode-map
+ (:localleader
+   "ci" #'leo/org-clock-in-resume)
+ (:leader
+   "X" #'counsel-org-capture)
+ :n "zN" (λ! (my/org-hide-show-entries-with-tags '("noexport") 'hide))
+ :n "ZN" (λ! (my/org-hide-show-entries-with-tags '("noexport") 'show))
  :n "gr" #'leo/org-refile-hydra/body
  :m "[]" #'outline-up-heading
  :ni "<C-return>" #'org-insert-heading-after-current
