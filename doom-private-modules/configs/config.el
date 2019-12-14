@@ -1,5 +1,22 @@
 ;;; config.el -*- lexical-binding: t; -*-
 ;; (def-package! proof-general)
+(defun my/org-pomodoro-text-time ()
+  "Return status info about org-pomodoro and if org-pomodoro is not running, try to print info about org-clock.
+    If either org-pomodoro or org-clock aren't active, print \"No Active Task \" "
+  (interactive)
+  (cond ((equal :none org-pomodoro-state)
+         (if (org-clock-is-active)
+             (format "Clocked task: %d minutes - %s"
+                     (org-clock-get-clocked-time) (substring-no-properties org-clock-heading)
+                     "No Active task")
+           "" ;; Empty string for when no clock is set
+           ))
+        ((equal :pomodoro org-pomodoro-state)
+         (format "%s %d minutes left - %s"
+                 "<icon=/home/leo/.xmonad/.xmobar/pomodoro.xpm/>"
+                 (/ (org-pomodoro-remaining-seconds) 60) (substring-no-properties org-clock-heading)))
+        ((equal :short-break org-pomodoro-state) "Short Break")
+        ((equal :long-break org-pomodoro-state)  "Long Break")))
 
 (setq display-line-numbers-type 'relative)
 (setq line-number-mode nil)
