@@ -1,0 +1,1892 @@
+:PROPERTIES:
+:ID:       eee0a79e-f65c-4ec8-880f-803fd950365c
+:END:
+#+PROPERTY: header-args :comments no :mkdirp yes :noweb yes :tangle no
+#+include: "./test.org"
+Here are the files I'm using
+#+BEGIN_SRC bash :tangle ~/.bashrc
+<<bashrc>>
+#+END_SRC
+#+BEGIN_SRC bash :tangle ~/.bash_profile
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+<<bashprofile>>
+#+END_SRC
+* Setup
+In order to setup the system, this needs to be run
+#+BEGIN_SRC bash
+<<setup-system>>
+#+END_SRC
+* Bash
+:PROPERTIES:
+:header-args: :noweb-ref bashrc
+:ID:       ef095ff6-c1e1-4ffc-90ff-2a19e320b3f2
+:END:
+Non-personal part.
+#+BEGIN_SRC bash
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    ,*i*) ;;
+      ,*) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
+	color_prompt=yes
+    else
+	color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+,*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+#+END_SRC
+Make bash use vim and use emacs as default editor.
+#+BEGIN_SRC bash
+set -o vi
+export VISUAL="emacsclient -n"
+export EDITOR="$VISUAL"
+export CARGO_HOME="/home/leo/.cargo"
+#+END_SRC
+My aliases
+#+BEGIN_SRC bash
+alias tmux='tmux -2'
+alias o='xdg-open'
+alias en='emacsclient -n'
+alias et='emacsclient -t'
+alias ec='emacsclient -cn'
+alias r="ranger"
+alias erik='sshfs leo@perpetuality.hexeye.se:/ /home/leo/Hexeye-Server'
+alias erikssh='ssh leo@perpetuality.hexeye.se'
+alias ls='ls -l --color=auto'
+alias ll='ls -la --color=auto'
+alias ..='cd ..'
+alias ...='ls ../..'
+alias svim='sudo vim'
+alias apt-get="sudo apt-get"
+alias irl='systemctl suspend'
+
+# do not delete / or prompt if deleting more than 3 files at a time #
+# alias rm='rm -I --preserve-root'
+alias rm='echo "This is not the command you are looking for."; false'
+
+alias trm='trash-put'
+ # confirmation #
+ alias mv='mv -i'
+ alias cp='cp -i'
+ alias ln='ln -i'
+
+  # Parenting changing perms on / #
+  alias chown='chown --preserve-root'
+  alias chmod='chmod --preserve-root'
+  alias chgrp='chgrp --preserve-root'
+
+# For ibus language stuff
+export GTK_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+# For opam
+export OPAMROOT=~/opam-coq.8.8.1
+eval `opam config env`
+#+END_SRC
+I use fzf to as fuzzy finding in bash
+#+BEGIN_SRC bash
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --max-count 20'
+bind -x '"\C-p": emacsclient -t $(fzf);'
+#+END_SRC
+I don't want to have ms spy on me.
+#+BEGIN_SRC bash
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# Make npm install local
+
+NPM_PACKAGES="$HOME/.npm-packages"
+
+# Tell our environment about user-installed node tools
+PATH="$NPM_PACKAGES/bin:$PATH"
+# Unset manpath so we can inherit from /etc/manpath via the `manpath` command
+unset MANPATH  # delete if you already modified MANPATH elsewhere in your configuration
+MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+
+# Tell Node about these packages
+NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
+
+#+END_SRC
+* Email
+:LOGBOOK:
+CLOCK: [2020-05-10 Sun 19:08]--[2020-05-10 Sun 19:16] =>  0:08
+:END:
+** Notmuch Emacs
+:PROPERTIES:
+:header-args: :noweb-ref emacs-notmuch
+:ID:       711b48c6-6529-49c8-bd5d-0626b3a2e005
+:END:
+
+These are my saved searches. Any mail that is not deleted and ~notdone~ is in a inbox.
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-notmuch
+(setq notmuch-saved-searches
+      '((:name "inbox" :query "tag:notdone AND NOT tag:deleted NOT tag:gmail/Inbox" :key "i")
+        (:name "inbox Ordförande" :query "tag:notdone AND NOT tag:deleted AND tag:gmail/Inbox" :key "o")
+        (:name "unread" :query "tag:unread" :key "u")
+        (:name "flagged" :query "tag:flagged" :key "f")
+        (:name "sent" :query "tag:sent" :key "t")
+        (:name "drafts" :query "tag:draft" :key "d")
+        (:name "all mail" :query "*" :key "a")))
+
+#+end_src
+
+
+When I have read a mail there are three cases:
+- I have not actually read the mail, in which case I leave it be
+- I have read the mail and done what I can do now, in which case I remove the ~notdone~ tag
+- I have read the mail and but there actions left to perform, in which case I capture it to my gtd system, and remove the ~notdone~ tag
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(map!
+ :n "<f1>" #'=notmuch
+ :after notmuch
+ (:map notmuch-show-mode-map
+   :n "D" #'evil-collection-notmuch-show-toggle-delete
+
+   :n "d" (λ! (notmuch-show-tag-all '("-notdone"))
+              (notmuch-show-next-thread-show)))
+ (:map notmuch-tree-mode-map
+  :n "d" (λ! (notmuch-tree-tag-thread '("-notdone")))))
+#+END_SRC
+
+I want to run the following command when syncing:
+
+TODO There is an issue where the notmuch command and the afew commands won't run.
+
+#+BEGIN_SRC emacs-lisp
+(setq +notmuch-sync-command "mbsync -a ; notmuch new; afew --tag --new")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-notmuch
+(setq +notmuch-mail-folder "~/.mail")
+(setq +notmuch-sync-backend 'mbsync)
+(setq sendmail-program "/usr/bin/msmtp")
+#+END_SRC
+
+The fcc header controls wherer sent in which folders sent mails go.
+#+BEGIN_SRC emacs-lisp
+(setq notmuch-fcc-dirs '(("dv-ordf@utn.se" . "gmail/Sent")
+                         ("leo@relevant-information.com" . "relevant-info/Sent")))
+#+END_SRC
+
+I want to see more of cited lines and set it to a better colour (grey is hard to read).
+#+BEGIN_SRC emacs-lisp
+(after! (:and ui notmuch)
+  (setq notmuch-wash-citation-lines-prefix 10)
+  (custom-theme-set-faces 'doom-one
+                          '(notmuch-wash-cited-text
+                            ((t (:background "#434a59" :foreground "#8fb3f7"))))
+                          '(notmuch-message-summary-face
+                            ((t (:foreground "#50b1c9"))))))
+#+END_SRC
+
+I don't want to have ~auto-fill-mode~ när jag skriver mail. Det blir för det
+mesta jobbigt för den som läser det då. I also want flyspell-mode to be on.
+#+BEGIN_SRC emacs-lisp
+(add-hook! 'notmuch-message-mode
+  (auto-fill-mode -1)
+  (visual-line-mode)
+  (flyspell-mode)
+  (ispell-change-dictionary "swedish"))
+#+END_SRC
+** Notmuch Program
+:PROPERTIES:
+:ID:       2c28b3d0-6410-4ff4-a0f4-d1b8b2ac3bfc
+:END:
+#+BEGIN_SRC conf :tangle ~/.notmuch-config
+# .notmuch-config - Configuration file for the notmuch mail system
+#
+# For more information about notmuch, see https://notmuchmail.org
+
+# Database configuration
+#
+# The only value supported here is 'path' which should be the top-level
+# directory where your mail currently exists and to where mail will be
+# delivered in the future. Files should be individual email messages.
+# Notmuch will store its database within a sub-directory of the path
+# configured here named ".notmuch".
+#
+[database]
+path=/home/leo/.mail
+
+# User configuration
+#
+# Here is where you can let notmuch know how you would like to be
+# addressed. Valid settings are
+#
+#	name		Your full name.
+#	primary_email	Your primary email address.
+#	other_email	A list (separated by ';') of other email addresses
+#			at which you receive email.
+#
+# Notmuch will use the various email addresses configured here when
+# formatting replies. It will avoid including your own addresses in the
+# recipient list of replies, and will set the From address based on the
+# address to which the original email was addressed.
+#
+[user]
+name=Leo Okawa Ericson
+primary_email=leo@relevant-information.com
+other_email=dv-ordf@utn.se
+
+# Configuration for "notmuch new"
+#
+# The following options are supported here:
+#
+#	tags	A list (separated by ';') of the tags that will be
+#		added to all messages incorporated by "notmuch new".
+#
+#	ignore	A list (separated by ';') of file and directory names
+#		that will not be searched for messages by "notmuch new".
+#
+#		NOTE: *Every* file/directory that goes by one of those
+#		names will be ignored, independent of its depth/location
+#		in the mail store.
+#
+[new]
+tags=unread;inbox;new;notdone;
+ignore=
+
+# Search configuration
+#
+# The following option is supported here:
+#
+#	exclude_tags
+#		A ;-separated list of tags that will be excluded from
+#		search results by default.  Using an excluded tag in a
+#		query will override that exclusion.
+#
+[search]
+exclude_tags=deleted;spam;
+
+# Maildir compatibility configuration
+#
+# The following option is supported here:
+#
+#	synchronize_flags      Valid values are true and false.
+#
+#	If true, then the following maildir flags (in message filenames)
+#	will be synchronized with the corresponding notmuch tags:
+#
+#		Flag	Tag
+#		----	-------
+#		D	draft
+#		F	flagged
+#		P	passed
+#		R	replied
+#		S	unread (added when 'S' flag is not present)
+#
+#	The "notmuch new" command will notice flag changes in filenames
+#	and update tags, while the "notmuch tag" and "notmuch restore"
+#	commands will notice tag changes and update flags in filenames
+#
+[maildir]
+synchronize_flags=true
+
+# Cryptography related configuration
+#
+# The following *deprecated* option is currently supported:
+#
+#	gpg_path
+#		binary name or full path to invoke gpg.
+#		NOTE: In a future build, this option will be ignored.
+#		Setting $PATH is a better approach.
+#
+[crypto]
+gpg_path=gpg
+#+END_SRC
+** afew
+:PROPERTIES:
+:ID:       3f3e84c6-ba87-406c-adc1-f4ecffb92da4
+:END:
+Afew is my tagging script
+#+BEGIN_SRC conf :tangle ~/.config/afew/config
+# This is the default filter chain
+[SpamFilter]
+[KillThreadsFilter]
+
+[FolderNameFilter.1]
+folder_transforms = relevant-info/INBOX:main sekreterare/inbox:sekreterare
+folder_blacklist = sekreterare/bak.alla_mail sekreterare/bak.skickat sekreterare/bak.papperskorgen sekreterare/bak.utkast sekreterare/bak relevant-info/Sent
+
+[ListMailsFilter]
+# [FolderNameFilter.2]
+# folder_explicit_list = relevant-info
+
+[Filter.0]
+query = 'tag:relevant-info/Trash'
+tags = +killed; -unread
+message = "Move Trash to Trash"
+
+
+[Filter.1]
+query = 'from:gitlab@mg.gitlab.com'
+tags = +gitlab -inbox
+message = "Gitlab skips the inbox"
+
+# [Filter.2]
+# query = to:dv-sekreterare@utn.se OR from:dv-sekreterare@utn.se OR to:dv-styrelse@utn.se
+# tags = +sekreterare
+# message = "sekreterare"
+
+[Filter.3]
+query = to:leo@relevant-information.com
+tags = +relevant; +main
+message = "relevant"
+
+# [Filter.4]
+# query = to:leer8530.uu@relevant-information.com OR to:Leo.Ericson.8530@student.uu.se OR to: "Computer Architecture" OR from:uu.se
+# tags = +school
+# message = "school"
+
+[Filter.5]
+query = from:no-reply@piazza.com
+tags = +piazza
+message = "piazza"
+[Filter.8]
+query = to:dn.rss@relevant-information.com
+tags = -unread; +rss-unread
+
+[Filter.6]
+query = from:@www.dn.se
+tags = +dn-rss; -inbox;
+message = "Dagens nyheter"
+
+[Filter.7]
+query = from:nyheter@www.dn.se
+tags = +dn-rss; +nyheter
+message = "Dagens nyheter nyheter"
+
+[Filter.9]
+query = from:sportadmin.se
+tags = +ubtk
+message = "Uppsalabtk"
+
+[Filter.10]
+query = from:builds@travis-ci.com
+tags = -inbox
+message = "Skip inbox"
+
+[Filter.11]
+query = to:dv-ordf@utn.se
+tags = +ordf
+message = "Ordförande-mail"
+
+[MailMover]
+folders = relevant-info/INBOX relevant-info/INBOX.Rss
+relevant-info/INBOX = 'tag:main':relevant-info/INBOX.MainInbox 'tag:relevant':relevant-info/INBOX.Relevant 'tag:school':relevant-info/INBOX.SchoolInbox
+relevant-info/INBOX.Rss = 'tag:dn-rss AND tag:nyheter':relevant-info/INBOX.Rss.DN_Nyheter 'tag:dn-rss AND (NOT tag:nyheter)':relevant-info/INBOX.Rss.DN
+#+END_SRC
+** Syncing
+
+*** isync
+:PROPERTIES:
+:ID:       41893352-d5d3-49ce-b4bb-daec6d38c7a0
+:END:
+I use isync for syncing to gmail.
+
+I need to create some directories for this to work:
+#+BEGIN_SRC sh :tangle no
+mkdir -p ~/.mail/gmail
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC conf :tangle ~/.config/mbsyncrc
+IMAPAccount gmail
+# Address to connect to
+Host imap.gmail.com
+User dv-ordf@utn.se
+PassCmd "pass Mail/ordf"
+#
+# Use SSL
+SSLType IMAPS
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+#CertificateFile ~/.cert/imap.gmail.com.pem
+#CertificateFile ~/.cert/Equifax_Secure_CA.pem
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Subfolders Verbatim
+# The trailing "/" is important
+Path ~/.mail/gmail/
+Inbox ~/.mail/gmail/Inbox
+
+Channel gmail
+Master :gmail-remote:
+Slave :gmail-local:
+# Exclude everything under the internal [Gmail] folder, except the interesting folders
+Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+# Or include everything
+#Patterns *
+# Automatically create missing mailboxes, both locally and on the server
+Create Both
+# Save the synchronization state files in the relevant directory
+SyncState *
+####
+
+IMAPAccount relevant-info
+# Address to connect to
+Host imap.mailbox.org
+User zetagon@mailbox.org
+PassCmd "pass Mail/mailbox"
+#
+# Use SSL
+SSLType IMAPS
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+#CertificateFile ~/.cert/imap.gmail.com.pem
+#CertificateFile ~/.cert/Equifax_Secure_CA.pem
+
+IMAPStore relevant-info-remote
+Account relevant-info
+
+MaildirStore relevant-info-local
+Subfolders Verbatim
+# The trailing "/" is important
+Path ~/.mail/relevant-info/
+Inbox ~/.mail/relevant-info/Inbox/
+
+Channel relevant-info
+Master :relevant-info-remote:
+Slave :relevant-info-local:
+Patterns *
+# Automatically create missing mailboxes, both locally and on the server
+Create Both
+# Save the synchronization state files in the relevant directory
+SyncState *
+####
+#+END_SRC
+*** offlineimap
+:PROPERTIES:
+:ID:       a0b3d156-43a0-429c-9ba8-01466c9d831f
+:END:
+I don't use offlineimap anymore, but here is the config.
+
+##+BEGIN_SRC conf :tangle ~/.offlineimaprc
+#+BEGIN_SRC conf :tangle no
+[general]
+# List of accounts to be synced, separated by a comma.
+accounts = relevant-info
+maxsyncaccounts = 2
+pythonfile = ~/.offlineimap.py
+
+[Account relevant-info]
+# Identifier for the local repository; e.g. the maildir to be synced via IMAP.
+localrepository = relevant-info-local
+# Identifier for the remote repository; i.e. the actual IMAP, usually non-local.
+remoterepository = relevant-info-remote
+postsynchook = /home/leo/dotfiles/offlineimap-post-sync.sh
+# autorefresh = 10 # If I want to let offlineimap running
+maxage = 62 # Only sync messages from the last two months
+
+[Repository relevant-info-local]
+# OfflineIMAP supports Maildir, GmailMaildir, and IMAP for local repositories.
+type = Maildir
+# Where should the mail be placed?
+localfolders = ~/.mail/relevant-info
+
+[Repository relevant-info-remote]
+# Remote repos can be IMAP or Gmail, the latter being a preconfigured IMAP.
+type = IMAP
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+remotehost = imap.mailbox.org
+remoteuser = zetagon@mailbox.org
+remotepasseval = get_pass("mailbox")
+#+END_SRC
+
+OfflineIMAP doesn't support using pass by default so I have to use this file.
+
+#+BEGIN_SRC python :tangle ~/.offlineimap.py :shebang "#!/usr/bin/env python"
+from subprocess import check_output
+
+def get_pass(account):
+    return check_output("pass Mail/" + account, shell=True).splitlines()[0]
+#+END_SRC
+** Sending
+:PROPERTIES:
+:ID:       76fb36b7-4b42-4347-b168-4c7c49b0ae0b
+:END:
+I have to set ~mail-specify-envelope-from~ to ~t~ for msmtp to use the address that I specify in the mail.
+I am not sure which of these variables are correct, but they seem to be doing the same thing.
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(setq mail-envelope-from 'header)
+(setq mail-specify-envelope-from t)
+(setq message-sendmail-envelope-from 'header)
+#+END_SRC
+#+BEGIN_SRC conf :tangle ~/.msmtprc
+#
+# This file focusses on TLS and authentication. Features not used here include
+# logging, timeouts, SOCKS proxies, TLS parameters, Delivery Status Notification
+# (DSN) settings, and more.
+
+
+# Set default values for all following accounts.
+defaults
+logfile ~/.msmtp.log
+
+# Use the mail submission port 587 instead of the SMTP port 25.
+port 587
+
+# Always use TLS.
+tls on
+
+# Set a list of trusted CAs for TLS. The default is to use system settings, but
+# you can select your own file.
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
+# If you select your own file, you should also use the tls_crl_file command to
+# check for revoked certificates, but unfortunately getting revocation lists and
+# keeping them up to date is not straightforward.
+#tls_crl_file ~/.tls-crls
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account mailbox
+
+# Host name of the SMTP server
+host smtp.mailbox.org
+
+# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# to pin a single certificate. You have to update the fingerprint when the
+# server certificate changes, but an attacker cannot trick you into accepting
+# a fraudulent certificate. Get the fingerprint with
+# $ msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.freemail.example
+#tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+
+# Envelope-from address
+from leo@relevant-information.com
+
+# Authentication. The password is given using one of five methods, see below.
+auth on
+user zetagon@mailbox.org
+
+# Password method 1: Add the password to the system keyring, and let msmtp get
+# it automatically. To set the keyring password using Gnome's libsecret:
+# $ secret-tool store --label=msmtp \
+#   host smtp.freemail.example \
+#   service smtp \
+#   user joe.smith
+
+# Password method 2: Store the password in an encrypted file, and tell msmtp
+# which command to use to decrypt it. This is usually used with GnuPG, as in
+# this example. Usually gpg-agent will ask once for the decryption password.
+passwordeval "pass Mail/mailbox"
+
+# Password method 3: Store the password directly in this file. Usually it is not
+# a good idea to store passwords in plain text files. If you do it anyway, at
+# least make sure that this file can only be read by yourself.
+#password secret123
+
+# Password method 4: Store the password in ~/.netrc. This method is probably not
+# relevant anymore.
+
+# Password method 5: Do not specify a password. Msmtp will then prompt you for
+# it. This means you need to be able to type into a terminal when msmtp runs.
+
+
+# # A second mail address at the same freemail service
+# account freemail2 : freemail
+# from joey@freemail.example
+
+
+# # The SMTP server of your ISP
+# account isp
+# host mail.isp.example
+# from smithjoe@isp.example
+# auth on
+# user 12345
+
+
+# # Set a default account
+account default : mailbox
+
+account ordf
+
+# Host name of the SMTP server
+host smtp.gmail.com
+
+# Envelope-from address
+from dv-ordf@utn.se
+
+# Authentication. The password is given using one of five methods, see below.
+auth on
+user dv-ordf@utn.se
+
+passwordeval "pass Mail/ordf"
+
+#+END_SRC
+* Emacs
+** Files
+:PROPERTIES:
+:ID:       977eeaac-d867-4e7d-8a26-5f3f97354521
+:END:
+Here are the files of my emacs config:
+#+CAPTION: packages.el declares which packages I want to install
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/packages.el
+<<emacs-packages>>
+#+END_SRC
+
+#+CAPTION: config.el
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+<<test>>
+(after! notmuch
+  ;;This notmuch config is made for the doom module
+  ;;
+  ;;I need this line to be able to link to notmuch mails
+  (require 'ol-notmuch)
+  <<emacs-notmuch>>
+  )
+(use-package! org-ql
+  :defer t)
+(use-package! org-super-agenda
+  :config (org-super-agenda-mode))
+(after! org
+  <<emacs-org-mode>>
+  )
+(after! org-roam
+  <<emacs-org-roam>>
+  )
+(after! org-noter
+<<emacs-org-noter>>
+)
+<<emacs-misc>>
+#+END_SRC
+** Doom modules
+:PROPERTIES:
+:ID:       2e858646-92c4-49ed-ae54-ffff5cf3c217
+:END:
+
+Put the doom CLI:s in my path.
+
+#+BEGIN_SRC bash :noweb-ref bashprofile
+export PATH="$PATH:$HOME/.emacs.d/bin"
+#+END_SRC
+
+Every time I change this file I have to invoke ~doom sync~.
+
+There is an issue with the doom CLI, where it ignores my noweb stuff. The
+solution so far is to apply this patch.
+#+BEGIN_SRC diff :tangle no
+- "--eval" (format "(org-babel-tangle-file %S %S)"
+- org dest)))
++ "--eval" (format "(org-babel-tangle-file %S)"
++ org)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/init.el
+(doom! :input
+       ;;chinese
+       ;;japanese
+
+       :completion
+       (company)           ; the ultimate code completion backend
+       ;;helm              ; the *other* search engine for love and life
+       ;;ido               ; the other *other* search engine...
+       ivy               ; a search engine for love and life
+
+       :ui
+       ;;deft              ; notational velocity for Emacs
+       doom              ; what makes DOOM look the way it does
+       doom-dashboard    ; a nifty splash screen for Emacs
+       doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       ;;fill-column       ; a `fill-column' indicator
+       hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       hydra
+       indent-guides     ; highlighted indent columns
+       modeline          ; snazzy, Atom-inspired modeline, plus API
+       ;;nav-flash         ; blink cursor line after big motions
+       ;;neotree           ; a project drawer, like NERDTree for vim
+       ophints           ; highlight the region an operation acts on
+       (popup +defaults)   ; tame sudden yet inevitable temporary windows
+       ;;pretty-code       ; ligatures or substitute text with pretty symbols
+       ;;tabs              ; an tab bar for Emacs
+       ;;treemacs          ; a project drawer, like neotree but cooler
+       ;;unicode           ; extended unicode support for various languages
+       vc-gutter         ; vcs diff in the fringe
+       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;;window-select     ; visually switch windows
+       workspaces        ; tab emulation, persistence & separate workspaces
+       ;;zen               ; distraction-free coding or writing
+
+       :editor
+       (evil +everywhere); come to the dark side, we have cookies
+       file-templates    ; auto-snippets for empty files
+       fold              ; (nigh) universal code folding
+       ;;(format +onsave)  ; automated prettiness
+       ;;god               ; run Emacs commands without modifier keys
+       lispy             ; vim for lisp, for people who don't like vim
+       ;;multiple-cursors  ; editing in many places at once
+       ;;objed             ; text object editing for the innocent
+       ;;parinfer          ; turn lisp into python, sort of
+       ;;rotate-text       ; cycle region at point between text candidates
+       snippets          ; my elves. They type so I don't have to
+       word-wrap         ; soft wrapping with language-aware indent
+
+       :emacs
+       dired             ; making dired pretty [functional]
+       electric          ; smarter, keyword-based electric-indent
+       ;;ibuffer         ; interactive buffer management
+       undo              ; persistent, smarter undo for your inevitable mistakes
+       vc                ; version-control and Emacs, sitting in a tree
+
+       :term
+       eshell            ; the elisp shell that works everywhere
+       ;;shell             ; simple shell REPL for Emacs
+       term              ; basic terminal emulator for Emacs
+       ;; vterm             ; the best terminal emulation in Emacs
+
+       :checkers
+       syntax              ; tasing you for every semicolon you forget
+       spell             ; tasing you for misspelling mispelling
+       ;;grammar           ; tasing grammar mistake every you make
+
+       :tools
+       ;;ansible
+       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       ;;direnv
+       ;;docker
+       ;;editorconfig      ; let someone else argue about tabs vs spaces
+       ;;ein               ; tame Jupyter notebooks with emacs
+       (eval +overlay)     ; run code, run (also, repls)
+       ;;gist              ; interacting with github gists
+       (lookup +dictionary +offline)              ; navigate your code and its documentation
+       ;;lsp
+       ;;macos             ; MacOS-specific commands
+       (magit +forge)             ; a git porcelain for Emacs
+       ;;make              ; run make tasks from Emacs
+       pass              ; password manager for nerds
+       pdf               ; pdf enhancements
+       ;;prodigy           ; FIXME managing external services & code builders
+       ;;rgb               ; creating color strings
+       ;;terraform         ; infrastructure as code
+       ;;tmux              ; an API for interacting with tmux
+       ;;upload            ; map local to remote projects via ssh/ftp
+
+       :lang
+       ;;agda              ; types of types of types of types...
+       ;;cc                ; C/C++/Obj-C madness
+       ;;clojure           ; java with a lisp
+       ;;common-lisp       ; if you've seen one lisp, you've seen them all
+       ;;coq               ; proofs-as-programs
+       ;;crystal           ; ruby at the speed of c
+       ;;csharp            ; unity, .NET, and mono shenanigans
+       ;;data              ; config/data formats
+       ;;(dart +flutter)   ; paint ui and not much else
+       ;;elixir            ; erlang done right
+       ;;elm               ; care for a cup of TEA?
+       emacs-lisp        ; drown in parentheses
+       erlang            ; an elegant language for a more civilized age
+       ;;ess               ; emacs speaks statistics
+       ;;faust             ; dsp, but you get to keep your soul
+       ;;fsharp           ; ML stands for Microsoft's Language
+       ;;fstar             ; (dependent) types and (monadic) effects and Z3
+       ;;(go +lsp)         ; the hipster dialect
+       (haskell)  ; a language that's lazier than I am
+       ;;hy                ; readability of scheme w/ speed of python
+       ;;idris             ;
+       ;;json              ; At least it ain't XML
+       ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
+       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       ;;julia             ; a better, faster MATLAB
+       ;;kotlin            ; a better, slicker Java(Script)
+       (latex +latexmk +fold )             ; writing papers in Emacs has never been so fun
+       ;;lean
+       ;;factor
+       ;;ledger            ; an accounting system in Emacs
+       ;;lua               ; one-based indices? one-based indices
+       markdown          ; writing docs for people to ignore
+       ;;nim               ; python + lisp at the speed of c
+       ;;nix               ; I hereby declare "nix geht mehr!"
+       ;;ocaml             ; an objective camel
+       (org +roam +pomodoro +journal noter +gnuplot)               ; organize your plain life in plain text
+       ;;perl              ; write code no one else can comprehend
+       ;;php               ; perl's insecure younger brother
+       ;;plantuml          ; diagrams for confusing people more
+       ;;purescript        ; javascript, but functional
+       python            ; beautiful is better than ugly
+       ;;qt                ; the 'cutest' gui framework ever
+       ;;racket            ; a DSL for DSLs
+       ;;rest              ; Emacs as a REST client
+       ;;rst               ; ReST in peace
+       ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       ;;scala             ; java, but good
+       ;;scheme            ; a fully conniving family of lisps
+       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       ;;sml
+       ;;solidity          ; do you need a blockchain? No.
+       ;;swift             ; who asked for emoji variables?
+       ;;terra             ; Earth and Moon in alignment for performance.
+       ;;web               ; the tubes
+       ;;yaml              ; JSON, but readable
+
+       :email
+       ;;(mu4e +gmail)
+       notmuch
+       ;;(wanderlust +gmail)
+
+       :app
+       ;;calendar
+       irc               ; how neckbeards socialize
+       ;;(rss +org)        ; emacs as an RSS reader
+       ;;twitter           ; twitter client https://twitter.com/vnought
+
+       :config
+       literate
+       (default +bindings +smartparens))
+(setq evil-want-abbrev-expand-on-insert-exit nil)
+
+#+END_SRC
+** Keybindings
+:PROPERTIES:
+:ID:       35c66993-c662-499d-a103-4e9355855aee
+:END:
+I want to use "," as my localleader key
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(setq doom-localleader-key ",")
+(map!
+;; I need these maps to be able to use jk in the agenda buffer properly
+<<emacs-keybinds>>
+ )
+#+END_SRC
+*** Actual keybindings
+:PROPERTIES:
+:header-args: :noweb-ref emacs-keybinds
+:ID:       fc66f6f3-e3c7-4190-a8e9-a1bdede6b308
+:END:
+:LOGBOOK:
+CLOCK: [2020-05-11 Mon 10:48]--[2020-05-11 Mon 11:05] =>  0:17
+:END:
+
+
+I want to use ~Dd~ as avy delete line.
+
+#+BEGIN_SRC emacs-lisp
+:n "D" nil
+(:prefix "D"
+:n "d" #'avy-kill-ring-save-whole-line
+:n "r" #'avy-kill-ring-save-region)
+#+END_SRC
+
+I have mapped tab to both tab and super, so it becomes clunky to use for keybindings.
+#+BEGIN_SRC emacs-lisp
+(:leader
+ "\\n" #'+workspace/new
+ "\\." #'+workspace/switch-to
+ "\\r" #'+workspace/rename)
+#+END_SRC
+
+Expand region seems very nice so I will try to bind it to visual mode ~v~
+#+BEGIN_SRC emacs-lisp
+:v "v" #'er/expand-region
+#+END_SRC
+
+~C-x C-s~ is hard to reach so I will rebind it to an easier binding.
+
+#+BEGIN_SRC emacs-lisp
+:i "C-s C-s" #'company-yasnippet
+#+END_SRC
+
+I want some alt tab functionality
+#+BEGIN_SRC emacs-lisp
+:n "C-M-i" #'+workspace/other
+#+END_SRC
+** Completion
+:PROPERTIES:
+:header-args: :noweb-ref emacs-misc
+:ID:       1467765f-7c45-4a97-961d-07bb162eb512
+:END:
+
+This is the way I want to interact with company
+#+BEGIN_SRC emacs-lisp
+(map! :map company-active-map
+      "C-SPC" #'company-other-backend
+      [return] nil
+      "TAB" nil
+      [tab] nil
+      "C-j" #'company-select-next
+      "C-k" #'company-select-previous
+      [backtab] nil
+      [return] #'company-complete-selection)
+#+END_SRC
+** Ivy
+:PROPERTIES:
+:header-args: :noweb-ref emacs-misc
+:ID:       c3b3a98d-5744-47cd-a72d-795164ed5a45
+:END:
+#+BEGIN_SRC emacs-lisp
+(after! ivy
+  (setq ivy-read-action-function #'ivy-hydra-read-action))
+#+END_SRC
+
+** Org-mode
+:PROPERTIES:
+:header-args: :noweb-ref emacs-org-mode
+:ID:       e8c0936d-4815-4823-a6ea-6fab916e929c
+:END:
+I want to use unique ID:s for linking to org notes. The default heading scheme
+is error prone, especially when editing headlines.
+#+BEGIN_SRC emacs-lisp
+(require 'org-id)
+(setq org-id-link-to-org-use-id t)
+#+END_SRC
+very lucky
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(set-company-backend! 'org-mode
+  'my/company-org
+  'company-capf
+  'company-org-roam
+  'company-ispell
+  'company-dabbrev
+  'company-yasnippet
+)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-clockreport-parameter-plist
+      '(:link t :maxlevel 5))
+#+END_SRC
+*** TODO Completion for noweb-ref
+This is a sorta working company backend that can complete noweb-ref style header
+arguments in src blocks. It completes all links enclosed with << >>
+#+BEGIN_SRC emacs-lisp
+(defun my/company-org (command &optional arg &rest _)
+  "Complete :noweb-ref links in org-mode src blocks"
+  (interactive (list 'interactive))
+  (cl-case command
+    (interactive (company-begin-backend #'my/company-org))
+    (prefix
+     (let ((on-begin-src)
+           (on-colon))
+       (save-excursion
+         (goto-char (line-beginning-position))
+         (setq on-begin-src (search-forward "#+BEGIN_SRC" (line-end-position) t)))
+       (when on-begin-src
+         (save-excursion
+           (search-backward " " nil t)
+           (forward-char)
+           (setq on-colon
+                 (string= ":"
+                          (buffer-substring-no-properties
+                           (point)
+                           (+ 1 (point))))))
+         (when on-colon
+           (thing-at-point 'symbol 'no-properties)))))
+    (candidates
+     (my/company-org--candidates arg))
+    (post-completion
+     (insert
+      (ivy-read ":noweb "
+                (-map
+                 (lambda (x) (concat " " (car (cdr  x))))
+                 (s-match-strings-all "<<\\(.+?\\)>>"
+                                      (buffer-substring-no-properties
+                                       (point-min)
+                                       (point-max)))))))))
+
+(defun my/company-org--candidates (arg)
+  (-filter (lambda (x) (s-prefix? arg x)) '("noweb-ref")))
+#+END_SRC
+*** Writing
+:PROPERTIES:
+:ID:       938140cf-2a39-41bf-a59d-5b14d7cedbe0
+:END:
+This setting makes just the headings tagged with :ignore: ignored when
+exporting(the contents are kept.) On the other hand, all headlines tagged with
+\:noexport: with subtrees are ignored when exporting.
+#+BEGIN_SRC emacs-lisp
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+#+END_SRC
+** Org-Roam
+:PROPERTIES:
+:header-args: :noweb-ref emacs-org-roam
+:ID:       37471411-1f5f-4767-9588-6a47b2070075
+:END:
+#+BEGIN_SRC emacs-lisp
+(setq org-roam-capture-templates
+      '(("d" "default" plain #'org-roam--capture-get-point "%?"
+         :file-name "%<%Y%m%d%H%M%S>"
+         :head "#+TITLE: ${title}\n#+Created: %t\n#+Time-stamp: <>\n"
+         :unnarrowed t)
+        ))
+(setq org-roam-directory "~/Documents/notes/")
+#+END_SRC
+I want to have a timestamp that updates when I last edited a file. ~time-stamp~
+will write a time-stamp between if it finds a string: "Time-stamp: <>" in the
+first 8 lines of the buffer.
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(require 'time-stamp)
+(add-hook 'write-file-functions 'time-stamp)
+(setq time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S")
+#+END_SRC
+
+In order to have org-roam-protocol working I need to setup emacsclient to handle the correct links.
+
+#+BEGIN_SRC nil :noweb-ref no :tangle ~/.local/share/applications/org-protocol.desktop
+[Desktop Entry]
+Name=Org-Protocol
+Exec=emacsclient %u
+Icon=emacs-icon
+Type=Application
+Terminal=false
+MimeType=x-scheme-handler/org-protocol
+#+END_SRC
+
+And run this command for it to take effect
+#+BEGIN_SRC bash :noweb-ref <<setup-system>>
+xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-roam-capture-ref-templates
+      '(("r" "ref" plain #'org-roam--capture-get-point "%?"
+        :file-name "%<%Y%m%d%H%M%S>"
+        :head "#+TITLE: ${title}\n#+Created: %t\n#+Time-stamp: <>\n#+ROAM_KEY: ${ref}\n\n%x"
+        :unnarrowed t)))
+#+END_SRC
+
+I don't want Scrapbook or the journal to be in the graph as i creates artificial connections.
+#+BEGIN_SRC emacs-lisp
+(setq org-roam-graph-exclude-matcher '("Scrapbook.org" "journal/"))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;;(add-to-list 'company-box-backends-colors '(company-org-roam . (:all "light slate blue" :selected (:background "light slate blue" :foreground "black"))))
+#+END_SRC
+
+I don't want Doom to open the roam buffer automatically
+#+BEGIN_SRC emacs-lisp
+(setq +org-roam-open-buffer-on-find-file nil)
+#+END_SRC
+*** Roam Server
+:PROPERTIES:
+:ID:       352cd483-dc34-4b1f-937d-06265b4d4b23
+:END:
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! org-roam-server)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(use-package! org-roam-server
+  :defer t)
+#+END_SRC
+** Journaling
+:PROPERTIES:
+:ID:       477c0408-c61d-48e9-9ca5-ada0ff511ca4
+:END:
+To integrate journaling with [[id:37471411-1f5f-4767-9588-6a47b2070075][Org-Roam]] I set the directory to the same as roam.
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(after! org-journal
+  (setq org-journal-dir "~/Documents/notes/journal")
+  (setq org-journal-file-type 'weekly)
+;; Don't use stupid american date format
+  (calendar-set-date-style 'iso))
+#+END_SRC
+** Org-noter
+:PROPERTIES:
+:header-args: :noweb-ref emacs-org-noter
+:ID:       b1f487cb-a6b1-4122-a587-1a0357f5987e
+:END:
+#+BEGIN_SRC emacs-lisp
+(map!
+ :map org-noter-doc-mode-map
+ :n "I" #'org-noter-insert-note-toggle-no-questions
+ :n "i" #'org-noter-insert-note)
+#+END_SRC
+** Bibliography managment
+I apparently need to set this in my bashrc
+#+BEGIN_SRC bash :noweb-ref bashprofile
+export BIBINPUTS="~/Dropbox/org/references/Zotero_articles.bib"
+#+END_SRC
+*** Org-roam bibtex
+:PROPERTIES:
+:ID:       2a036cc6-b88b-4369-a48c-86975e421044
+:END:
+This packages allows org-ref notes to be org-roam files
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! org-roam-bibtex)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(use-package! org-roam-bibtex
+  :config
+  (org-roam-bibtex-mode))
+#+END_SRC
+
+*** Org-ref
+:PROPERTIES:
+:ID:       1f784267-984f-4acc-9dac-ec3da3b185e3
+:END:
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! org-ref)
+(package! helm-bibtex)
+(package! ivy-bibtex)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(use-package! org-ref
+  :defer t
+  :init
+  (setq org-ref-completion-library 'org-ref-ivy-cite)
+  :config
+  (setq org-ref-notes-directory "~/Documents/notes"
+        org-ref-bibliography-notes "~/Dropbox/org/references/articles.org"
+        org-ref-default-bibliography '("~/Dropbox/org/references/Zotero_articles.bib")
+        org-ref-pdf-directory "~/Dropbox/org/references/pdfs/"
+        org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
+        org-ref-default-ref-type "cref"
+        org-ref-default-citation-link "autocite"
+        org-latex-prefer-user-labels t
+        org-footnote-auto-label 'confirm
+        org-ref-ref-types '("cref" "Cref" "ref" "eqref" "pageref" "nameref" "autoref"))
+  (map!
+   (:leader
+     :n "nb" #'org-ref-open-bibtex-notes)
+   (:map org-mode-map
+     (:localleader
+       (:prefix (";" . "Org-ref")
+         "r" #'org-ref-helm-insert-ref-link
+         (:prefix ("c" . "Change")
+           "r" #'org-ref-change-ref-type
+           "c" #'org-ref-change-cite-type))))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(use-package! ivy-bibtex
+  :defer t
+  :commands (ivy-bibtex)
+  :config
+  (setq helm-bibtex-bibliography "~/Dropbox/org/references/Zotero_articles.bib"
+        reftex-default-bibliography '("~/Dropbox/org/references/Zotero_articles.bib")
+        helm-bibtex-library-path "~/Dropbox/org/references/pdfs"
+        bibtex-completion-notes-path "~/Documents/notes/"
+        bibtex-completion-pdf-field "File"
+        org-ref-cite-onclick-function (lambda (x) (message x) (org-ref-cite-hydra/body)))
+  (map!
+   :leader
+   :n "nh" #'ivy-bibtex))
+#+END_SRC
+** Task management
+:PROPERTIES:
+:ID:       c8423be4-43b1-41b1-8b5b-4159a31e2edc
+:END:
+
+I use Org-mode for managing my tasks, duh.
+
+I use [[https://github.com/alphapapa/org-ql][Org-QL]] [[https://github.com/alphapapa/org-super-agenda][Org Super Agenda]] for easier queries.
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages :tangle no
+(package! org-ql)
+(package! org-super-agenda)
+#+END_SRC
+
+Here are my agenda files:
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(setq org-agenda-files'("~/org/orgzly/Todo.org"
+                        "~/org/orgzly/Inbox.org"
+                        "~/org/orgzly/Habits.org"
+                        "~/org/orgzly/Projects.org"
+                        "~/org/orgzly/begrepp.org"
+                        "~/org/orgzly/plan.org"
+                        "~/org/orgzly/Log.org"
+                        "~/org/orgzly/schema.org"
+                        "~/org/orgzly/Events.org"))
+#+END_SRC
+
+Here are my todo-keywords. NEXT is mostly there for legacy reasons.
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "WAITING" "|" "DONE(d!)" "CANCELLED(c@)")))
+#+END_SRC
+
+*** Keymaps
+I need these maps to be able to use jk in the agenda buffer properly
+#+BEGIN_SRC emacs-lisp :tangle no :noweb-ref emacs-keybinds
+ (:map org-super-agenda-header-map
+  :map org-super-agenda-header-map
+  "j" #'org-agenda-next-line
+  "k" #'org-agenda-previous-line
+  :map org-agenda-keymap
+  :map org-agenda-mode-map
+  "k" #'org-agenda-previous-line
+  "j" #'org-agenda-next-line)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle no :noweb-ref emacs-keybinds
+(:leader
+:desc "Today" "ot" #'my/today
+:desc "Create schedule for today" "ost" #'my/create-schedule-for-today
+:desc "Create schedule for this week" "osw" #'my/create-schedule-for-week
+:desc "Create schedule for this month" "osm" #'my/create-schedule-for-month
+ )
+#+END_SRC
+*** Deciding what to do
+:PROPERTIES:
+:ID:       34efb1d3-ecb2-4f59-a8c8-90b58f14cdc0
+:END:
+~my/today~ is the primary way I see what to do right now. It should only give
+items that are releveant to today.
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(defun my/today ()
+    (interactive)
+    (let ((org-agenda-custom-commands
+           '(("l" "Today"
+              ((agenda "" ((org-agenda-view-columns-initially nil)
+                           (org-habit-scheduled-past-days 10000)
+                           (org-scheduled-past-days 7)
+                           (org-habit-preceding-days 200)
+                           (org-habit-following-days 3)
+                           (org-deadline-warning-days 1)
+                           (org-super-agenda-groups
+                            '((:name "Done Today"
+                               :order 100
+                               :and (:date today
+                                     :todo "DONE"))
+                              ;; (:name "Today"
+                              ;;  :time-grid t
+                              ;;  :date today
+                              ;;  )
+                              ;; (:discard (:and (:scheduled past
+                              ;;                  :not (:habit t)
+                              ;;                  :not (:date today))))
+                              (:name "Städa"
+                               :category "clean")
+                              (:name "Meeting"
+                               :tag ("@meeting")
+                               :order 20)
+                              (:name "Finish Today"
+                               :scheduled today)
+                              (:name "Schedule"
+                               :time-grid t)
+                              (:auto-priority t)
+                              (:name "Todos"
+                               :todo t
+                               )
+                              ;; (:discard
+                              ;;  (:deadline t))
+                              ))
+                           ))
+               (org-ql-block
+                '(ts :on today))))))
+          (org-agenda-start-day "0d")
+          (org-agenda-span 1))
+      (org-agenda nil "l")))
+#+END_SRC
+
+#+RESULTS:
+: my/today
+
+And this function is my way of deciding what to do when I have free time.
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+  (defun my/anytime-todos ()
+    (interactive)
+    (org-ql-search (org-agenda-files)
+      '(and (todo "TODO" "NEXT" "WAITING")
+            (tags "anytime"))
+      :super-groups
+      '((:auto-category))))
+#+END_SRC
+
+I will test having a more granular time grid
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(setq org-agenda-time-grid '((daily today require-timed)
+                             (800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 1900 2000 2100)
+                             "-------------"
+                             "+-------------"))
+#+END_SRC
+*** Planning
+:PROPERTIES:
+:ID:       1c73ac9a-789d-49db-b179-e5c809efee21
+:END:
+These functions are used to decide what to do this day, week or month.
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+  (defun my/create-schedule-for-today ()
+    (interactive)
+    (my//create-schedule '(not (tags "weeklyreview" "monthlyreview" "yearlyreview") )))
+
+  (defun my/create-schedule-for-week ()
+    (interactive)
+    (my//create-schedule '(tags "weeklyreview")))
+  (defun my/create-schedule-for-month ()
+    (interactive)
+    (my//create-schedule '(tags "monthlyreview")))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(defun my//create-schedule (tags)
+  (let ((org-overriding-columns-format
+         "%EFFORT %80ITEM %3PRIORITY %CATEGORY %TODO ")
+        (org-agenda-view-columns-initially 't))
+    (org-ql-search (append '("~/org/orgzly/InboxComputer.org" "~/org/orgzly/Inbox.org") (org-agenda-files))
+                   `(and (todo)
+                         (not (org-entry-blocked-p))
+                         ,tags
+                         (not (and
+                               (property "BLOCKED" "")
+                               (descendants (todo)))))
+                   :super-groups
+                   '((:name "Today"
+                      :scheduled today)
+                     (:name "Past schedule"
+                      :scheduled past)
+                     (:name "Deadlines"
+                      :deadline t
+                      :log t)
+                     (:auto-category t)))))
+#+END_SRC
+
+I want to be able to set efforts to tasks through the collumns view so I have to
+set this variable with some fixed preset.
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(setq org-global-properties
+      '(("Effort_ALL" .
+         "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")))
+#+END_SRC
+
+**** TODO I want to implement the following workflow
+- Daily review
+  - Schedule things for today, from todos not marked with weekly, monthly or yearly
+- Weekly review
+  - Put the weekly tag on all untagged todos
+  - Manualy remove weekly tags on things that should be considered this week, from todos marked with weekly
+- Monthly review
+  - Replace weekly tags with monthly tags
+  - Manualy replace monthly tags with weekly tags on things that should be considered this month, from todos marked with monthly
+
+https://github.com/zaeph/.emacs.d Maybe this can be some inspiration
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(defun my/push-dailies-to-weekly ()
+  "Puts the tag weeklyreview on all TODOs without any review tags or are scheduled today."
+  (interactive)
+  (org-ql-query
+    :select (λ!  (org-set-tags (cons "weeklyreview" (org-get-tags))))
+    :from (current-buffer)
+    :where '(and (todo)
+                 (not (org-entry-blocked-p))
+                 (not (tags "weeklyreview" "dailyreview" "monthlyreview"))
+                 (not (and
+                       (property "BLOCKED" "")
+                       (descendants (todo))))
+                 (not (ts :from today :to 7)))))
+    ;; :where '(and (todo)
+    ;;              (not (tags "dailyreview" "yearlyreview" "monthlyreview" "weeklyreview"))
+    ;;              (not (ts :on today)))))
+#+END_SRC
+
+*** Capturing
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(setq org-capture-templates
+        '(;; ("w" "Weekly Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+          ;;  (file "~/Dropbox/org/templates/weeklyreviewtemplate.org"))
+          ;; ("d" "Daily Review" entry (file+datetree "~/Dropbox/org/reviews.org")
+          ;;  (file "~/Dropbox/org/templates/dailyreviewtemplate.org"))
+          ("x" "Scrapbook with clipboard" entry (file+datetree "~/Documents/notes/scrapbook.org")
+           "* %?
+%x
+")
+          ("X" "Scrapbook" entry (file+datetree "~/Documents/notes/scrapbook.org")
+           "* %?
+")
+          ("d" "Daily Summary" entry (file+datetree "~/Dropbox/org/reviews.org")
+           "* Daily Summary :daily:
+:PROPERTIES:
+:STRESS: %?
+:CONTENTMENT:
+:END:
+%t
+Summary: "
+           :jump-to-captured t
+           )
+          ("w" "Weekly Summary" entry (file+datetree "~/Dropbox/org/reviews.org")
+           "* Weekly summary :weekly:
+\** What went well :good:
+\** What can be improved :improve:
+\** Summary
+The Last column is the % of 40hours
+,#+BEGIN: clocktable :scope (\"~/org/orgzly/Projects.org\") :maxlevel 2 :block thisweek :stepskip0 t :formula % :match \"school\"
+,#+TBLFM: $6=40:00;t::$7=$4;t:: $8=100 * $7/$6
+,#+END:
+,#+BEGIN: clocktable :scope (\"~/org/orgzly/Projects.org\" \"~/org/orgzly/Log.org\" \"~/org/orgzly/Todo.org\") :maxlevel 5 :block thisweek :stepskip0 t :fileskip0 t
+,#+END:
+"
+           :jump-to-captured t)
+          ("t" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
+           "* TODO %? ")
+          ("f" "Todo" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
+           "* TODO %?\n %a "
+           :created t)
+          ("T" "clipboard" entry (file "~/Dropbox/org/orgzly/InboxComputer.org")
+           "* %?
+%T
+%x")
+          ("z" "Gather info for clocked task" item (clock)
+           "%x")
+          ("o" "Clock in a other task" entry (file+olp+datetree "~/Dropbox/org/orgzly/Log.org" "Log")
+           "* %?"
+           :clock-in t
+           :clock-resume t)
+          ("ce" "Clock in emacs confing" entry (file+headline "~/Dropbox/org/orgzly/Log.org" "Emacs Config")
+           "* %?"
+           :clock-in t
+           :clock-resume t)
+          ("cx" "Clock in xmonad confing" entry (file+headline "~/Dropbox/org/orgzly/Log.org" "XMonad Config")
+           "* %?"
+           :clock-in t
+           :clock-resume t)
+          ("co" "Clock in general confing" entry (file+headline "~/Dropbox/org/orgzly/Log.org" "Config")
+           "* %?"
+           :clock-in t
+           :clock-resume t)
+          ("l" "Learning Log" table-line (file+headline "~/Dropbox/org/orgzly/Log.org" "Learning")
+           "| %t | %K %? | | |")
+          ("s" "Clock in subtask" entry (clock)
+           "* %?"
+           :clock-in t
+           :clock-resume t
+           )
+          ("p" "Plan" entry (file  "~/Dropbox/org/orgzly/plan.org")
+           "* %?
+%(cfw:org-capture-day)")))
+#+END_SRC
+*** Clocking
+:PROPERTIES:
+:ID:       e6e33def-ae4c-4bed-8993-ab7683b8d6d0
+:END:
+The default volume is way too loud.
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(after! org-pomodoro
+  (setq org-pomodoro-finished-sound-args "--volume=30000")
+  (setq org-pomodoro-short-break-sound-args "--volume=30000")
+  (setq org-pomodoro-killed-sound-args "--volume=30000")
+  (setq org-pomodoro-ticking-sound-args "--volume=30000")
+  (setq org-pomodoro-start-sound-args "--volume=30000")
+  (setq org-pomodoro-long-break-sound-args "--volume=30000")
+  (setq org-pomodoro-overtime-sound-args "--volume=30000"))
+#+END_SRC
+
+I want to still count the break as worktime, because the breaks are neccesary
+for work.
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+    (after! org-pomodoro
+      (setq org-pomodoro-clock-break t)
+      (setq org-pomodoro-keep-killed-pomodoro-time t))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! org-mru-clock)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(use-package! org-mru-clock
+  :config
+  (map!
+   :leader
+   "n O" #'org-mru-clock-in)
+  (setq org-mru-clock-capture-if-no-match '((".*" . "o"))
+        org-mru-clock-completing-read #'ivy-completing-read))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-org-mode
+(setq org-clock-mode-line-total 'today)
+#+END_SRC
+**** TODO Kan vara bra att sätta upp kategorier
+ALla tasks och projekt hamnar under kategorier
+
++ kategori
+  + task
+  + projekt
+    + task
+
+Detta är bra för att då kan jag ha capture templates för att klocka in en misc. event i en kategori, ex. ordf
+**** TODO Man kan klocka det som finns i arkiven också.
+
+#+BEGIN: clocktable :scope agenda-with-archives :maxlevel 2
+#+CAPTION: Clock summary at [2020-05-16 Sat 19:44]
+#+END:
+*** Time Tracking functions
+**** Pichart
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(defvar my/clockreport-tags-colors
+  nil)
+(setq my/clockreport-tags-colors
+      '(("ospp" . "red")
+        ("sannstat" . "blue")
+        ("bervet" . "orange")
+        ("ioopm" . "yellow")
+        ("automata" . "green")))
+#+End_src
+
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(defun my/clockreport-pichart (ipos table-list params)
+  (interactive)
+  (goto-char ipos)
+  (let ((time-per-tag (make-hash-table
+                       :test 'equal))
+        (tracked-tags (-map (lambda (x) (car x)) my/clockreport-tags-colors))
+        used-tag-stack)
+    (pcase-dolist (`(,file-name ,file-time ,entries) table-list)
+      (pcase-dolist (`(,level ,headline ,tags-list ,ts ,time ,props) entries)
+        (dolist (tag tags-list)
+          (if (-contains? tracked-tags tag)
+              (progn
+                (puthash tag (+ (or time 0)
+                                (or (gethash tag time-per-tag) 0))
+                         time-per-tag)
+                (push tag used-tag-stack))
+            (push nil used-tag-stack)))))
+    (let* ((i 1)
+           tracked-time-plist)
+      (maphash (lambda (k v)
+                 (push (list :title k :value v :color (alist-get k my/clockreport-tags-colors nil nil #'equal)) tracked-time-plist))
+               time-per-tag)
+      (my/make-pichart tracked-time-plist "/tmp/chart.png")
+      (insert "[[file:/tmp/chart.png][file:chart.png]]")
+      (org-display-inline-images))))
+
+(defun my/make-pichart (plots file)
+  (with-current-buffer (find-file-noselect "/tmp/pichart.plt")
+    (delete-region (point-min) (point-max))
+    (insert
+     "\
+set term png
+set output \"" file "\"
+set size square
+set xrange [-1:1]
+set yrange [-1:1]
+set style fill solid 1
+
+unset border
+unset tics
+set key outside bottom
+")
+
+    (let* ((i 0)
+          (prev-angle 0)
+          angle
+          (value-list (-map (lambda (x) (plist-get x :value)) plots))
+          (sum-values (-sum value-list))
+          (percent-list (-map (lambda (x) (/ (float x) sum-values))
+                              value-list)))
+      (loop for p in plots
+            for percent in percent-list
+            do
+        (setq angle (+ prev-angle (* 360 percent)))
+        (insert (format "$data%d << EOD
+0 0 1 %d %d
+e
+EOD
+"
+                        i
+                        prev-angle
+                        angle))
+        (setq i (+ 1 i))
+        (setq prev-angle angle))
+
+      (setq i 0)
+      (insert "plot ")
+      (dolist (p plots)
+        (insert (format "$data%d" i) " with circles linecolor rgb \"" (or (plist-get p :color) "black") "\" title \"" (plist-get p :title) "\" ,\\\n")
+        (setq i (+ 1 i)))
+      (delete-char -2)
+      (save-buffer)
+      (call-process "gnuplot" nil nil nil "/tmp/pichart.plt"))))
+#+END_SRC
+
+**** Clock in quickly
+
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(defun my/clock-in-specific (name)
+  (interactive)
+  (with-current-buffer (find-file-noselect "/home/leo/org/orgzly/Log.org")
+    (save-excursion
+      (goto-char (point-min))
+      (unless (search-forward (concat "** " name) nil t)
+        (goto-char (point-max))
+        (insert (concat "** " name)))
+      (goto-char (line-end-position))
+      (org-clock-in)
+      (kdeconnect-ping-msg
+       (concat "Clocking in: "
+               (org-no-properties (org-get-heading))))
+      (save-buffer))))
+
+(defun my/kdec-clock-out ()
+  (interactive)
+  (save-excursion
+    (org-clock-goto)
+    (kdeconnect-ping-msg
+     (concat "Clocking out: "
+             (org-no-properties (org-get-heading))))
+    (org-clock-out)
+    (buffer-save)))
+
+;; From https://github.com/carldotac/kdeconnect.el
+;;;###autoload
+(defun kdeconnect-ping-msg (message)
+  "Ping the active device with MESSAGE."
+  (interactive "MEnter message: ")
+  (shell-command
+   (mapconcat 'identity
+              (list "kdeconnect-cli" "-d"
+                    (shell-quote-argument "5f9f969c142cd64b")
+                    "--ping-msg" (shell-quote-argument message)) " ")))
+#+END_SRC
+** Latex
+:PROPERTIES:
+:ID:       6eeb7136-2da1-43d3-9175-5892668d491a
+:END:
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(setq +latex-viewers '(okular))
+#+END_SRC
+** PDF
+Use the same theme in pdfs as in the rest of emacs
+#+BEGIN_SRC :tangle ~/.doom.d/config.el
+(add-hook 'pdf-tools-enabled-hook #'pdf-view-midnight-minor-mode)
+#+END_SRC
+** Misc.
+:PROPERTIES:
+:header-args: :noweb-ref emacs-misc
+:ID:       dc4b5876-482c-4057-b0cb-d391f1feed05
+:END:
+I want the prompt for when I unlock my gpg key
+#+BEGIN_SRC emacs-lisp
+(after! epa (setq epa-pinentry-mode 'ask))
+#+END_SRC
+
+
+I want ~j~ and ~k~ and other evil movements to treat soft-wrapped lines like normal lines.
+#+BEGIN_SRC emacs-lisp
+(setq evil-respect-visual-line-mode t)
+#+END_SRC
+** Erlang
+:PROPERTIES:
+:header-args: :noweb-ref emacs-misc
+:ID:       736efea6-84b6-4951-afb1-65d772cf7c93
+:END:
+This function allows me to extract logs in the format I used in the cacofonix project
+#+BEGIN_SRC emacs-lisp
+(defun my/extract-erlang-log (query)
+  (interactive "sQuery pls: ")
+  (save-excursion)
+  (goto-char (point-min))
+  (let* ((beg (point-min))
+         (end)
+         (continue t)
+         pos)
+    (while continue
+      (setq pos (point))
+      (setq continue (search-forward query nil t))
+      (setq end (or (re-search-backward "\n\n" nil t) (- (line-beginning-position) 1)))
+      (delete-region beg end)
+      (setq beg (search-forward "\n\n" nil t))
+      (message "Position: %d" pos))
+    (delete-region pos (point-max))))
+#+END_SRC
+This is the log configuration for the above function
+#+BEGIN_SRC erlang :tangle no :noweb-ref no
+[{
+  kernel, [{
+   logger, [{
+     handler, default, logger_std_h,
+       #{
+         level => debug,
+         formatter => {logger_formatter,
+                       #{template => [time, " ",  level,":", pid, "\n",file, ":", line, "\n", msg, "\n\n"],
+                         single_line => false}}
+        }
+    }]},
+    {logger_level, debug}
+ ]}
+].
+#+END_SRC
+** IRC
+:PROPERTIES:
+:ID:       1c96e624-b94d-46dd-8e24-92dffb7a0685
+:END:
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! weechat)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-misc
+(use-package! weechat
+  :commands (weechat-connect))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.doom.d/config.el
+(after! circe
+  (set-irc-server! "chat.freenode.net"
+                   `(:tls t
+                     :port 6697
+                     :nick "Zetagon"
+                     :sasl-username ,(+pass-get-user "freenode/freenode@relevant-information.com")
+                     :sasl-password (lambda (&rest _) (+pass-get-secret "freenode/freenode@relevant-information.com"))
+                     :channels ("#emacs-circe"))))
+#+END_SRC
+** Passwords
+I want to pin these packages myself
+#+BEGIN_SRC emacs-lisp :noweb-ref emacs-packages
+(package! pass :pin "919d8e3826d556433ab67d4ee21a509d209d1baa")
+(package! password-store :pin "07b169ec32ad6961ed8625a0b932a663abcb01d2")
+(package! password-store-otp :pin "04998c8578a060ab4a4e8f46f2ee0aafad4ab4d5")
+
+;; an older version of `auto-source-pass' is built into Emacs 26+, so we must
+;; install the new version directly from the source and with a psuedonym.
+(package! auth-source-pass
+  :recipe (:host github :repo "DamienCassou/auth-password-store")
+  :pin "ff4940c647786914b3cbef69103d96a4ea334111")
+
+(when (featurep! :completion ivy)
+  (package! ivy-pass :pin "5b523de1151f2109fdd6a8114d0af12eef83d3c5"))
+(when (featurep! :completion helm)
+  (package! helm-pass :pin "ed5798f2d83937575e8f23fde33323bca9e85131"))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb-ref
+
+#+END_SRC
+
+* Further improvements
+** TODO Multiple org-files for config
+It's possible to have multiple source files for org.
+
+#+caption: included.org
+#+BEGIN_SRC org-mode
+\#+BEGIN_SRC :noweb-ref test
+
+\#+END_SRC
+#+END_SRC
+
+then in this file:
+#+BEGIN_SRC org-mode
+\#+include ./included.org
+#+END_SRC
+
+Lastly call ~org-org-export-to-org~ to get the final org document to tangle
+
+** TODO göra en hydra för mina agendaviews
+** TODO göra en hydra för när jag är i mina agendaviews
+typ för att navigera och byta.
+** TODO Fixa en hydra för att läsa mail och rss feeds
+SCHEDULED: <2020-05-23 Sat>
+det ska vara exakt samma interface för båda
+** TODO Fixa journal agenda
+:PROPERTIES:
+:ORDERED:  t
+:END:
+*** TODO Fixa så att journal hamnar i agenda
+SCHEDULED: <2020-05-23 Sat>
+*** TODO Fixa så att todos i journal går över till nästa dag
+SCHEDULED: <2020-05-23 Sat>
+*** TODO Fixa en capture template för att lägga saker jag vill läsa i min journal
+SCHEDULED: <2020-05-23 Sat>
+då kan jag lätt skriva anteckningar för det och länka mot org-roam
+* TODO göra en arkiveringsfunktion som tar hänsyn till breadcrumbs
