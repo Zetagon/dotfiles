@@ -40,7 +40,7 @@ CLOCK: [2020-07-04 Sat 20:54]--[2020-07-04 Sat 21:15] =>  0:21
         property-list
         (property-colors (plist-get params :property-colors)))
     (org-map-entries (lambda ()
-                       (setq clock-type (org-entry-properties nil "CLOCK-TYPE"))
+                       (setq clock-type (cdr (car (org-entry-properties nil "CLOCK-TYPE"))))
                        (unless clock-type
                          (setq clock-type "Uncategorized"))
                        (puthash
