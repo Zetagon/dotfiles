@@ -1,4 +1,35 @@
 ;;; ~/.doom.d/pichart-property.el -*- lexical-binding: t; -*-
+(defun pichart/make-test-org-file ()
+  (find-file (make-temp-file nil nil ".org"
+                             " \"#+BEGIN: my/pichart-property :scope file :property-colors (( \"foo\" . \"red\" ) (\"wow\" . \"blue\"))
+| foo | 0:42 | red |
+| wow | 0:21 | blue |
+[[file:/tmp/chart.png]]
+#+END:
+
+* test
+:PROPERTIES:
+:CLOCK-TYPE: foo
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-04 Sat 20:54]--[2020-07-04 Sat 21:15] =>  0:21
+:END:
+** bar
+:PROPERTIES:
+:CLOCK-TYPE: foo
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-04 Sat 20:54]--[2020-07-04 Sat 21:15] =>  0:21
+:END:
+
+** baz
+:PROPERTIES:
+:CLOCK-TYPE: wow
+:END:
+:LOGBOOK:
+CLOCK: [2020-07-04 Sat 20:54]--[2020-07-04 Sat 21:15] =>  0:21
+:END:
+")))
 
 (defun org-dblock-write:my/pichart-property (params)
   ""
