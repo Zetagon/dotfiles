@@ -47,8 +47,7 @@ myKeymap = ([ ("M4-/", switchProjectPrompt def)
             , ("M4-C-/", shiftToProjectPrompt def)
             , ("M4-d", XS.put $ AProjects defaultProjectList)
             , ("M4-s", switchSuperProject)
-            , ("M4-t", namedScratchpadAction scratchpads "htop")
-            , ("M4-g", namedScratchpadAction scratchpads "agenda")
+            , ("M4-r", namedScratchpadAction scratchpads "agenda")
             , ("M4-c", namedScratchpadAction scratchpads "cmus")]
                ++ map (\x -> ("M4-S-" ++ show x, switchActiveProjectNr x)) [0..9] -- Go to the project at position x
                ++ map (\x-> ("M4-" ++ show x, goToProjectNr x)) [0..9]) -- Assign a project to position x
@@ -58,7 +57,7 @@ scratchpads =
 -- run htop in xterm, find it by title, use default floating window placement
     [ NS "htop" "xterm -e htop" (title =? "htop") defaultFloating
     , NS "cmus" "xterm -xrm 'XTerm*vt100.allowTitleOps: false'   -T \"cmus\" -e cmus" (title =? "cmus") defaultFloating
-    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(org-agenda nil \"a\")'"
+    , NS "agenda" "emacsclient -c -F '((name . \"org-agenda\"))' -e '(my/today)'"
           (title =? "org-agenda")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))]
 -- * Project list
@@ -67,17 +66,24 @@ projects = [ makeEmacsProject "Emacs" "~/" ""
            , makeSimpleProject "XMonad Browser" ["firejail --noprofile firefox - --new-window"]
            , makeEmacsProject "Spirited Away" "~/Documents/texter/analys-spirited-away" "~/Documents/texter/analys-spirited-away/master.tex"
            , makeSimpleProject "Spirited Away Browser" ["firejail --noprofile firefox - --new-window"]
-           , makeSimpleProject "Watch" ["crunchyroll"]
+           , makeSimpleProject "Watch" ["konsole -e \"firejail --net=none --private=~/Downloads/Torrents/\""]
            , makeSimpleProject "Keepass" ["keepassx"]
-           , makeSimpleProject "Mail" ["thunderbird"]
+           , makeSimpleProject "Mail" ["emacsclient -c -e \"(=notmuch)\""]
            , makeSimpleProject "Terminals" $ replicate 3 "konsole"
+           , Project
+             { projectName = "Cacofonix Terminals"
+             , projectDirectory = "~/Documents/dvkand/operativ-system/cacofonix"
+             , projectStartHook = Just $ do spawn "konsole"
+             }
+           , makeEmacsProject "Cacofonix Emacs" "~/Documents/dvkand/operativ-system/cacofonix" ""
            , makeSimpleProject "Browser" ["firejail --noprofile firefox"]
-           , makeSimpleProject "Messaging" [ "firefox --new-window https://discordapp.com/login"
-                                           , "firefox --new-window https://perpetuality.slack.com/"
-                                           , "firefox --new-window https://styrelsedv.slack.com/"]
+           , makeSimpleProject "Messaging" ["discord"]
            , makeSimpleProject "VLC" ["vlc"]
            , makeSimpleProject "Mpsyt" ["xterm -e \"firejail --noprofile mpsyt\""]
+           , makeSimpleProject "Nautilus" ["nautilus"]
+           , makeSimpleProject "Libre Office" ["libreoffice"]
            , makeSimpleProject "Zotero" ["zotero"]
+           , makeSimpleProject "Zoom" ["zoom"]
            ]
 
 terminalsP = getP "Terminals"
@@ -93,6 +99,9 @@ defaultProjectList = mkProjectList [ (1, "Emacs")
                                    , (0, "Mpsyt")]
 -- * Super Project List
 defaultSuperProjectList = [ ("default" , defaultProjectList)
+                          , ("cacofonix", mkProjectList [ (1, "Cacofonix Eacs")
+                                                        , (2, "Browser")
+                                                        , (3, "Cacofonix Terminals")])
                           , ("watch", mkProjectList [(1, "Watch"), (8, "Keepass")])
                           , ("spirited away", mkProjectList [(1, "Spirited Away"), (2, "Spirited Away Browser"), (3, "VLC"), (7, "Zotero"), (0, "Mpsyt")])
                           , ("xmonad", mkProjectList [ (1, "XMonadConfig")
@@ -108,7 +117,6 @@ makeEmacsProject name path files =
       , projectDirectory = path
       , projectStartHook = Just $ do
                              spawn $ "emacsclient -c " ++ files
-                             spawn "konsole"
       }
 
 makeSimpleProject name programs =
