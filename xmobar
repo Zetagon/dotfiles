@@ -2,12 +2,16 @@ Config { bgColor = "black"
        , fgColor = "grey"
        , position = Top
        , lowerOnStart = True
+       , font = "xtf:Deja Vu"
+       , additionalFonts = ["Noto Color Emoji", "xtf:FontAwesome"]
+
        , commands = [ Run Cpu ["-L", "3", "-H", "50", "--normal", "green", "--high", "red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Swap [] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
-                    , Run StdinReader]
+                    , Run StdinReader
+                    , Run PipeReader "/tmp/pomodoro-pipe" "pomodoro"]
        , sepChar = "%"
        , alignSep =  "}{}"
-       , template = "%StdinReader% }{ %cpu% | %memory% * %swap%  <fc=#ee9a00>%date%</fc>"
+       , template = "%StdinReader% }  %pomodoro% { %cpu% |  %memory% * %swap%  <fc=#ee9a00>%date%</fc>"
 }
