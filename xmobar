@@ -22,16 +22,8 @@ Config { bgColor = "black"
                                          -- charged status
                                          , "-i"	, "<fc=#006000>Charged</fc>"
                                          ] 50
-                    , Run Com "/usr/bin/notmuch" ["count", "not tag:school AND tag:unread"] "mail" 15
-                    , Run Com "/usr/bin/notmuch" ["count", "tag:unread AND tag:school"] "schoolmail" 15
-                    , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat"] "bat0" 10
-                    , Run Com "/usr/bin/bash" ["/home/leo/.xmonad/.xmobar/bat1"] "bat1" 10
-                    , Run Com "/home/leo/dotfiles/xmonad/.xmobar/org-pomodoro.sh" [""] "pomodoro" 60
-                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["offlineimap"] "offlineimapstatus" 10
-                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["dropbox"] "dropbox" 10
-                    , Run Com "/home/leo/dotfiles/xmobar-program-status.sh" ["emacs"] "emacs" 10
                     , Run StdinReader]
        , sepChar = "%"
        , alignSep =  "}{}"
-       , template = "%StdinReader% }{%pomodoro% %dropbox% %emacs% %offlineimapstatus% %schoolmail% | %mail% | %bat0% %bat1% %cpu%   |%memory% * %swap%  <fc=#ee9a00>%date%</fc>"
+       , template = "%StdinReader% }{ %bat0% %bat1% %cpu%   |%memory% * %swap%  <fc=#ee9a00>%date%</fc>"
 }
