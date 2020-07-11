@@ -41,7 +41,8 @@ xmodmap -e "remove mod4 = Hyper_R"
 xmodmap -e "keycode any = backslash"
 xcape -e "Hyper_R=backslash"
 
-node ~/bin/nasaApodImage.js
+# This script is dangerous, could allow arbitrary code to run
+# node ~/bin/nasaApodImage.js &
 feh --bg-max ~/Pictures/background.jpg
 deja-dup &
 dropbox start &
