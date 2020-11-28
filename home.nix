@@ -23,22 +23,32 @@
     pkgs.python3
     pkgs.keepassx2
     pkgs.gnumake
-    pkgs.erlang
+    pkgs.tmux
+    pkgs.rofi	
+    pkgs.xbindkeys
+    pkgs.xcape
+    pkgs.xorg.xmodmap
+    pkgs.texlive.combined.scheme-medium
+    pkgs.mu
+    pkgs.isync
+    pkgs.gimp
+    pkgs.mpv
+    pkgs.vim
   ];
 
-  home.file = {
-    ".xbindekeysrc".source = ./xbindkeysrc;
-    ".doom.d/config.org".source = ./doom/config.org;
-    ".config" = {
-      source = ./config;
-      recursive = true;
-    };
-    ".xmonad" = {
-      source = ./xmonad;
-      recursive = true;
-    };
-    ".xmobarrc".source = ./xmobar;
-  };
+  # home.file = {
+    # ".xbindkeysrc".source = ./xbindkeysrc;
+    # ".doom.d/config.org".source = ./doom/config.org;
+    # ".config" = {
+      # source = ./config;
+      # recursive = true;
+    # };
+    # ".xmonad" = {
+      # source = ./xmonad;
+      # recursive = true;
+    # };
+    # ".xmobarrc".source = ./xmobar;
+  # };
 
 
 
